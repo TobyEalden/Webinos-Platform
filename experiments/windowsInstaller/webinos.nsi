@@ -1,6 +1,6 @@
 RequestExecutionLevel admin
 
-!define DEBUGBUILD 1
+!define DEBUGBUILD 0
 ; For help check http://nsis.sourceforge.net/Docs/Chapter4.html#4.2.1
 
 SetCompressor lzma
@@ -37,7 +37,7 @@ SetCompressor lzma
 !define INSTALLER_BANNER "installBanner.bmp"
 
 !define PRODUCT_NAME "Webinos"
-!define VERSION "v0.1-Alpha"
+!define VERSION "v0.5-Engineering-Eval-Windows"
 
 ; XP Compatibility
 !ifndef SF_SELECTED
@@ -105,7 +105,7 @@ SetCompressor lzma
   
   LangString DESC_SecWebinosPZPAuto ${LANG_ENGLISH} "Automatically start ${PRODUCT_NAME} PZP at system startup"
   
-  LangString DESC_SecXmppSupport ${LANG_ENGLISH} "Add ${PRODUCT_NAME} Xmpp support."
+;  LangString DESC_SecXmppSupport ${LANG_ENGLISH} "Add ${PRODUCT_NAME} Xmpp support."
   
   LangString DESC_SecOpenSSLDLLs ${LANG_ENGLISH} "Install OpenSSL DLLs locally (may be omitted if DLLs are already installed globally)."
   
@@ -171,7 +171,7 @@ SectionIn RO
   
   SetOutPath "$INSTDIR\webinos"
 
-  File /r /x .gitignore /x test /x pom.xml /x wrt /x wscript /x *.gyp /x obj /x *.sln /x *.vcxproj* /x *.cpp /x *.h /x *.c /x *.cc /x *.exp /x *.ilk /x *.pdb /x *.lib /x .git /x common\manager\context_manager\data\contextSettings.json "${SRCROOT}\webinos\*.*"
+  File /r /x .gitignore /x android /x test /x pom.xml /x wrt /x wscript /x *.gyp /x obj /x *.sln /x *.vcxproj* /x *.sdf /x *.suo /x *.cpp /x *.h /x *.c /x *.cc /x *.exp /x *.ilk /x *.pdb /x *.lib /x .git /x common\manager\context_manager\data\contextSettings.json "${SRCROOT}\webinos\*.*"
   
   SetOutPath "$INSTDIR\node_modules"
   
@@ -181,9 +181,9 @@ SectionIn RO
   
   File /r /x certificates /x *.txt /x tools /x build.xml "${SRCROOT}\demo\*.*"
   
-  SetOutPath "$INSTDIR\storage"
+;  SetOutPath "$INSTDIR\storage"
   
-  File /r "${SRCROOT}\storage\*.*"
+;  File /r "${SRCROOT}\storage\*.*"
   
   SetOutPath "$INSTDIR"
   
@@ -195,28 +195,29 @@ Section "Enable Context" SecEnableContext
 
 SectionEnd
 
-Section "Add Xmpp support to ${PRODUCT_NAME}" SecXmppSupport
+;Section "Add Xmpp support to ${PRODUCT_NAME}" SecXmppSupport
 
-  SetOverwrite on
+ ; SetOverwrite on
   
-  DetailPrint "Installing Xmpp support"
+  ;DetailPrint "Installing Xmpp support"
+ 
+	; todo
+;  SetOutPath "$INSTDIR\node_modules\"
   
-  SetOutPath "$INSTDIR\node_modules\"
+;  File /r /x *.exe /x *.zip /x Expat-2.0.1 /x icu /x obj /x *.gyp /x obj /x *.sln /x *.vcxproj* /x *.cpp /x *.h /x *.c /x *.cc /x *.exp /x *.ilk /x *.pdb /x *.lib /x .git "${XmppModulesPath}\*.*"
   
-  File /r /x *.exe /x *.zip /x Expat-2.0.1 /x icu /x obj /x *.gyp /x obj /x *.sln /x *.vcxproj* /x *.cpp /x *.h /x *.c /x *.cc /x *.exp /x *.ilk /x *.pdb /x *.lib /x .git "${XmppModulesPath}\*.*"
+;  SetOutPath "$INSTDIR\bin"
   
-  SetOutPath "$INSTDIR\bin"
+;  File /r "${XmppModulesPath}\Expat-2.0.1\Bin\*.*"
   
-  File /r "${XmppModulesPath}\Expat-2.0.1\Bin\*.*"
-  
-  File /r "${XmppModulesPath}\icu\bin\*.*"
+;  File /r "${XmppModulesPath}\icu\bin\*.*"
 
-SectionEnd
+;SectionEnd
 
 Section /o "AutoStart ${PRODUCT_NAME} PZH" SecWebinosPZHAuto
 	; set registry parameters to autostar pzh	
 	DetailPrint "Configuring windows to autostart ${PRODUCT_NAME} PZH"
-    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}PZH"  "$INSTDIR\bin\node.exe $INSTDIR\demo\startPzh.js"
+    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}PZH"  "$INSTDIR\bin\node.exe $INSTDIR\demo\startFarm.js"
 SectionEnd
 
 Section /o "AutoStart ${PRODUCT_NAME} PZP" SecWebinosPZPAuto
@@ -331,25 +332,25 @@ createStartShortcuts:
 addClientStartShortcut:
   ;Set the "start in" parameter of the shortcut
   SetOutPath "$INSTDIR\demo"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Start PZH.lnk" $NodeExe "startPzh.js" "$INSTDIR\${PRODUCT_ICON}"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Start PZH.lnk" $NodeExe "startFarm.js" "$INSTDIR\${PRODUCT_ICON}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Start PZP.lnk" $NodeExe "startPzp.js" "$INSTDIR\${PRODUCT_ICON}"
   
   
   WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\PZP UI.url" "InternetShortcut" "URL" "http://localhost:8080/client/client.html"
-  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\PZH Admin UI.url" "InternetShortcut" "URL" "http://localhost:8082/client/pzh.html"
+  WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\PZH Admin UI.url" "InternetShortcut" "URL" "https://localhost:9000"
 
-  SectionGetFlags ${SecXmppSupport} $R0
-  IntOp $R0 $R0 & ${SF_SELECTED}
-  IntCmp $R0 ${SF_SELECTED} "" writeRegistryInfo writeRegistryInfo 
-    SetOutPath "$INSTDIR\webinos\common\xmpp\lib"
-    CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Start Xmpp PZP client 1.lnk" $NodeExe "pzp.js 0 w021@servicelab.org/mobile webinos" "$INSTDIR\${PRODUCT_ICON}"
-    CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Start Xmpp PZP client 2.lnk" $NodeExe "pzp.js  1 w021@servicelab.org/tv webinos" "$INSTDIR\${PRODUCT_ICON}"
-    CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Start Xmpp PZP client via BOSH 1.lnk" $NodeExe "node pzp.js 2 w021@servicelab.org/viabosh webinos http://xmpp.servicelab.org/jabber/" "$INSTDIR\${PRODUCT_ICON}"
-    CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Start Xmpp PZP client via BOSH 2.lnk" $NodeExe "node pzp.js 3 w021@servicelab.org/viabosh2 webinos http://xmpp.servicelab.org/jabber/" "$INSTDIR\${PRODUCT_ICON}"
-	WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Xmpp PZP client 1 UI.url" "InternetShortcut" "URL" "http://localhost:8000"
-	WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Xmpp PZP client 2 UI.url" "InternetShortcut" "URL" "http://localhost:8010"
-	WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Xmpp PZP client via BOSH 1 UI.url" "InternetShortcut" "URL" "http://localhost:8020"
-	WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Xmpp PZP client via BOSH 2 UI.url" "InternetShortcut" "URL" "http://localhost:8030"
+;  SectionGetFlags ${SecXmppSupport} $R0
+;  IntOp $R0 $R0 & ${SF_SELECTED}
+;  IntCmp $R0 ${SF_SELECTED} "" writeRegistryInfo writeRegistryInfo 
+;    SetOutPath "$INSTDIR\webinos\common\xmpp\lib"
+;    CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Start Xmpp PZP client 1.lnk" $NodeExe "pzp.js 0 w021@servicelab.org/mobile webinos" "$INSTDIR\${PRODUCT_ICON}"
+;    CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Start Xmpp PZP client 2.lnk" $NodeExe "pzp.js  1 w021@servicelab.org/tv webinos" "$INSTDIR\${PRODUCT_ICON}"
+;    CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Start Xmpp PZP client via BOSH 1.lnk" $NodeExe "node pzp.js 2 w021@servicelab.org/viabosh webinos http://xmpp.servicelab.org/jabber/" "$INSTDIR\${PRODUCT_ICON}"
+;    CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Start Xmpp PZP client via BOSH 2.lnk" $NodeExe "node pzp.js 3 w021@servicelab.org/viabosh2 webinos http://xmpp.servicelab.org/jabber/" "$INSTDIR\${PRODUCT_ICON}"
+;	WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Xmpp PZP client 1 UI.url" "InternetShortcut" "URL" "http://localhost:8000"
+;	WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Xmpp PZP client 2 UI.url" "InternetShortcut" "URL" "http://localhost:8010"
+;	WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Xmpp PZP client via BOSH 1 UI.url" "InternetShortcut" "URL" "http://localhost:8020"
+;	WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\XMPP\Xmpp PZP client via BOSH 2 UI.url" "InternetShortcut" "URL" "http://localhost:8030"
   writeRegistryInfo:
   ; Store install folder in registry
   WriteRegStr HKLM SOFTWARE\${PRODUCT_NAME} "" $INSTDIR
@@ -374,7 +375,7 @@ SectionEnd
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SecWebinosUserSpace} $(DESC_SecWebinosUserSpace)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecEnableContext} $(DESC_SecEnableContext)
-  !insertmacro MUI_DESCRIPTION_TEXT ${SecXmppSupport} $(DESC_SecXmppSupport)
+;  !insertmacro MUI_DESCRIPTION_TEXT ${SecXmppSupport} $(DESC_SecXmppSupport)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecWebinosPZHAuto} $(DESC_SecWebinosPZHAuto)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecWebinosPZPAuto} $(DESC_SecWebinosPZPAuto)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenSSLDLLs} $(DESC_SecOpenSSLDLLs)
