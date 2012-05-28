@@ -104,8 +104,8 @@
     "location": "common/rpc/"
   },
   "xmpp": {
-        "name": "xmpp",
-        "location": "common/xmpp/"
+    "name": "xmpp",
+    "location": "common/xmpp/"
   },
   "pzp": {
     "name": "PZP",
@@ -118,5 +118,9 @@
   "wrt": {
     "name": "wrt",
     "location": "wrt/"
+  },
+  "test": {
+    "name": "test",
+    "location": "test/"
   }
 }
