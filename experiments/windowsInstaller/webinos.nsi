@@ -37,7 +37,7 @@ SetCompressor lzma
 !define INSTALLER_BANNER "installBanner.bmp"
 
 !define PRODUCT_NAME "Webinos"
-!define VERSION "v0.5-Engineering-Eval-Windows"
+!define VERSION "v0.5-Eng-Eval"
 
 ; XP Compatibility
 !ifndef SF_SELECTED
@@ -72,7 +72,7 @@ SetCompressor lzma
   !define MUI_COMPONENTSPAGE_SMALLDESC
   !define MUI_FINISHPAGE_LINK "Visit Webinos.org"
   !define MUI_FINISHPAGE_LINK_LOCATION "http://webinos.org"
-  !define MUI_FINISHPAGE_NOAUTOCLOSE
+  !define MUI_FINISHPAGE_NOCLOSE
   !define MUI_ABORTWARNING
   !define MUI_ICON "${PRODUCT_ICON}"
   !define MUI_UNICON "${PRODUCT_ICON}"
@@ -118,6 +118,8 @@ SetCompressor lzma
   LangString DESC_SecAddShortcuts ${LANG_ENGLISH} "Add ${PRODUCT_NAME} documentation shortcuts to the current user's Start Menu."
 
   LangString DESC_SecEnableContext ${LANG_ENGLISH} "Enable ${PRODUCT_NAME}'s context loging in order to provide contextual user informations."
+  
+  LangString DESC_SecDebugTools ${LANG_ENGLISH} "Install debugging tools to help troubleshoot module load errors"
 
 ;--------------------------------
 ;Reserve Files
@@ -171,15 +173,15 @@ SectionIn RO
   
   SetOutPath "$INSTDIR\webinos"
 
-  File /r /x .gitignore /x android /x test /x pom.xml /x wrt /x wscript /x *.gyp /x obj /x *.sln /x *.vcxproj* /x *.sdf /x *.suo /x *.cpp /x *.h /x *.c /x *.cc /x *.exp /x *.ilk /x *.pdb /x *.lib /x .git /x common\manager\context_manager\data\contextSettings.json "${SRCROOT}\webinos\*.*"
+  File /r /x *.ipch /x .gitignore /x android /x test /x pom.xml /x wrt /x wscript /x *.gyp /x obj /x *.sln /x *.vcxproj* /x *.sdf /x *.suo /x *.cpp /x *.h /x *.c /x *.cc /x *.exp /x *.ilk /x *.pdb /x *.lib /x .git /x common\manager\context_manager\data\contextSettings.json "${SRCROOT}\webinos\*.*"
   
   SetOutPath "$INSTDIR\node_modules"
   
-  File /r "${SRCROOT}\node_modules\*.*"
+  File /r /x *.ipch /x .gitignore /x android /x test /x pom.xml /x wrt /x wscript /x *.gyp /x obj /x *.sln /x *.vcxproj* /x *.sdf /x *.suo /x *.cpp /x *.h /x *.c /x *.cc /x *.exp /x *.ilk /x *.pdb /x *.lib /x .git /x socket.io\node_modules\socket.io-client\node_modules\active-x-obfuscator\node_modules\zeparser\benchmark.html "${SRCROOT}\node_modules\*.*"
   
-  SetOutPath "$INSTDIR\demo"
+  SetOutPath "$INSTDIR\webinos\test"
   
-  File /r /x certificates /x *.txt /x tools /x build.xml "${SRCROOT}\demo\*.*"
+  File /r /x certificates /x *.txt /x tools /x build.xml "${SRCROOT}\webinos\test\*.*"
   
 ;  SetOutPath "$INSTDIR\storage"
   
@@ -217,13 +219,13 @@ SectionEnd
 Section /o "AutoStart ${PRODUCT_NAME} PZH" SecWebinosPZHAuto
 	; set registry parameters to autostar pzh	
 	DetailPrint "Configuring windows to autostart ${PRODUCT_NAME} PZH"
-    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}PZH"  "$INSTDIR\bin\node.exe $INSTDIR\demo\startFarm.js"
+    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}PZH"  "$INSTDIR\bin\node.exe $\"$INSTDIR\webinos\pzh\lib\pzh_start.js$\""
 SectionEnd
 
 Section /o "AutoStart ${PRODUCT_NAME} PZP" SecWebinosPZPAuto
 	; set registry parameters to autostar pzp
 	DetailPrint "Configuring windows to autostart ${PRODUCT_NAME} PZP"
-    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}PZH"  "$INSTDIR\bin\node.exe $INSTDIR\demo\startPzp.js"
+    !insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}PZP"  "$INSTDIR\bin\node.exe $\"$INSTDIR\webinos\pzp\lib\pzp_start.js$\""
 SectionEnd
 
 Section "OpenSSL DLLs" SecOpenSSLDLLs
@@ -331,9 +333,9 @@ createStartShortcuts:
     
 addClientStartShortcut:
   ;Set the "start in" parameter of the shortcut
-  SetOutPath "$INSTDIR\demo"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Start PZH.lnk" $NodeExe "startFarm.js" "$INSTDIR\${PRODUCT_ICON}"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Start PZP.lnk" $NodeExe "startPzp.js" "$INSTDIR\${PRODUCT_ICON}"
+  SetOutPath "$INSTDIR\webinos"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Start PZH.lnk" $NodeExe "pzh\lib\pzh_start.js" "$INSTDIR\${PRODUCT_ICON}"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Start PZP.lnk" $NodeExe "pzp\lib\pzp_start.js" "$INSTDIR\${PRODUCT_ICON}"
   
   
   WriteINIStr "$SMPROGRAMS\${PRODUCT_NAME}\PZP UI.url" "InternetShortcut" "URL" "http://localhost:8080/client/client.html"
@@ -383,6 +385,7 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SecMSVCR100DLL} $(DESC_SecMSVCR100DLL)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecAddPath} $(DESC_SecAddPath)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecAddShortcuts} $(DESC_SecAddShortcuts)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecDebugTools} $(DESC_SecDebugTools)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
