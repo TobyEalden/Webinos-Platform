@@ -144,6 +144,7 @@ this.WidgetManager = (function() {
 			var onProcess = function(processingResult) {
 				if(processingResult.status != WidgetConfig.STATUS_OK) {
 					callPrepareListener(listener, processingResult);
+					return;
 				}
 	
 				/* basic processing was successful, so determine status of any existing

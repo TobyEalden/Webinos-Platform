@@ -212,7 +212,7 @@ this.WidgetProcessor = (function() {
         } else {
           widgetConfig.installId = WidgetProcessor.getWidgetResourceHash(that.res);
 		}
-      console.log(util.inspect(widgetConfig));
+      //console.log(util.inspect(widgetConfig));
       if(that.processListener)
         that.processListener(that.processingResult);
     };

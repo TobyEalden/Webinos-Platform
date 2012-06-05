@@ -324,7 +324,7 @@ this.WidgetConfigProcessor = (function() {
 			};
 
 			var startElement = function(elt) {
-				/* console.log('startElement: name: ' + elt.nsName); */
+				//console.log('startElement: name: ' + elt.nsName);
 				var isWidget = elt.isWidget = (elt.nsUri == WIDGETS_NS);
 				var eltName = elt.nsName;
 				var attrs = elt.attrs;
@@ -403,10 +403,13 @@ this.WidgetConfigProcessor = (function() {
 					elt.isValid = parent.isRoot;
 					if(elt.isValid) {
 						var email, href;
-						if('href' in attrs)
-							href = processUriAttr(attrs.href).href;
+						if('href' in attrs) {
+							href = processUriAttr(attrs.href);
+							if (href !== undefined)
+								href = href.href;
+						}
 						if('email' in attrs)
-							href = processTextAttr(attrs.email);
+							email = processTextAttr(attrs.email);
 						widgetConfig.author = {href: href, email: email};
 						beginDirectionalElement(elt, parent);
 					}
@@ -828,7 +831,9 @@ this.WidgetConfigProcessor = (function() {
 						value = processTextAttr(attrs.value);
 					if('readonly' in attrs)
 						readonly = (processTextAttr(attrs.readonly) == 'true');
-					Logger.logAction(Logger.LOG_MINOR, "DwhJBIJRQN", "adding preference " + name + ": " + value);
+					else
+						readonly = false;
+					Logger.logAction(Logger.LOG_MINOR, "DwhJBIJRQN", "adding preference with name '" + name + "' and value '" + value + "'");
 					preferences[name] = new Preference(name, value, readonly);
 
 				} else if(isWidget && eltName == 'span') {
@@ -1017,9 +1022,18 @@ this.WidgetConfigProcessor = (function() {
 			try {
 				parser.parse(configBuffer, {isFinal:true});
 			} catch(e) {
+				// Toby - needed to prevent continued processing after exception.
+				if (processingResult.status == WidgetConfig.STATUS_OK)
+					processingResult.status = WidgetConfig.STATUS_INVALID;
 				if(processListener)
 					processListener(processingResult);
 			}
+		} else {
+			// Toby - failed to extract config from resource.
+			if (processingResult.status == WidgetConfig.STATUS_OK)
+				processingResult.status = WidgetConfig.STATUS_INVALID;
+			if(processListener)
+				processListener(processingResult);
 		}
 	};
 
