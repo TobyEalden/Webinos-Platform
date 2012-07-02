@@ -64,9 +64,12 @@ PzpServer.prototype.startServer = function (parent, callback) {
         }
 
         parent.state = global.states[2];
-
-        parent.connectedPzp[clientSessionId].socket = conn;
-        parent.connectedPzp[clientSessionId].state  = global.states[2];
+	
+	if(typeof parent.connectedPzp[clientSessionId] !== "undefined")
+	{
+          parent.connectedPzp[clientSessionId].socket = conn;
+          parent.connectedPzp[clientSessionId].state  = global.states[2];
+	}
 
         var msg = parent.messageHandler.registerSender(parent.sessionId, clientSessionId);
         parent.sendMessage(msg, clientSessionId);
@@ -79,13 +82,15 @@ PzpServer.prototype.startServer = function (parent, callback) {
             session.common.processedMsg(self, obj, function(validMsgObj) {
               if(validMsgObj.type === "prop" && validMsgObj.payload.status === "findServices") {
                 log.info("trying to send Webinos Services from this RPC handler to " + validMsgObj.from + "...");
-                var services = parent.rpcHandler.getAllServices(validMsgObj.from);
+                var services = parent.discovery.getAllServices(validMsgObj.from);
                 var msg = {"type":"prop", "from":parent.sessionId, "to":validMsgObj.from, "payload":{"status":"foundServices", "message":services}};
                 msg.payload.id = validMsgObj.payload.message.id;
                 parent.sendMessage(msg, validMsgObj.from);
                 log.info("sent " + (services && services.length) || 0 + " Webinos Services from this RPC handler.");
-              }
-              else if (validMsgObj.type === "prop" && validMsgObj.payload.status === "pzpDetails") {
+              } else if(validMsgObj.type === "prop" && validMsgObj.payload.status === "foundServices") {
+                log.info("received message about available remote services.");
+                parent.serviceListener && parent.serviceListener(validMsgObj.payload);
+              } else if (validMsgObj.type === "prop" && validMsgObj.payload.status === "pzpDetails") {
                 if(parent.connectedPzp[validMsgObj.from]) {
                   parent.connectedPzp[validMsgObj.from].port = validMsgObj.payload.message;
                 } else {
@@ -169,11 +174,11 @@ PzpServer.prototype.startServer = function (parent, callback) {
     });
 
     server.on("listening", function () {
-      log.info("listening as server on port :" + session.configuration.pzpServerPort + " address : "+ parent.pzpAddress);
+      log.info("listening as server on port :" + session.configuration.pzpServerPort);
       callback.call(parent, "started");
     });
 
-    server.listen(session.configuration.pzpServerPort, parent.pzpAddress);
+    server.listen(session.configuration.pzpServerPort);
   });
 };
 

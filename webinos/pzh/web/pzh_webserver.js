@@ -229,7 +229,7 @@ function authenticate(hostname, url) {
     });
     exts.push(attr);
 
-    rely = new openid.RelyingParty('https://'+hostname+':9000/main.html?id=verify',
+    rely = new openid.RelyingParty('https://'+hostname+':'+session.configuration.webServerPort+'/main.html?id=verify',
         null,
         false,
         false,
@@ -295,8 +295,12 @@ function fetchOpenIdDetails(req, res, callback){
             }
 
             farm.getOrCreatePzhInstance(host, details, function(key, pzhInt){
-                pzh[details.id] = pzhInt;	
+              if (typeof pzhInt !== "undefined" || pzhInt === null) {
+                pzh[details.id] = pzhInt;
                 pzhapis.listZoneDevices(pzhInt, result);
+              } else {
+                log.error("failed adding pzh");
+              }
             });
         }
     });

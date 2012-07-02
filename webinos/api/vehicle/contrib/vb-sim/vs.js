@@ -200,6 +200,8 @@ DeviceMotionEvent.prototype.initDeviceMotionEvent = function(data){
 
 
 var fs = require('fs'), url = require('url'), path = require('path');
+var nPathV = parseFloat(process.versions.node);
+if (nPathV >= 0.7) { nPathV = fs;} else { nPathV = path;}
 
 		function getContentType(uri) {
 			var contentType = {"Content-Type": "text/plain"};
@@ -231,7 +233,7 @@ var fs = require('fs'), url = require('url'), path = require('path');
 var httpServer = require('http').createServer(function(request, response) {  
 			var uri = url.parse(request.url).pathname;  
 			var filename = path.join(__dirname, uri);  
-            path.exists(filename, function(exists) {  
+			nPathV.exists(filename, function(exists) {  
 				if(!exists) {  
 					response.writeHead(404, {"Content-Type": "text/plain"});
 					response.write("404 Not Found\n");
@@ -281,8 +283,13 @@ tcData.r = 456;
 
 
 var psrData = new Object();
-
-var psfData = new Object();
+psrData.ol = 255;
+psrData.l = 255;
+psrData.ml = 255;
+psrData.mr = 255;
+psrData.r = 255;
+psrData.or = 255;
+var psfData = psrData;
 
 //LIGHTS
 var lfrData = false;

@@ -36,7 +36,9 @@ if (typeof exports !== "undefined") {
     var webinos        = require("webinos")(__dirname);
     var session        = webinos.global.require(webinos.global.pzp.location, "lib/session");
     var log            = new session.common.debug("pzh_session");
-    var rpc            = webinos.global.require(webinos.global.rpc.location, "lib/rpc");
+    var rpc            = webinos.global.require(webinos.global.rpc.location);
+    var Registry       = webinos.global.require(webinos.global.rpc.location, "lib/registry").Registry;
+    var Discovery      = webinos.global.require(webinos.global.api.service_discovery.location, "lib/rpc_servicedisco").Service;
     var MessageHandler = webinos.global.require(webinos.global.manager.messaging.location, "lib/messagehandler").MessageHandler;
     var RPCHandler     = rpc.RPCHandler;
     var authcode       = require("./pzh_authcode");
@@ -56,9 +58,12 @@ var Pzh = function (modules) {
   this.config       = {};/** Holds PZH Configuration particularly certificates */
   this.connectedPzh = {};/** Holds Connected PZH information such as IP address, port and socket */
   this.connectedPzp = {};/** Holds connected PZP information such as IP address and socket connection */
-  this.rpcHandler = new RPCHandler();// Handler for remote method calls.
+  this.registry     = new Registry();
+  this.rpcHandler   = new RPCHandler(undefined, this.registry); // Handler for remote method calls.
+  this.discovery    = new Discovery(this.rpcHandler, [this.registry]);
+  this.registry.registerObject(this.discovery);
+  this.registry.loadModules(modules, this.rpcHandler); // load specified modules
   this.messageHandler = new MessageHandler(this.rpcHandler);// handler of all things message
-  this.rpcHandler.loadModules(modules);// load specified modules
   this.expecting;    // Set by authcode directly
 };
 
@@ -157,7 +162,7 @@ Pzh.prototype.handleConnectionAuthorization = function (self, conn) {
       var text = decodeURIComponent(cn);
       data = text.split(":");
     } catch(err) {
-      log.error("exception in reading common name of peer PZH certificate " + err);
+      log.error("exception in reading common name of peer pzh certificate " + err);
       return;
     }
     /**
@@ -184,10 +189,10 @@ Pzh.prototype.handleConnectionAuthorization = function (self, conn) {
       try {
         sessionId = self.sessionId+"/"+data[1];
       } catch(err1) {
-        log.error("exception in reading common name of PZP certificate " + err1);
+        log.error("exception in reading common name of pzp certificate " + err1);
         return;
       }
-      log.info("pzp - "+sessionId+" Connected");
+      log.info("pzp - "+sessionId+"  connected");
 
       // Used for communication purpose. Address is used as PZP might have different IP addresses
       self.connectedPzp[sessionId] = {"socket": conn,  "address": conn.socket.remoteAddress};
@@ -312,22 +317,22 @@ Pzh.prototype.processMsg = function(conn, msgObj) {
       });
     }
     else if (validMsgObj.type === "prop" && validMsgObj.payload.status === "pzpDetails") {
-      log.info("receiving details from PZP...");
+      log.info("receiving details from pzp...");
       self.sendPzpUpdate(validMsgObj.from, conn, validMsgObj.payload.message);
     }
     // information sent by connecting PZP about services it supports. These details are then used by findServices 
     else if(validMsgObj.type === "prop" && validMsgObj.payload.status === "registerServices") {
-      log.info("receiving Webinos services from PZP...");
-      self.rpcHandler.addRemoteServiceObjects(validMsgObj.payload.message);
+      log.info("receiving Webinos services from pzp...");
+      this.discovery.addRemoteServiceObjects(validMsgObj.payload.message);
     }   
     // Send findServices information to connected PZP..
     else if(validMsgObj.type === "prop" && validMsgObj.payload.status === "findServices") {
       log.info("trying to send webinos services from this RPC handler to " + validMsgObj.from + "...");
-      var services = self.rpcHandler.getAllServices(validMsgObj.from);
+      var services = this.discovery.getAllServices(validMsgObj.from);
       var msg = self.prepMsg(self.sessionId, validMsgObj.from, "foundServices", services);
       msg.payload.id = validMsgObj.payload.message.id;
       self.sendMessage(msg, validMsgObj.from);
-      log.info("sent " + (services && services.length) || 0 + " Webinos Services from this RPC handler.");
+      log.info("sent " + (services && services.length) || 0 + " Webinos Services from this rpc handler.");
     }
     // Message is forwarded to Messaging manager
     else {
@@ -361,7 +366,7 @@ Pzh.prototype.setMessageHandler = function() {
 */
 exports.addPzh = function ( uri, modules, callback) {
   if (typeof farm.server === "undefined" || farm.server === null) {
-    log.error("farm is not running, please startFarm");
+    log.error("farm is not running, please run webinos_pzh");
     callback(false);
   } else {
     if (typeof uri === "undefined" || uri === "null" || typeof modules === "undefined" || modules === "null" ){
@@ -369,12 +374,18 @@ exports.addPzh = function ( uri, modules, callback) {
       callback(false);
     } else {
       var name = uri.split("/")[1];
+      
+      if (name === farm.config.name) {
+        log.error("farm name and pzh name appears to be same , please either login with different userid");
+        callback(false);
+        return;
+      } 
       var instance  = new Pzh(modules);
 
       authcode.createAuthCounter(function (res) {
         instance.expecting = res;
       });
-      session.configuration.setConfiguration(name, "Pzh", uri, function(config, conn_key) {
+      session.configuration.setConfiguration(name, "Pzh", uri, null, function(config, conn_key) {
         instance.config    = config;
         instance.sessionId = name ; 
         instance.modules   = modules;     // modules loaded in pzh
@@ -395,7 +406,7 @@ exports.addPzh = function ( uri, modules, callback) {
         instance.rpcHandler.setSessionId(instance.sessionId);
 
         if (typeof farm.server === "undefined" || farm.server === null) {
-          log.error("farm is not running, please startFarm");
+          log.error("farm is not running, please run webinos_pzh");
         } else {
           // This adds SNI context to existing running PZH server
           farm.server.addContext(uri, options);

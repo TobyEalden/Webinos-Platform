@@ -43,7 +43,11 @@ function loadPzhs(config) {
   for ( myKey in config.pzhs) {
     if(typeof config.pzhs[myKey] !== "undefined") {
       pzh.addPzh(myKey, config.pzhs[myKey], function(res, instance) {
-        log.info("started PZH ... " + instance.config.name);
+        if (res) {
+          log.info("started PZH ... " + instance.config.name);
+        } else {
+          log.error("failed started PZH ... ");
+        }
       });
     }
   }
@@ -59,7 +63,7 @@ farm.startFarm = function (url, name, callback) {
   // The directory structure which pzh_farms needs for putting in files
   session.configuration.createDirectoryStructure(function(){
     // Configuration setting for pzh, returns set values and connection key
-    session.configuration.setConfiguration(name,"PzhFarm", url, function (config, conn_key) {
+    session.configuration.setConfiguration(name,"PzhFarm", url, null, function (config, conn_key) {
       if (config === "undefined") {
         log.error("failed setting configuration, details are missing");
         return;
@@ -108,7 +112,7 @@ farm.startFarm = function (url, name, callback) {
                 var removed = session.common.removeClient(cl, conn);
                 if (removed !== null && typeof removed !== "undefined"){
                   cl.messageHandler.removeRoute(removed, conn.servername);
-                  cl.rpcHandler.removeRemoteServiceObjects(removed);
+                  cl.discovery.removeRemoteServiceObjects(removed);
                 }
               }
             } catch (err) {
@@ -170,14 +174,18 @@ farm.getOrCreatePzhInstance = function (host, user, callback) {
   } else {
     log.info("adding new PZH - " + myKey);
     var pzhModules = session.configuration.pzhDefaultServices;
-    pzh.addPzh(myKey, pzhModules, function(){
-      farm.pzhs[myKey].config.name     = name;
-      farm.pzhs[myKey].config.email    = user.email;
-      farm.pzhs[myKey].config.country  = user.country;
-      farm.pzhs[myKey].config.image    = user.image;
-      session.configuration.storeConfig(farm.pzhs[myKey].config, function() {
-        callback(myKey, farm.pzhs[myKey]);
-      });
+    pzh.addPzh(myKey, pzhModules, function(status){
+      if (status) {
+        farm.pzhs[myKey].config.name     = name;
+        farm.pzhs[myKey].config.email    = user.email;
+        farm.pzhs[myKey].config.country  = user.country;
+        farm.pzhs[myKey].config.image    = user.image;
+        session.configuration.storeConfig(farm.pzhs[myKey].config, function() {
+          callback(myKey, farm.pzhs[myKey]);
+        });
+      } else {
+        callback(myKey, null);
+      }
     });
   }
 };
