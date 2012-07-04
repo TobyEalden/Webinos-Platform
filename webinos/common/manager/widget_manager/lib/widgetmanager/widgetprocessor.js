@@ -165,7 +165,7 @@ this.WidgetProcessor = (function() {
 
   WidgetProcessor.prototype.setError = function(errorArtifact) {
     Logger.logAction(Logger.LOG_ERROR, errorArtifact.reason, errorArtifact.getStatusText());
-    console.log('status: ' + errorArtifact.status);
+    //console.log('status: ' + errorArtifact.status);
     this.processingResult.setError(errorArtifact);
     this.onError();
   };
@@ -465,7 +465,7 @@ this.WidgetProcessor = (function() {
         }
         /* choose an undersize icon in preference to an oversize one */
         if(undersizePreference) widgetConfig.prefIcon = undersizePreference;
-        else if(oversizePreference) widgetConfig.prefIcon = oversizePreference;
+        else if (oversizePreference) widgetConfig.prefIcon = oversizePreference;
       }
       finishProcess();
     };

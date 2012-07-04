@@ -43,7 +43,8 @@ this.ManagerUtils = (function () {
     ManagerUtils.mkdirs = function (dirPath) {
         dirPath = dirPath.replace(/\\/g, '/');
         var pathElements = dirPath.split('/');
-        dirPath = (dirPath[0] == '/') ? '/' : '';
+//        dirPath = (dirPath[0] == '/') ? '/' : '';
+        dirPath = (dirPath[1] == ':') ? dirPath.substr(0,3) : '';
         while (pathElements.length) {
             var elt = pathElements.shift();
             if (elt == '') continue;
@@ -56,10 +57,20 @@ this.ManagerUtils = (function () {
                 if (stat.isDirectory())
                     continue;
             } else {
-                fs.mkdirSync(dirPath);
+                    fs.mkdirSync(dirPath);
             }
         }
         return dirPath;
+    };
+
+    ManagerUtils.mkdirs2 = function (dirPath) {
+        var pathElements = dirPath.split('/');
+        while (pathElements.length) {
+            var folder = pathElements.shift();
+            if (folder == "") continue;
+
+
+        }
     };
 
     /*
