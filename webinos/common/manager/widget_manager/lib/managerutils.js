@@ -43,8 +43,8 @@ this.ManagerUtils = (function () {
     ManagerUtils.mkdirs = function (dirPath) {
         dirPath = dirPath.replace(/\\/g, '/');
         var pathElements = dirPath.split('/');
-//        dirPath = (dirPath[0] == '/') ? '/' : '';
-        dirPath = (dirPath[1] == ':') ? dirPath.substr(0,3) : '';
+        dirPath = (dirPath[0] == '/') ? '/' : '';
+//        dirPath = (dirPath[1] == ':') ? dirPath.substr(0,3) : '';
         while (pathElements.length) {
             var elt = pathElements.shift();
             if (elt == '') continue;
