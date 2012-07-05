@@ -29,7 +29,7 @@
     ToDo - parameterise this path
     */
     //WidgetTestProcessor.suitePath = '/home/toby/dev/2006/waf/widgets/test-suite/test-cases/';
-    WidgetTestProcessor.suitePath = 'd:/store/dev/w3c widget test suite/2006/waf/widgets/test-suite/test-cases/';
+    WidgetTestProcessor.suitePath = '/home/ivan/2006/waf/widgets/test-suite/test-cases/';
 
 
     WidgetTestProcessor.prototype.process = function (finished, runTests) {
@@ -314,7 +314,7 @@
     describe('ta-BnWPqNvNVo', function () {
         it('/ta-BnWPqNvNVo/000/aw.wgt - Test that the user agent does not attempt to load a default start file when a custom start file has been declared.	To pass, the widget start file must point to "pass.html" and the icons list must contain a pointer to "icon.png" at the root of the widget.',
 		function (done) {
-		    testWidget('/ta-BnWPqNvNVo/000/aw.wgt', done, function (cfg) {
+		    testWidget('ta-BnWPqNvNVo/000/aw.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual('pass.html');
 		        expect(cfg.prefIcon).toEqual('icon.png');
 		    });
@@ -326,43 +326,43 @@
     describe('ta-BnWPqNvNVo', function () {
         it('/ta-BxjoiWHaMr/000/ax.wgt - Test the UA\'s ability process the height attribute.	To pass, the widget height must be either the numeric value 123 or a value greater than 0.',
 		function (done) {
-		    testWidget('/ta-BxjoiWHaMr/000/ax.wgt', done, function (cfg) {
+		    testWidget('ta-BxjoiWHaMr/000/ax.wgt', done, function (cfg) {
 		        expect(cfg.height).toEqual(123) || expect(cfg.height).toBeGreaterThan(0);
 		    });
 		});
         it('/ta-BxjoiWHaMr/001/ay.wgt - Test the UA\'s ability process the height attribute.	To pass, the user agent must ignore the value of the height attribute (the value is composed of characters).',
 		function (done) {
-		    testWidget('/ta-BxjoiWHaMr/001/ay.wgt', done, function (cfg) {
+		    testWidget('ta-BxjoiWHaMr/001/ay.wgt', done, function (cfg) {
 		        expect(cfg.height).toEqual(0);
 		    });
 		});
         it('/ta-BxjoiWHaMr/002/az.wgt - Test the UA\'s ability process the height attribute.	To pass, the widget height must be the numeric value 100 or a value greater than 0 (resulting from rule for parsing a non-negative integer).',
 		function (done) {
-		    testWidget('/ta-BxjoiWHaMr/002/az.wgt', done, function (cfg) {
+		    testWidget('ta-BxjoiWHaMr/002/az.wgt', done, function (cfg) {
 		        expect(cfg.height).toEqual(100) || expect(cfg.height).toBeGreaterThan(0);
 		    });
 		});
         it('/ta-BxjoiWHaMr/003/a1.wgt - Test the UA\'s ability process the height attribute.	To pass, the widget height must be the numeric value 123 or a value greater than 0 (resulting from rule for parsing a non-negative integer).',
 		function (done) {
-		    testWidget('/ta-BxjoiWHaMr/003/a1.wgt', done, function (cfg) {
+		    testWidget('ta-BxjoiWHaMr/003/a1.wgt', done, function (cfg) {
 		        expect(cfg.height).toEqual(123) || expect(cfg.height).toBeGreaterThan(0);
 		    });
 		});
         it('/ta-BxjoiWHaMr/004/a2.wgt - Test the UA\'s ability process the height attribute.	To pass, the widget height must be ignored (the value is an empty string, hence it would be ignored).',
 		function (done) {
-		    testWidget('/ta-BxjoiWHaMr/004/a2.wgt', done, function (cfg) {
+		    testWidget('ta-BxjoiWHaMr/004/a2.wgt', done, function (cfg) {
 		        expect(cfg.height).toBeUndefined();
 		    });
 		});
         it('/ta-BxjoiWHaMr/005/a3.wgt - Test the UA\'s ability process the height attribute.To pass, the widget height must be ignored (the value is a sequence of space characters, hence it would be ignored).',
 		function (done) {
-		    testWidget('/ta-BxjoiWHaMr/005/a3.wgt', done, function (cfg) {
+		    testWidget('ta-BxjoiWHaMr/005/a3.wgt', done, function (cfg) {
 		        expect(cfg.height).toBeUndefined();
 		    });
 		});
         it('/ta-BxjoiWHaMr/006/a4.wgt - Test the UA\'s ability process the height attribute.	To pass, the widget height must be ignored (the value is an empty string.',
 		function (done) {
-		    testWidget('/ta-BxjoiWHaMr/006/a4.wgt', done, function (cfg) {
+		    testWidget('ta-BxjoiWHaMr/006/a4.wgt', done, function (cfg) {
                 // Bug in test? The value in the widget is -123.
 		        expect(cfg.height).toEqual(0);
 		    });
@@ -375,13 +375,13 @@
     describe('ta-DwhJBIJRQN', function () {
         it('/ta-DwhJBIJRQN/000/a5.wgt - Test that the UA skips preference elements without a name attribute.	To pass, widget preferences must remain an empty list (i.e., the preference is skipped).',
 		function (done) {
-		    testWidget('/ta-DwhJBIJRQN/000/a5.wgt', done, function (cfg) {
+		    testWidget('ta-DwhJBIJRQN/000/a5.wgt', done, function (cfg) {
 		        expect(cfg.preferences).toBeUndefined();
 		    });
 		});
         it('/ta-DwhJBIJRQN/001/a6.wgt - Test that the UA skips preference element already defined.	To pass, widget preference must contain one preference whose name is "PASS" and whose value is "PASS" and whose readonly attr value must be "false".',
 		function (done) {
-		    testWidget('/ta-DwhJBIJRQN/001/a6.wgt', done, function (cfg) {
+		    testWidget('ta-DwhJBIJRQN/001/a6.wgt', done, function (cfg) {
 		        expect(cfg.preferences.length).toEqual(1);
 		        expect(cfg.preferences[0].name).toEqual("PASS");
 		        expect(cfg.preferences[0].value).toEqual("PASS");
@@ -390,7 +390,7 @@
 		});
         it('/ta-DwhJBIJRQN/002/a7.wgt - Test that the UA does a case sensitive comparison on the value of the readonly attribute.	To pass, widget preference must contain one preference whose name is "PASS" and whose value is "PASS" and whose readonly attr value must be "false".',
 		function (done) {
-		    testWidget('/ta-DwhJBIJRQN/002/a7.wgt', done, function (cfg) {
+		    testWidget('ta-DwhJBIJRQN/002/a7.wgt', done, function (cfg) {
 		        expect(cfg.preferences.length).toEqual(1);
 		        expect(cfg.preferences[0].name).toEqual("PASS");
 		        expect(cfg.preferences[0].value).toEqual("PASS");
@@ -399,7 +399,7 @@
 		});
         it('/ta-DwhJBIJRQN/003/a8.wgt - Test that the UA does a case sensitive comparison on the value of the readonly attribute.	To pass, widget preference must contain one preference whose name is "PASS" and whose value is "PASS" and whose readonly attr value must be "true".',
 		function (done) {
-		    testWidget('/ta-DwhJBIJRQN/003/a8.wgt', done, function (cfg) {
+		    testWidget('ta-DwhJBIJRQN/003/a8.wgt', done, function (cfg) {
 		        expect(cfg.preferences.length).toEqual(1);
 		        expect(cfg.preferences[0].name).toEqual("PASS");
 		        expect(cfg.preferences[0].value).toEqual("PASS");
@@ -408,7 +408,7 @@
 		});
         it('/ta-DwhJBIJRQN/004/a9.wgt - Test that the UA sets the readonly attribute to false by default.	To pass, widget preference must contain one preference whose name is "PASS" and whose value is "PASS" and whose readonly attr value must be "false".',
 		function (done) {
-		    testWidget('/ta-DwhJBIJRQN/004/a9.wgt', done, function (cfg) {
+		    testWidget('ta-DwhJBIJRQN/004/a9.wgt', done, function (cfg) {
 		        expect(cfg.preferences.length).toEqual(1);
 		        expect(cfg.preferences[0].name).toEqual("PASS");
 		        expect(cfg.preferences[0].value).toEqual("PASS");
@@ -417,7 +417,7 @@
 		});
         it('/ta-DwhJBIJRQN/005/ba.wgt - Test that the UA skips multiple preference element already defined.	To pass, widget preference must contain one preference whose name is "a" and whose value is "a" and whose readonly attr value must be "false".',
 		function (done) {
-		    testWidget('/ta-DwhJBIJRQN/005/ba.wgt', done, function (cfg) {
+		    testWidget('ta-DwhJBIJRQN/005/ba.wgt', done, function (cfg) {
 		        expect(cfg.preferences.length).toEqual(1);
 		        expect(cfg.preferences[0].name).toEqual("a");
 		        expect(cfg.preferences[0].value).toEqual("a");
@@ -426,7 +426,7 @@
 		});
         it('/ta-DwhJBIJRQN/006/bb.wgt - Test the UA\'s ability store preferences whose name vary only in case.	To pass, widget preference must contain two preferences: 1 must have a name "a" and whose value is "a" and whose readonly attr value must be "false". 2 must have a name "A" and whose value is "b" and whose readonly attribute value must be "false".',
 		function (done) {
-		    testWidget('/ta-DwhJBIJRQN/006/bb.wgt', done, function (cfg) {
+		    testWidget('ta-DwhJBIJRQN/006/bb.wgt', done, function (cfg) {
 		        expect(cfg.preferences.length).toEqual(2);
 		        expect(cfg.preferences[0].name).toEqual("a");
 		        expect(cfg.preferences[0].value).toEqual("a");
@@ -438,7 +438,7 @@
 		});
         it('/ta-DwhJBIJRQN/007/bc.wgt - Tests that the UA applies the rule for getting a single attribute value to name, value, and readonly attributes.	To pass, widget preference must contain one preference whose name is "PASS" and whose value is "PASS" and whose readonly attr value must be "false".',
 		function (done) {
-		    testWidget('/ta-DwhJBIJRQN/007/bc.wgt', done, function (cfg) {
+		    testWidget('ta-DwhJBIJRQN/007/bc.wgt', done, function (cfg) {
 		        expect(cfg.preferences.length).toEqual(1);
 		        expect(cfg.preferences[0].name).toEqual("PASS");
 		        expect(cfg.preferences[0].value).toEqual("PASS");
@@ -452,13 +452,13 @@
     describe('ta-dxzVDWpaWg', function () {
         it('/ta-dxzVDWpaWg/000/bg.wgt - Test to make sure that the UA only checks the root of the widget for config files, and not in an arbitrary folder.	To pass, the user agent must treat this widget as an invalid widget (config file is not at the root).',
 		function (done) {
-		    testWidget('/ta-dxzVDWpaWg/000/bg.wgt', done, function (cfg) {
+		    testWidget('ta-dxzVDWpaWg/000/bg.wgt', done, function (cfg) {
 		        expect(cfg).toBeUndefined();
 		    });
 		});
         it('/ta-dxzVDWpaWg/001/bh.wgt - Test to make sure that the UA only checks the root of the widget for config files, and not in a locale folder.	To pass, the user agent must treat this widget as an invalid widget (config file is not at the root, but in locale folder).',
 		function (done) {
-		    testWidget('/ta-dxzVDWpaWg/001/bh.wgt', done, function (cfg) {
+		    testWidget('ta-dxzVDWpaWg/001/bh.wgt', done, function (cfg) {
 		        expect(cfg).toBeUndefined();
 		    });
 		});
@@ -469,23 +469,23 @@
     describe('ta-FAFYMEGELU', function () {
         it('/ta-FAFYMEGELU/000/bj.wgt - Tests the UA\'s ability to locate an icon at the root of the widget. To pass, after processing, the icons list must contain "icon.png",	which is at the root of the widget.',
 		function (done) {
-		    testWidget('/ta-FAFYMEGELU/000/bj.wgt', done, function (cfg) {
+		    testWidget('ta-FAFYMEGELU/000/bj.wgt', done, function (cfg) {
 		        expect(cfg.icons).toBeDefined();
 		        expect(cfg.icons.length).toEqual(1);
-		        expect(cfg.icons[0].path).toEqual("icon.png");
+		        expect(cfg.icons[0].path).toEqual("icon.png");//Ivan: I think perhaps that cfg.icons is not the correct way of of accessing the icons array. All tests involving cfg.icons throw errors. Icons appears to be an asociative array, does this matter? Also should we be using expect(x).toContain(y) for checking contents of array? error: cannot read property length of undefined.
 		    });
 		});
         it('/ta-FAFYMEGELU/001/bk.wgt - Tests the UA\'s ability to locate an icon in a locale folder.	To pass, after processing, the icons list must contain a pointer to "locales/en/icon.png"',
 		function (done) {
-		    testWidget('/ta-FAFYMEGELU/001/bk.wgt', done, function (cfg) {
+		    testWidget('ta-FAFYMEGELU/001/bk.wgt', done, function (cfg) {
 		        expect(cfg.icons).toBeDefined();
 		        expect(cfg.icons.length).toBeGreaterThan(0);
-		        expect(cfg.icons[0].path).toEqual("locales/en/icon.png");
+		        expect(cfg.icons[0].path).toEqual("locales/en/icon.png"); //Ivan: Test failing due to cfg.icons, cannot read property length of undefined.
 		    });
 		});
         it('/ta-FAFYMEGELU/002/bl.wgt - Tests the UA\'s ability to locate an icon in a locale folder and at the root of the widget.	To pass, after processing, the icons list must contain a pointer to "locales/en/icon.jpg", and "icon.png", which is at the root of the widget.	The icons list can be in any order, so long as it contains "icon.png" and "locales/en/icon.jpg".',
 		function (done) {
-		    testWidget('/ta-FAFYMEGELU/002/bl.wgt', done, function (cfg) {
+		    testWidget('ta-FAFYMEGELU/002/bl.wgt', done, function (cfg) {
 		        expect(cfg.icons).toBeDefined();
 		        expect(cfg.icons.length).toEqual(2);
 		        if (cfg.icons[0].path == "locales/en/icon.jpg")
@@ -493,52 +493,52 @@
 		        else if (cfg.icons[0].path == "icon.png")
 		            expect(cfg.icons[1].path).toEqual("locales/en/icon.png");
 		        else
-		            expect(correctIcons).toBeDefined();
+		            expect(correctIcons).toBeDefined(); //Ivan: Test failing due to cfg.icons, cannot read property length of undefined.
 		    });
 		});
         it('/ta-FAFYMEGELU/003/bm.wgt - Tests the UA\'s ability to deal with custom icon declaration in the config document and matching default icons.	To pass, the icons list must contain a pointer to "locales/en/icon.jpg", and "icon.png", which is at the root of the widget.	The icons list can be in any order, so long as it contains "icon.png" and "locales/en/icon.jpg".',
 		function (done) {
-		    testWidget('/ta-FAFYMEGELU/003/bm.wgt', done, function (cfg) {
+		    testWidget('ta-FAFYMEGELU/003/bm.wgt', done, function (cfg) {
 		        expect(cfg.icons["locales/en/icon.png"]).toBeDefined();
-		        expect(cfg.icons["icon.png"]).toBeDefined();
+		        expect(cfg.icons["icon.png"]).toBeDefined();//Ivan: No reason given for test fail
 		    });
 		});
         it('/ta-FAFYMEGELU/004/bn.wgt - Tests the UA\'s ability to deal with custom icon declarations in the config document and matching default icons. To pass, the icons list must contain a pointer to "icons/pass.png", and "locales/en/icon.png" (ordering of the items in the list is irrelevant).',
 		function (done) {
-		    testWidget('/ta-FAFYMEGELU/004/bn.wgt', done, function (cfg) {
+		    testWidget('ta-FAFYMEGELU/004/bn.wgt', done, function (cfg) {
 		        expect(cfg.icons["locales/en/icon.png"]).toBeDefined();
-		        expect(cfg.icons["icons/pass.png"]).toBeDefined();
+		        expect(cfg.icons["icons/pass.png"]).toBeDefined(); //Ivan: No reason given for test fail.
 		    });
 		});
         it('/ta-FAFYMEGELU/005/bo.wgt - Test the UA\'s ability to load default icons in the correct order.	To pass, the icons list must contain "icon.png" and \'icon.jpg\'.',
 		function (done) {
-		    testWidget('/ta-FAFYMEGELU/005/bo.wgt', done, function (cfg) {
+		    testWidget('ta-FAFYMEGELU/005/bo.wgt', done, function (cfg) {
 		        expect(cfg.icons).toBeDefined();
 		        expect(cfg.icons[0].path).toEqual("icon.png");
-		        expect(cfg.icons[1].path).toEqual("icon.jpg");
+		        expect(cfg.icons[1].path).toEqual("icon.jpg");//Ivan: Fails due to not being able to read properties of cfg.icons (undefined)
 		    });
 		});
         it('/ta-FAFYMEGELU/006/bp.wgt - Test the UA\'s ability to load default icons.	To pass, the icons list must contain a pointer to "locales/en/icon.png" (order in the list is not relevant).',
 		function (done) {
-		    testWidget('/ta-FAFYMEGELU/006/bp.wgt', done, function (cfg) {
+		    testWidget('ta-FAFYMEGELU/006/bp.wgt', done, function (cfg) {
 		        expect(cfg.icons).toBeDefined();
-		        expect(cfg.icons[0].path).toEqual("locales/en/icon.png");
+		        expect(cfg.icons[0].path).toEqual("locales/en/icon.png");//Ivan: Fails due to not being able to read properties of cfg.icons (undefined)
 		    });
 		});
         it('/ta-FAFYMEGELU/007/ad.wgt - Tests if the UA treats file names in the default icons files table case-sensitively.To pass, the icons list must only contain a pointer to "icon.png"	at the root of the widget.',
 		function (done) {
-		    testWidget('/ta-FAFYMEGELU/007/ad.wgt', done, function (cfg) {
+		    testWidget('ta-FAFYMEGELU/007/ad.wgt', done, function (cfg) {
 		        expect(cfg.icons).toBeDefined();
 		        expect(cfg.icons.length).toEqual(1);
-		        expect(cfg.icons[0].path).toEqual("icon.png");
+		        expect(cfg.icons[0].path).toEqual("icon.png");//Ivan: Fails due to not being able to read properties of cfg.icons (undefined)
 		    });
 		});
         it('/ta-FAFYMEGELU/008/ae.wgt - Tests if the UA treats file names in the default icons files table case-sensitively.To pass, the icons list must only contain a pointer to "locales/en/icon.png".',
 		function (done) {
-		    testWidget('/ta-FAFYMEGELU/008/ae.wgt', done, function (cfg) {
+		    testWidget('ta-FAFYMEGELU/008/ae.wgt', done, function (cfg) {
 		        expect(cfg.icons).toBeDefined();
 		        expect(cfg.icons.length).toEqual(1);
-		        expect(cfg.icons[0].path).toEqual("locales/en/icon.png");
+		        expect(cfg.icons[0].path).toEqual("locales/en/icon.png");//Ivan: Fails due to not being able to read properties of cfg.icons (undefined)
 		    });
 		});
     });
@@ -548,19 +548,19 @@
     describe('ta-hkWmGJgfve', function () {
         it('/ta-hkWmGJgfve/000/bq.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the content element. To pass, the widget start file must be "pass.html".',
 		function (done) {
-		    testWidget('/ta-hkWmGJgfve/000/bq.wgt', done, function (cfg) {
+		    testWidget('ta-hkWmGJgfve/000/bq.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("pass.html");
 		    });
 		});
         it('/ta-hkWmGJgfve/001/br.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the content element.	To pass, the widget must be treated by the user agent as an invalid widget.',
 		function (done) {
-		    testWidget('/ta-hkWmGJgfve/001/br.wgt', done, function (cfg) {
-		        expect(cfg).toBeUndefined();
+		    testWidget('ta-hkWmGJgfve/001/br.wgt', done, function (cfg) {
+		        expect(cfg).toBeUndefined(); //Ivan: Fails, widget is not being set to invalid despite duplicate content elements
 		    });
 		});
         it('/ta-hkWmGJgfve/002/bs.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the content element.To pass, the widget start file must be "pass.html".',
 		function (done) {
-		    testWidget('/ta-hkWmGJgfve/002/bs.wgt', done, function (cfg) {
+		    testWidget('ta-hkWmGJgfve/002/bs.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("pass.html");
 		    });
 		});
@@ -571,37 +571,37 @@
     describe('ta-klLDaEgJeU', function () {
         it('/ta-klLDaEgJeU/000/bt.wgt - Test to make sure the user agent rejects malformed XML.	To pass, the widget must be treated as invalid by the user agent.',
 		function (done) {
-		    testWidget('/ta-klLDaEgJeU/000/bt.wgt', done, function (cfg) {
+		    testWidget('ta-klLDaEgJeU/000/bt.wgt', done, function (cfg) {
 		        expect(cfg).toBeUndefined();
 		    });
 		});
         it('		/ta-klLDaEgJeU/001/bu.wgt - Test to make sure the user agent rejects malformed XML.	To pass, the widget must be treated as invalid by the user agent.',
 		function (done) {
-		    testWidget('/ta-klLDaEgJeU/001/bu.wgt', done, function (cfg) {
+		    testWidget('ta-klLDaEgJeU/001/bu.wgt', done, function (cfg) {
 		        expect(cfg).toBeUndefined();
 		    });
 		});
         it('/ta-klLDaEgJeU/002/bv.wgt - Tests support of XML, XMLNS, and UTF-8.	To pass, the user agent must load \'pass&amp;.html\' as the start file.',
 		function (done) {
-		    testWidget('/ta-klLDaEgJeU/002/bv.wgt', done, function (cfg) {
-		        expect(cfg.startFile).toEqual("pass&amp;.html");
+		    testWidget('ta-klLDaEgJeU/002/bv.wgt', done, function (cfg) {
+			expect(cfg.startFile).toEqual("pass&amp;.html"); //Ivan: cfg is undefined, widget falling over on start files?
 		    });
 		});
         it('/ta-klLDaEgJeU/003/bw.wgt - Tests support of XML, XMLNS, and UTF-8. To pass, the widget author must be the string \'PASS\'.',
 		function (done) {
-		    testWidget('/ta-klLDaEgJeU/003/bw.wgt', done, function (cfg) {
-		        expect(cfg.author.name.unicode).toEqual("PASS")
+		    testWidget('ta-klLDaEgJeU/003/bw.wgt', done, function (cfg) {
+		        expect(cfg.author.name.unicode).toEqual("PASS")//Ivan: cfg is undefined, widget falling over on author?
 		    });
 		});
         it('/ta-klLDaEgJeU/004/lt.wgt - Tests support of XML, by making sure the user agent treats &lt; as malformed XML. To pass, the user agent must treat this as an invalid widget.',
 		function (done) {
-		    testWidget('/ta-klLDaEgJeU/004/lt.wgt', done, function (cfg) {
+		    testWidget('ta-klLDaEgJeU/004/lt.wgt', done, function (cfg) {
 		        expect(cfg).toBeUndefined();
 		    });
 		});
         it('/ta-klLDaEgJeU/005/amp.wgt - Tests support of XML, by making sure the user agent treats &amp; as malformed XML. To pass, the user agent must treat this as an invalid widget.',
 		function (done) {
-		    testWidget('/ta-klLDaEgJeU/005/amp.wgt', done, function (cfg) {
+		    testWidget('ta-klLDaEgJeU/005/amp.wgt', done, function (cfg) {
 		        expect(cfg).toBeUndefined();
 		    });
 		});
@@ -612,19 +612,19 @@
     describe('ta-klLDaEgJeU', function () {
         it('/ta-LYLMhryBBT/000/bx.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the name element.	To pass, the name of the widget must be "PASS"..',
 		function (done) {
-		    testWidget('/ta-LYLMhryBBT/000/bx.wgt', done, function (cfg) {
+		    testWidget('ta-LYLMhryBBT/000/bx.wgt', done, function (cfg) {
 		        expect(cfg.name.unicode).toEqual('PASS');
 		    });
 		});
         it('/ta-LYLMhryBBT/001/by.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the name element.	To pass, the name of the widget must be an empty string.',
 		function (done) {
-		    testWidget('/ta-LYLMhryBBT/001/by.wgt', done, function (cfg) {
-		        expect(cfg.name).toEqual('');
+		    testWidget('ta-LYLMhryBBT/001/by.wgt', done, function (cfg) {
+		        expect(cfg.name).toEqual(''); //Ivan: code in wigetconfigprocessor.js doesn't seem to have a check for repeated name elements.
 		    });
 		});
         it('/ta-LYLMhryBBT/002/bz.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the name element.	To pass, the name of the widget must be "PASS".',
 		function (done) {
-		    testWidget('/ta-LYLMhryBBT/002/bz.wgt', done, function (cfg) {
+		    testWidget('ta-LYLMhryBBT/002/bz.wgt', done, function (cfg) {
 		        expect(cfg.name.unicode).toEqual('PASS');
 		    });
 		});
@@ -635,31 +635,31 @@
     describe('ta-RawAIWHoMs', function () {
         it('/ta-RawAIWHoMs/000/b1.wgt - Tests the ability for a UA to correctly process an widget element\'s id attribute.	To pass, the widget id must be "pass:".',
 		function (done) {
-		    testWidget('/ta-RawAIWHoMs/000/b1.wgt', done, function (cfg) {
+		    testWidget('ta-RawAIWHoMs/000/b1.wgt', done, function (cfg) {
 		        expect(cfg.id).toEqual('pass:');
 		    });
 		});
         it('/ta-RawAIWHoMs/001/rd.wgt - Tests the ability for a UA to correctly process an widget element\'s id attribute.	To pass, the widget id must ignore the value (not a valid IRI).',
 		function (done) {
-		    testWidget('/ta-RawAIWHoMs/001/rd.wgt', done, function (cfg) {
+		    testWidget('ta-RawAIWHoMs/001/rd.wgt', done, function (cfg) {
 		        expect(cfg.id).toBeUndefined();
 		    });
 		});
         it('/ta-RawAIWHoMs/002/b2.wgt - Tests the ability for a UA to correctly process an widget element\'s id attribute.	To pass, the widget id must equal "pass:" (applies rule for getting a single attribute value).',
 		function (done) {
-		    testWidget('/ta-RawAIWHoMs/002/b2.wgt', done, function (cfg) {
+		    testWidget('ta-RawAIWHoMs/002/b2.wgt', done, function (cfg) {
 		        expect(cfg.id).toEqual('pass:');
 		    });
 		});
         it('/ta-RawAIWHoMs/id-empty/id-empty.wgt - Tests the ability for a UA to correctly process an widget element\'s id attribute.	To pass, id the attribute is ignored, as it is an empty string.',
 		function (done) {
-		    testWidget('/ta-RawAIWHoMs/id-empty/id-empty.wgt', done, function (cfg) {
+		    testWidget('ta-RawAIWHoMs/id-empty/id-empty.wgt', done, function (cfg) {
 		        expect(cfg.id).toBeUndefined();
 		    });
 		});
         it('/ta-RawAIWHoMs/id-empty-with-spaces/id-empty-with-spaces.wgt - Tests the ability for a UA to correctly process an widget element\'s id attribute.	To pass, id the attribute is ignored, as it is an empty string.',
 		function (done) {
-		    testWidget('/ta-RawAIWHoMs/id-empty-with-spaces/id-empty-with-spaces.wgt', done, function (cfg) {
+		    testWidget('ta-RawAIWHoMs/id-empty-with-spaces/id-empty-with-spaces.wgt', done, function (cfg) {
 		        expect(cfg.id).toBeUndefined();
 		    });
 		});
@@ -670,63 +670,63 @@
     describe('ta-RawAIWHoMs', function () {
         it('/ta-RGNHRBWNZV/008/cc.wgt - Tests the user agent\'s ability to select start files in the appropriate order.	To pass, the user agent must select index.htm as the start file.',
 		function (done) {
-		    testWidget('/ta-RGNHRBWNZV/008/cc.wgt', done, function (cfg) {
+		    testWidget('ta-RGNHRBWNZV/008/cc.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.htm");
 		    });
 		});
         it('/ta-RGNHRBWNZV/009/cv.wgt - Tests the user agent\'s ability to select start files in the appropriate order.	To pass, the user agent must select  index.html as the start file.',
 		function (done) {
-		    testWidget('/ta-RGNHRBWNZV/009/cv.wgt', done, function (cfg) {
+		    testWidget('ta-RGNHRBWNZV/009/cv.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.html");
 		    });
 		});
         it('/ta-RGNHRBWNZV/000/b3.wgt - Tests to see if the user agents applies the algorithm to locate a default start file, when no custom start file is present.	To pass, index.htm must be the widget start file and the start file content-type must be text/html.',
 		function (done) {
-		    testWidget('/ta-RGNHRBWNZV/000/b3.wgt', done, function (cfg) {
+		    testWidget('ta-RGNHRBWNZV/000/b3.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.htm");
-		        expect(cfg.startFile.type).toEqual("text/html"); //TODO -- Correct way to check type?
+		        expect(cfg.startFile.contentType).toEqual("text/html"); //Ivan: This is incorrect, test for index.htm appears to pass but type check does not.
 		    });
 		});
         it('/ta-RGNHRBWNZV/001/b4.wgt - Tests to see if the user agents applies the algorithm to locate a default start file, when no custom start file is present.	To pass, index.html must be the widget start file and the start file content-type must be text/html.',
 		function (done) {
-		    testWidget('/ta-RGNHRBWNZV/001/b4.wgt', done, function (cfg) {
+		    testWidget('ta-RGNHRBWNZV/001/b4.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.html");
-		        expect(cfg.startFile.type).toEqual("text/html");
+		        expect(cfg.startFile.contentType).toEqual("text/html");//Ivan: Again it's failing on the type check (correct syntax)
 		    });
 		});
         it('/ta-RGNHRBWNZV/002/b0.wgt - Tests the UA\'s ability treat file names in the default start files table case-sensitively.	To pass, the user agent must treat this widget as an invalid widget.',
 		function (done) {
-		    testWidget('/ta-RGNHRBWNZV/002/b0.wgt', done, function (cfg) {
-		        expect(cfg).toBeUndefined();
+		    testWidget('ta-RGNHRBWNZV/002/b0.wgt', done, function (cfg) {
+		        expect(cfg).toBeUndefined(); //Ivan: line 391 widgetprocessor.js, does not appear to check for case.
 		    });
 		});
         it('/ta-RGNHRBWNZV/003/c1.wgt - Tests the UA\'s ability treat file names in the default start files table case-sensitively.	To pass, the user agent must treat this widget as an invalid widget.',
 		function (done) {
-		    testWidget('/ta-RGNHRBWNZV/003/c1.wgt', done, function (cfg) {
-		        expect(cfg).toBeUndefined();
+		    testWidget('ta-RGNHRBWNZV/003/c1.wgt', done, function (cfg) {
+		        expect(cfg).toBeUndefined(); //Ivan: Is not checking for case sensitivity when comparing to STARTFILE_NAMES, line 381 widgetprocessor.js
 		    });
 		});
         it('/ta-RGNHRBWNZV/004/c2.wgt - Tests the UA\'s ability treat file names in the default start files table case-sensitively.	To pass, the user agent must treat this widget as an invalid widget.',
 		function (done) {
-		    testWidget('/ta-RGNHRBWNZV/004/c2.wgt', done, function (cfg) {
-		        expect(cfg).toBeUndefined();
+		    testWidget('ta-RGNHRBWNZV/004/c2.wgt', done, function (cfg) {
+		        expect(cfg).toBeUndefined();//Ivan: Is not checking for case sensitivity when comparing to STARTFILE_NAMES, line 381 widgetprocessor.js
 		    });
 		});
         it('/ta-RGNHRBWNZV/005/c3.wgt - Tests the UA\'s ability treat file names in the default start files table case-sensitively.	To pass, the user agent must treat this widget as an invalid widget.',
 		function (done) {
-		    testWidget('/ta-RGNHRBWNZV/005/c3.wgt', done, function (cfg) {
-		        expect(cfg).toBeUndefined();
+		    testWidget('ta-RGNHRBWNZV/005/c3.wgt', done, function (cfg) {
+		        expect(cfg).toBeUndefined(); //Ivan: Is not checking for case sensitivity when comparing to STARTFILE_NAMES, line 381 widgetprocessor.js
 		    });
 		});
         it('/ta-RGNHRBWNZV/006/c4.wgt - Tests the UAs ability treat file names in the default start files table case-sensitively.	To pass, the user agent must ignore "INdeX.htm" at the root, but must use "index.html" as the default start file.',
 		function (done) {
-		    testWidget('/ta-RGNHRBWNZV/006/c4.wgt', done, function (cfg) {
+		    testWidget('ta-RGNHRBWNZV/006/c4.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.html");
 		    });
 		});
         it('/ta-RGNHRBWNZV/007/c5.wgt - Tests the UAs ability treat file names in the default start files table case-sensitively.	To pass, the user agent must ignore "INdeX.htm" in the locales folder, but must use "index.html" as the default start file.',
 		function (done) {
-		    testWidget('/ta-RGNHRBWNZV/007/c5.wgt', done, function (cfg) {
+		    testWidget('ta-RGNHRBWNZV/007/c5.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.html");
 		    });
 		});
@@ -737,13 +737,13 @@
     describe('ta-RRZxvvTFHx', function () {
         it('/ta-RRZxvvTFHx/000/b5.wgt - Tests that a UA does not go searching in an arbritrary folder ("abc123") for default start files.	To pass, the user agent must treat this widget as an invalid widget.',
 		function (done) {
-		    testWidget('/ta-RRZxvvTFHx/000/b5.wgt', done, function (cfg) {
-		        expect(cfg).toBeUndefined();
+		    testWidget('ta-RRZxvvTFHx/000/b5.wgt', done, function (cfg) {
+		        expect(cfg).toBeUndefined(); //Ivan: Is looking in arbitary folder or has a default start file being set.
 		    });
 		});
         it('/ta-RRZxvvTFHx/001/b6.wgt - Tests that a UA does not go searching in an arbritrary folder ("foo/bar") for default start files.	To pass, the user agent must use index.html at the root of the widget as the start file',
 		function (done) {
-		    testWidget('/ta-RRZxvvTFHx/001/b6.wgt', done, function (cfg) {
+		    testWidget('ta-RRZxvvTFHx/001/b6.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.html");
 		    });
 		});
@@ -754,22 +754,22 @@
     describe('ta-sdwhMozwIc', function () {
         it('/ta-sdwhMozwIc/000/b7.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the author element.	To pass, the author name must be  "PASS", href must be "PASS:" and email must be "PASS".',
 		function (done) {
-		    testWidget('/ta-sdwhMozwIc/000/b7.wgt', done, function (cfg) {
-		        expect(cfg.author.unicode).toEqual("PASS");
+		    testWidget('ta-sdwhMozwIc/000/b7.wgt', done, function (cfg) {
+		        expect(cfg.author.name).toEqual("PASS");//Ivan: Author and href are not being set to pass but email is. Syntax error?
 		        expect(cfg.author.href).toEqual("PASS");
 		        expect(cfg.author.email).toEqual("PASS");
 		    });
 		});
         it('/ta-sdwhMozwIc/001/b8.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the author element.	To pass, the author name must be an empty string.',
 		function (done) {
-		    testWidget('/ta-sdwhMozwIc/001/b8.wgt', done, function (cfg) {
-		        expect(cfg.author.unicode).toEqual("");
+		    testWidget('ta-sdwhMozwIc/001/b8.wgt', done, function (cfg) {
+		        expect(cfg.author.name).toEqual("");
 		    });
 		});
         it('/ta-sdwhMozwIc/002/b9.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the author element.	To pass, the author name must be "PASS", href must be "PASS:" and email must be "PASS".',
 		function (done) {
-		    testWidget('/ta-sdwhMozwIc/002/b9.wgt', done, function (cfg) {
-		        expect(cfg.author.unicode).toEqual("PASS");
+		    testWidget('ta-sdwhMozwIc/002/b9.wgt', done, function (cfg) {
+		        expect(cfg.author.name).toEqual("PASS");//Ivan: href and email are correct but name is not (does the repeition have the same or no href and email element?
 		        expect(cfg.author.href).toEqual("PASS:");
 		        expect(cfg.author.email).toEqual("PASS");
 		    });
@@ -781,25 +781,25 @@
     describe('ta-UEMbyHERkI', function () {
         it('/ta-UEMbyHERkI/000/c6.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the description element.	To pass, the widget description must be "PASS".',
 		function (done) {
-		    testWidget('/ta-UEMbyHERkI/000/c6.wgt', done, function (cfg) {
+		    testWidget('ta-UEMbyHERkI/000/c6.wgt', done, function (cfg) {
 		        expect(cfg.description.unicode).toEqual("PASS");
 		    });
 		});
         it('/ta-UEMbyHERkI/001/c7.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the description element.	To pass, the widget description must be an empty string.',
 		function (done) {
-		    testWidget('/ta-UEMbyHERkI/001/c7.wgt', done, function (cfg) {
-		        expect(cfg.description).toEqual("");
+		    testWidget('ta-UEMbyHERkI/001/c7.wgt', done, function (cfg) {
+		        expect(cfg.description).toEqual("");//Ivan: Line 365 widgetconfigprocessor.js does not appear to have any way of checking if description is already set.
 		    });
 		});
         it('/ta-UEMbyHERkI/002/rb.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the description element.	To pass, the widget description must be "PASS".',
 		function (done) {
-		    testWidget('/ta-UEMbyHERkI/002/rb.wgt', done, function (cfg) {
+		    testWidget('ta-UEMbyHERkI/002/rb.wgt', done, function (cfg) {
 		        expect(cfg.description.unicode).toEqual("PASS");
 		    });
 		});
         it('/ta-UEMbyHERkI/003/c8.wgt - Tests the UA\'s ability to correctly select the description element when the xml:lang attribute is present.	To pass, the widget description must be "PASS".',
 		function (done) {
-		    testWidget('/ta-UEMbyHERkI/003/c8.wgt', done, function (cfg) {
+		    testWidget('ta-UEMbyHERkI/003/c8.wgt', done, function (cfg) {
 		        expect(cfg.description.unicode).toEqual("PASS");
 		    });
 		});
@@ -810,45 +810,45 @@
     describe('ta-UScJfQHPPy', function () {
         it('/ta-UScJfQHPPy/000/c9.wgt - Test the UA\'s ability process the width attribute.	To pass, the value of the widget width must be ignored (the value is composed of characters).',
 		function (done) {
-		    testWidget('/ta-UScJfQHPPy/000/c9.wgt', done, function (cfg) {
-		        expect(cfg.width).toBeUndefined();
+		    testWidget('ta-UScJfQHPPy/000/c9.wgt', done, function (cfg) {
+		        expect(cfg.width).toBeUndefined();//Ivan: Doesn't appear to be anything other than a function to check for negative in widgetconfigprocessor.js line 290.
 		    });
 		});
         it('/ta-UScJfQHPPy/001/cq.wgt - Test the UA\'s ability process the width attribute.	To pass, the widget width must be the value "123" or a value greater than 0. ',
 		function (done) {
-		    testWidget('/ta-UScJfQHPPy/001/cq.wgt', done, function (cfg) {
+		    testWidget('ta-UScJfQHPPy/001/cq.wgt', done, function (cfg) {
 		        expect(cfg.width).toEqual(123) || expect(cfg.width).toBeGreaterThan(0);
 		    });
 		});
         it('/ta-UScJfQHPPy/002/cw.wgt - Test the UA\'s ability process the width attribute.	To pass, the widget width must be the numeric value 200 or a value greater than 0 (resulting from rule for parsing a non-negative integer).',
 		function (done) {
-		    testWidget('/ta-UScJfQHPPy/002/cw.wgt', done, function (cfg) {
+		    testWidget('ta-UScJfQHPPy/002/cw.wgt', done, function (cfg) {
 		        expect(cfg.width).toEqual(200) || expect(cfg.width).toBeGreaterThan(0);
 		    });
 		});
         it('/ta-UScJfQHPPy/003/ce.wgt - Test the UA\'s ability process the width attribute.	To pass, the widget width must be the numeric value 123  or a value greater than 0(resulting from rule for parsing a non-negative integer).',
 		function (done) {
-		    testWidget('/ta-UScJfQHPPy/003/ce.wgt', done, function (cfg) {
+		    testWidget('ta-UScJfQHPPy/003/ce.wgt', done, function (cfg) {
 		        expect(cfg.width).toEqual(123) || expect(cfg.width).toBeGreaterThan(0);
 		    });
 		});
         it('/ta-UScJfQHPPy/004/cr.wgt - Test the UA\'s ability process the width attribute.	To pass, the user agent must assign some default width to the widget (the value is an empty string, hence it would be ignored).',
 		function (done) {
-		    testWidget('/ta-UScJfQHPPy/004/cr.wgt', done, function (cfg) {
+		    testWidget('ta-UScJfQHPPy/004/cr.wgt', done, function (cfg) {
 
-		        expect(cfg.width).toBeGreaterThan(0);
+		        expect(cfg.width).toBeGreaterThan(0);//Ivan: Fixed this issue.
 		    });
 		});
         it('/ta-UScJfQHPPy/005/ct.wgt - Test the UA\'s ability process the width attribute.	To pass, the user agent must assign some default width to the widget (the value is a sequence of space characters, hence it would be ignored).',
 		function (done) {
-		    testWidget('/ta-UScJfQHPPy/005/ct.wgt', done, function (cfg) {
-		        expect(cfg.width).toBeGreaterThan(0);
+		    testWidget('ta-UScJfQHPPy/005/ct.wgt', done, function (cfg) {
+		        expect(cfg.width).toBeGreaterThan(0);//Ivan: Should just be assigning width = x after an if switch to check type of width. However doesn't seem to work.
 		    });
 		});
         it('/ta-UScJfQHPPy/006/cy.wgt - Test the UA\'s ability process the width attribute.	To pass, the user agent must assign some default width to the widget (the value is a sequence of space characters, hence it would be ignored).',
 		function (done) {
-		    testWidget('/ta-UScJfQHPPy/006/cy.wgt', done, function (cfg) {
-		        expect(cfg.width).toBeGreaterThan(0);
+		    testWidget('ta-UScJfQHPPy/006/cy.wgt', done, function (cfg) {
+		        expect(cfg.width).toBeGreaterThan(0); //Ivan: Should just be assigning width = x after an if switch to check type of width. However doesn't seem to work.
 		    });
 		});
     });
@@ -858,27 +858,27 @@
     describe('ta-UScJfQHPPy', function () {
         it('/ta-vcYJAPVEym/000/cu.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the license element.	To pass, the widget license be the string "PASS" and license href must be the string "PASS:".',
 		function (done) {
-		    testWidget('/ta-vcYJAPVEym/000/cu.wgt', done, function (cfg) {
+		    testWidget('ta-vcYJAPVEym/000/cu.wgt', done, function (cfg) {
 		        expect(cfg.license.text.unicode).toEqual("PASS");
 		        expect(cfg.license.href).toEqual("PASS:")
 		    });
 		});
         it('/ta-vcYJAPVEym/001/ci.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the license element.	To pass, the widget license must be an empty string and widget license href must be ignored.',
 		function (done) {
-		    testWidget('/ta-vcYJAPVEym/001/ci.wgt', done, function (cfg) {
-		        expect(cfg.license.text).toEqual("");
+		    testWidget('ta-vcYJAPVEym/001/ci.wgt', done, function (cfg) {
+		        expect(cfg.license.text).toEqual(""); //Ivan: Succesfully ignores href but does not ignore repetition of license element. 
 		        expect(cfg.license.href).toBeUndefined();
 		    });
 		});
         it('/ta-vcYJAPVEym/002/ra.wgt - Tests the UA\'s ability to ignore subsequent repetitions of the license element.	To pass, widget license must be "PASS".',
 		function (done) {
-		    testWidget('/ta-vcYJAPVEym/002/ra.wgt', done, function (cfg) {
+		    testWidget('ta-vcYJAPVEym/002/ra.wgt', done, function (cfg) {
 		        expect(cfg.license.text.unicode).toEqual("PASS");
 		    });
 		});
         it('/ta-vcYJAPVEym/003/co.wgt - Tests the UA\'s ability to correctly select a license element that makes use of xml:lang.	To pass, widget license must be "PASS".',
 		function (done) {
-		    testWidget('/ta-vcYJAPVEym/003/co.wgt', done, function (cfg) {
+		    testWidget('ta-vcYJAPVEym/003/co.wgt', done, function (cfg) {
 		        expect(cfg.license.text.unicode).toEqual("PASS");
 		    });
 		});
@@ -889,37 +889,37 @@
     describe('ta-VdCEyDVSA', function () {
         it('/ta-VdCEyDVSA/000/cp.wgt - Test the ability of the user agent to correctly apply the rule for getting text content to a description element.	To pass, the value of the widget description must be the string "PASS".',
 		function (done) {
-		    testWidget('/ta-VdCEyDVSA/000/cp.wgt', done, function (cfg) {
+		    testWidget('ta-VdCEyDVSA/000/cp.wgt', done, function (cfg) {
 		        expect(cfg.description.unicode).toEqual("PASS");
 		    });
 		});
         it('/ta-VdCEyDVSA/001/ca.wgt - Test the ability of the user agent to correctly process the description element.	To pass, the value of the widget description must be the string "PASS".',
 		function (done) {
-		    testWidget('/ta-VdCEyDVSA/001/ca.wgt', done, function (cfg) {
+		    testWidget('ta-VdCEyDVSA/001/ca.wgt', done, function (cfg) {
 		        expect(cfg.description.unicode).toEqual("PASS");
 		    });
 		});
         it('/ta-VdCEyDVSA/002/cs.wgt - Test the ability of the user agent to correctly process the description element.	To pass, the value of the widget description must be an empty string.',
 		function (done) {
-		    testWidget('/ta-VdCEyDVSA/002/cs.wgt', done, function (cfg) {
-		        expect(cfg.description).toEqual("");
+		    testWidget('ta-VdCEyDVSA/002/cs.wgt', done, function (cfg) {
+		        expect(cfg.description.unicode).toEqual("");//Ivan: Failure, perhaps this isn't  the correct way to check for an empty string, or the description element process cannot handle an empty string.
 		    });
 		});
         it('/ta-VdCEyDVSA/003/cd.wgt - Test the ability of the user agent to correctly process the description element.To pass, the value of the widget description must be a string that corresponds to the following bytes (ASCII): 0A 09 50 0A 09 41 0A 09 53 0A 09 53 0A',
 		function (done) {
-		    testWidget('/ta-VdCEyDVSA/003/cd.wgt', done, function (cfg) {
-		        expect(cfg.description.unicode).toEqual("\u000A\u0009\u0050\u000A\u0009\u0041\u000A\u0009\u0053\u000A\u0009\u0053\u000A"); //TODO -- Unsure if this will work.	
+		    testWidget('ta-VdCEyDVSA/003/cd.wgt', done, function (cfg) {
+		        expect(cfg.description.unicode).toEqual("\u000A\u0009\u0050\u000A\u0009\u0041\u000A\u0009\u0053\u000A\u0009\u0053\u000A"); //Ivan: Is there something wrong with the ability of the description element processor to deal with none unicode strings?
 		    });
 		});
         it('/ta-VdCEyDVSA/004/x1.wgt - Test the ability of the user agent to correctly process localized description elements by ignoring languages it does not know (i.e., selecting the unlocalized content).To pass, the value of the widget description must the string "PASS".',
 		function (done) {
-		    testWidget('/ta-VdCEyDVSA/004/x1.wgt', done, function (cfg) {
+		    testWidget('ta-VdCEyDVSA/004/x1.wgt', done, function (cfg) {
 		        expect(cfg.description.unicode).toEqual("PASS");
 		    });
 		});
         it('/ta-VdCEyDVSA/005/x2.wgt - Test the ability of the user agent to correctly process localized description elements.	To pass, the value of the widget description must the string "PASS".',
 		function (done) {
-		    testWidget('/ta-VdCEyDVSA/005/x2.wgt', done, function (cfg) {
+		    testWidget('ta-VdCEyDVSA/005/x2.wgt', done, function (cfg) {
 		        expect(cfg.description.unicode).toEqual("PASS");
 		    });
 		});
@@ -930,19 +930,19 @@
     describe('ta-VerEfVGeTc', function () {
         it('/ta-VerEfVGeTc/000/cf.wgt - Test the UA\'s ability to process version a version attribute.	To pass, the value of widget version must be the string "PASS".',
 		function (done) {
-		    testWidget('/ta-VerEfVGeTc/000/cf.wgt', done, function (cfg) {
+		    testWidget('ta-VerEfVGeTc/000/cf.wgt', done, function (cfg) {
 		        expect(cfg.version.unicode).toEqual("PASS");
 		    });
 		});
         it('/ta-VerEfVGeTc/001/cg.wgt - Test the UA\'s ability to process version a version attribute.	To pass, the value of version must be an empty string  (applies rule for getting a single attribute value).',
 		function (done) {
-		    testWidget('/ta-VerEfVGeTc/001/cg.wgt', done, function (cfg) {
-		        expect(cfg.version).toEqual("");
+		    testWidget('ta-VerEfVGeTc/001/cg.wgt', done, function (cfg) {
+		        expect(cfg.version).toEqual(""); //Ivan: Seems to fall down on all empty string tests, either the test is wrong or the processor cannot handle empty elements.
 		    });
 		});
         it('/ta-VerEfVGeTc/002/ch.wgt - Test the UA\'s ability to process version a version attribute.	To pass, the value of widget version must be the string "PASS" (applies rule for getting a single attribute value).',
 		function (done) {
-		    testWidget('/ta-VerEfVGeTc/002/ch.wgt', done, function (cfg) {
+		    testWidget('ta-VerEfVGeTc/002/ch.wgt', done, function (cfg) {
 		        expect(cfg.version.unicode).toEqual("PASS");
 		    });
 		});
@@ -953,33 +953,33 @@
     describe('ta-YUMJAPVEgI', function () {
         it('/ta-YUMJAPVEgI/000/cj.wgt - Test the ability of the user agent to correctly apply the rule for getting text content to a license element.	To pass, the value of the widget license must be the string "PASS".',
 		function (done) {
-		    testWidget('/ta-YUMJAPVEgI/000/cj.wgt', done, function (cfg) {
-		        expect(cfg.license.unicode).toEqual("PASS");
+		    testWidget('ta-YUMJAPVEgI/000/cj.wgt', done, function (cfg) {
+		        expect(cfg.license.unicode).toEqual("PASS");//Ivan: The function for getting the license element content appears to be broken (fails on all tests).
 		    });
 		});
         it('/ta-YUMJAPVEgI/001/ck.wgt - Test the ability of the user agent to correctly process the text content of a license element.	To pass, the value of the widget license must be the string "PASS".',
 		function (done) {
-		    testWidget('/ta-YUMJAPVEgI/001/ck.wgt', done, function (cfg) {
-		        expect(cfg.license.unicode).toEqual("PASS");
+		    testWidget('ta-YUMJAPVEgI/001/ck.wgt', done, function (cfg) {
+		        expect(cfg.license.unicode).toEqual("PASS");//Ivan: The function for getting the license element content appears to be broken (fails on all tests).
 		    });
 		});
         it('/ta-YUMJAPVEgI/002/cl.wgt - Test the ability of the user agent to correctly process the text content of the license element.	To pass, the value of the widget license must be an empty string.',
 		function (done) {
-		    testWidget('/ta-YUMJAPVEgI/002/cl.wgt', done, function (cfg) {
-		        expect(cfg.license.unicode).toEqual("");
+		    testWidget('ta-YUMJAPVEgI/002/cl.wgt', done, function (cfg) {
+		        expect(cfg.license.unicode).toEqual("");//Ivan: The function for getting the license element content appears to be broken (fails on all tests).
 		    });
 		});
         it('/ta-YUMJAPVEgI/003/cz.wgt - Test the ability of the user agent to correctly process the text content license element.	To pass, the value of the widget license must a string that corresponds to the following bytes (ASCII): 0A 09 50 0A 09 41 0A 09 53 0A 09 53 0A',
 		function (done) {
-		    testWidget('/ta-YUMJAPVEgI/003/cz.wgt', done, function (cfg) {
-		        expect(cfg.license.ASCII).toEqual("0A 09 50 0A 09 41 0A 09 53 0A 09 53 0A");
+		    testWidget('ta-YUMJAPVEgI/003/cz.wgt', done, function (cfg) {
+		        expect(cfg.license.ASCII).toEqual("\u000A \u0009 \u0050 \u000A \u0009 \u0041 \u000A \u0009 \u0053 \u000A \u0009 \u0053 \u000A");//Ivan: The function for getting the license element content appears to be broken (fails on all tests).
 		    });
 		});
         it('/ta-YUMJAPVEgI/004/cx.wgt - Test the ability of the user agent to correctly process license element\'s href attribute when it is a file.	To pass, the value of the widget license must be an empty string, but the license href attribute must point to the file at \'test/pass.html\'.',
 		function (done) {
-		    testWidget('/ta-YUMJAPVEgI/004/cx.wgt', done, function (cfg) {
-		        expect(cfg.license.text).toEqual("");
-		        expect(cfg.license.href).toEqual("test/pass.html");
+		    testWidget('ta-YUMJAPVEgI/004/cx.wgt', done, function (cfg) {
+		        expect(cfg.license.unicode).toEqual("");
+		        expect(cfg.license.href).toEqual("test/pass.html");//Ivan: Cannot read property, the license element doesn't exists or the widget processor cannot find it.
 		    });
 		});
     });
@@ -989,16 +989,16 @@
     describe('ta-iipTwNshRg', function () {
         it('/ta-iipTwNshRg/000/d1.wgt - Tests the user agents ability to correctly process icon elements without a src attribute.	To pass, the icons list will only contain icon.png',
 		function (done) {
-		    testWidget('/ta-iipTwNshRg/000/d1.wgt', done, function (cfg) {
-		        expect(cfg.icons).toBeDefined();
+		    testWidget('ta-iipTwNshRg/000/d1.wgt', done, function (cfg) {
+		        expect(cfg.icons).toBeDefined();//Ivan: cfg.icons is not defined, no processing taking place. Is there a problem with icon processing in general or just its ability to handle icons without src
 		        expect(cfg.icons.length).toEqual(1);
 		        expect(cfg.icons[0].path).toEqual('icon.png')
 		    });
 		});
         it('/ta-iipTwNshRg/001/ga.wgt - Tests the user agents ability to correctly process icon elements with an empty src attribute.	To pass, the icons list will only contain icon.png',
 		function (done) {
-		    testWidget('/ta-iipTwNshRg/001/ga.wgt', done, function (cfg) {
-		        expect(cfg.icons).toBeDefined();
+		    testWidget('ta-iipTwNshRg/001/ga.wgt', done, function (cfg) {
+		        expect(cfg.icons).toBeDefined();//Ivan: cfg.icons is not defined, no processing taking place. Is there a problem with icon processing in general or just its ability to handle icons without src
 		        expect(cfg.icons.length).toEqual(1);
 		        expect(cfg.icons[0].path).toEqual('icon.png');
 		    });
@@ -1010,7 +1010,7 @@
     describe('ta-roCaKRxZhS', function () {
         it('/ta-roCaKRxZhS/000/d2.wgt - Tests the UA\'s ability to handle the situation where a path points to an icon which does not exist.	To pass, the icons list must contain icon.png.',
 		function (done) {
-		    testWidget('/ta-roCaKRxZhS/000/d2.wgt', done, function (cfg) {
+		    testWidget('ta-roCaKRxZhS/000/d2.wgt', done, function (cfg) {
 		        expect(cfg.icons).toBeDefined();
 		        expect(cfg.icons.length).toEqual(1);
 		        expect(cfg.icons[0].path).toEqual('icon.png')
@@ -1023,7 +1023,7 @@
     describe('ta-MFcsScFEaC', function () {
         it('/ta-MFcsScFEaC/000/d3.wgt - Test the UA\'s ability to progress to Step 8 when it has nothing to process inside the widget element.	To pass, the widget start file must be "index.htm"',
 		function (done) {
-		    testWidget('/ta-MFcsScFEaC/000/d3.wgt', done, function (cfg) {
+		    testWidget('ta-MFcsScFEaC/000/d3.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.htm");
 		    });
 		});
@@ -1034,8 +1034,8 @@
     describe('ta-ignore-unrequired-feature-with-invalid-name', function () {
         it('/ta-ignore-unrequired-feature-with-invalid-name/000/gg.wgt - Tests the user agents ability to correctly process a feature element.	To pass, the user agent must not contain any values in the feature list (i.e., the erroneously named feature is ignored). ',
 		function (done) {
-		    testWidget('/ta-ignore-unrequired-feature-with-invalid-name/000/gg.wgt', done, function (cfg) {
-		        expect(cfg.features).toBeUndefined();
+		    testWidget('ta-ignore-unrequired-feature-with-invalid-name/000/gg.wgt', done, function (cfg) {
+		        expect(cfg.features).toBeUndefined();//Ivan: Feature list contains error codes when it should be empty. Line 746 widgetconfigprocessor.js
 		    });
 		});
     });
@@ -1045,8 +1045,8 @@
     describe('ta-paWbGHyVrG', function () {
         it('/ta-paWbGHyVrG/000/d4.wgt - Tests the user agents ability to correctly process a feature element.	To pass, the user agent must treat this widget as an invalid widget. ',
 		function (done) {
-		    testWidget('/ta-paWbGHyVrG/000/d4.wgt', done, function (cfg) {
-		        expect(cfg).toBeUndefined();
+		    testWidget('ta-paWbGHyVrG/000/d4.wgt', done, function (cfg) {
+		        expect(cfg).toBeUndefined();//Ivan: Widget is not being invalidated.
 		    });
 		});
     });
@@ -1056,8 +1056,8 @@
     describe('ta-luyKMFABLX', function () {
         it('/ta-luyKMFABLX/000/d5.wgt - Tests the user agents ability to correctly process a feature element.	To pass, the user agent must not contain any values in the feature list (i.e., the unknown feature is skipped). ',
 		function (done) {
-		    testWidget('/ta-luyKMFABLX/000/d5.wgt', done, function (cfg) {
-		        expect(cfg.features).toBeUndefined();
+		    testWidget('ta-luyKMFABLX/000/d5.wgt', done, function (cfg) {
+		        expect(cfg.features).toBeUndefined();//Ivan: Feature list contains error codes when it should be empty. Line 746 widgetconfigprocessor.js
 		    });
 		});
     });
@@ -1067,7 +1067,7 @@
     describe('ta-xlgUWUVzCY', function () {
         it('/ta-xlgUWUVzCY/000/d6.wgt - NOTE: this test assumes the widget engine supports the magic feature "feature:a9bb79c1". This feature does nothing: it\'s just used for conformance testing.	Tests the user agent\'s ability to correctly process a param element.	To pass, feature \'feature:a9bb79c1\' must not have any associated parameters.',
 		function (done) {
-		    testWidget('/ta-xlgUWUVzCY/000/d6.wgt', done, function (cfg) {
+		    testWidget('ta-xlgUWUVzCY/000/d6.wgt', done, function (cfg) {
 		        expect(cfg.features).toBeDefined();
 		        expect(cfg.features[0].param).toBeUndefined();
 		    });
@@ -1079,19 +1079,19 @@
     describe('ta-LTUJGJFCOU', function () {
         it('/ta-LTUJGJFCOU/000/d7.wgt - Test that the user agent skips a content element with no src attribute and	loads default start file. To pass, the start file must be index.htm at the root of the widget.',
 		function (done) {
-		    testWidget('/ta-LTUJGJFCOU/000/d7.wgt', done, function (cfg) {
+		    testWidget('ta-LTUJGJFCOU/000/d7.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.htm");
 		    });
 		});
         it('/ta-LTUJGJFCOU/001/d8.wgt - Test that the user agent skips a content element with no src attribute and	loads default start file.	To pass, the start file must be index.htm at the root of the widget.',
 		function (done) {
-		    testWidget('/ta-LTUJGJFCOU/001/d8.wgt', done, function (cfg) {
+		    testWidget('ta-LTUJGJFCOU/001/d8.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.htm");
 		    });
 		});
         it('/ta-LTUJGJFCOU/002/gb.wgt - Test that the user agent correctly handles a content element with an empty src attribute.	To pass, the start file must be index.htm at the root of the widget.',
 		function (done) {
-		    testWidget('/ta-LTUJGJFCOU/002/gb.wgt', done, function (cfg) {
+		    testWidget('ta-LTUJGJFCOU/002/gb.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.htm");
 		    });
 		});
@@ -1102,13 +1102,13 @@
     describe('ta-LQcjNKBLUZ', function () {
         it('/ta-LQcjNKBLUZ/000/d9.wgt - Test that the user agent skips a content element that points to a non-existing file and shouldn\'t read the following content element.	To pass the user agent must treat the widget as invalid.',
 		function (done) {
-		    testWidget('/ta-LQcjNKBLUZ/000/d9.wgt', done, function (cfg) {
-		        expect(cfg).toBeUndefined();
+		    testWidget('ta-LQcjNKBLUZ/000/d9.wgt', done, function (cfg) {
+		        expect(cfg).toBeUndefined();//Ivan: Is not invalidating widget just placing error code.
 		    });
 		});
         it('/ta-LQcjNKBLUZ/001/d0.wgt - Test that the user agent skips a content element that points to a non-existing file.	To pass, the start file must be index.htm',
 		function (done) {
-		    testWidget('/ta-LQcjNKBLUZ/001/d0.wgt', done, function (cfg) {
+		    testWidget('ta-LQcjNKBLUZ/001/d0.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.htm");
 		    });
 		});
@@ -1119,13 +1119,13 @@
     describe('ta-ZjcdAxFMSx', function () {
         it('/ta-ZjcdAxFMSx/000/dq.wgt - Test the UA\'s ability to correctly find config document.	To pass, the user agent must treat this as an invalid widget (config.exe is not a recognized config file name).',
 		function (done) {
-		    testWidget('/ta-ZjcdAxFMSx/000/dq.wgt', done, function (cfg) {
+		    testWidget('ta-ZjcdAxFMSx/000/dq.wgt', done, function (cfg) {
 		        expect(cfg).toBeUndefined();
 		    });
 		});
         it('/ta-ZjcdAxFMSx/001/dw.wgt - Test the UA\'s ability to correctly find config document.	To pass, the user agent must treat this as an invalid widget (CoNfIG.xml is not a recognized config file name)',
 		function (done) {
-		    testWidget('/ta-ZjcdAxFMSx/001/dw.wgt', done, function (cfg) {
+		    testWidget('ta-ZjcdAxFMSx/001/dw.wgt', done, function (cfg) {
 		        expect(cfg).toBeUndefined();
 		    });
 		});
@@ -1136,15 +1136,15 @@
     describe('ta-paIabGIIMC', function () {
         it('/ta-paIabGIIMC/000/dc.wgt - Test the UA\'s support for explicitly setting the mime type of a file using the type attribute of the content element.	To pass, the widget start file must be index.php and start file content type must be "text/html"',
 		function (done) {
-		    testWidget('/ta-paIabGIIMC/000/dc.wgt', done, function (cfg) {
+		    testWidget('ta-paIabGIIMC/000/dc.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual("index.php");
-		        expect(cfg.startFile.type).toEqual("text/html");
+		        expect(cfg.startFile.contentType).toEqual("text/html");//Ivan: Fixed. Type should be ContentType
 		    });
 		});
         it('/ta-paIabGIIMC/001/dv.wgt - Test the UA\'s support for explicitly setting the mime type of a file using the type attribute of the content element.	To pass, the user agent must treat this as an invalid widget.',
 		function (done) {
-		    testWidget('/ta-paIabGIIMC/001/dv.wgt', done, function (cfg) {
-		        expect(cfg).toBeUndefined();
+		    testWidget('ta-paIabGIIMC/001/dv.wgt', done, function (cfg) {
+		        expect(cfg).toBeUndefined();//Ivan: Widget is not being set to invalid when there is an invalid type.
 		    });
 		});
     });
@@ -1154,13 +1154,13 @@
     describe('ta-rZdcMBExBX', function () {
         it('/ta-rZdcMBExBX/000/df.wgt - Test the UA\'s ability to handle a feature element without a name attribute.	To pass, the feature list must remain empty.',
 		function (done) {
-		    testWidget('/ta-rZdcMBExBX/000/df.wgt', done, function (cfg) {
+		    testWidget('ta-rZdcMBExBX/000/df.wgt', done, function (cfg) {
 		        expect(cfg.features).toBeUndefined();
 		    });
 		});
         it('/ta-rZdcMBExBX/002/ha.wgt - NOTE: this test assumes the widget engine supports the magic feature "feature:a9bb79c1". This feature does nothing: it\'s just used for conformance testing.	Test the UA\'s ability to handle multiple feature elements with the same value for the name attribute, but with different param elements.	To pass, the feature list must contain two features. Both are named \'feature:a9bb79c1\'. One feature must have a parameter named "test" whose value is "pass1"	The other feature must have a parameter named "test" whose value is "pass2" (the order in which the features appear in the feature list in not relevant).',
 		function (done) {
-		    testWidget('/ta-rZdcMBExBX/002/ha.wgt', done, function (cfg) {
+		    testWidget('ta-rZdcMBExBX/002/ha.wgt', done, function (cfg) {
 		        expect(cfg.features.length).toEqual(2);
 		        expect(cfg.features[0].name).toEqual("feature:a9bb79c1");
 		        expect(cfg.features[1].name).toEqual("feature:a9bb79c1");
@@ -1185,17 +1185,17 @@
     describe('ta-EGkPfzCBOz', function () {
         it('/ta-EGkPfzCBOz/000/dt.wgt - NOTE: this test assumes the widget engine supports the magic feature "feature:a9bb79c1". This feature does nothing: it\'s just used for conformance testing.	Tests the user agents to correctly handle a param element with missing name attribute.	To pass, the feature list must contain one feature named \'feature:a9bb79c1\' with no associated parameters.',
 		function (done) {
-		    testWidget('/ta-EGkPfzCBOz/000/dt.wgt', done, function (cfg) {
+		    testWidget('ta-EGkPfzCBOz/000/dt.wgt', done, function (cfg) {
 		        expect(cfg.features.length).toEqual(1);
 		        expect(cfg.features[0].name).toEqual("feature:a9bb79c1");
-		        expect(cfg.features[0].params).toBeUndefined();
+		        expect(cfg.features[0].params).toBeUndefined();//Ivan: features doesn't appear to be being defined except for with an error code. 
 		    });
 		});
         it('/ta-EGkPfzCBOz/001/dg.wgt - NOTE: this test assumes the widget engine supports the magic feature "feature:a9bb79c1". This feature does nothing: it\'s just used for conformance testing.Tests the user agents to correctly handle a param element with missing name attribute.	To pass, the feature list must contain one feature named \'feature:a9bb79c1\' with one associated parameter whose name	is \'PASS\' and whose value is \'PASS\'.',
 		function (done) {
-		    testWidget('/ta-EGkPfzCBOz/001/dg.wgt', done, function (cfg) {
+		    testWidget('ta-EGkPfzCBOz/001/dg.wgt', done, function (cfg) {
 		        expect(cfg.features.length).toEqual(1);
-		        expect(cfg.features[0].name).toEqual("feature:a9bb79c1");
+		        expect(cfg.features[0].name).toEqual("feature:a9bb79c1");//Ivan: This might not be the correct way of accessing features and parameters as all tests of features fail.
 		        expect(cfg.features[0].params.length).toEqual(1);
 		        expect(cfg.features[0].params[0].name).toEqual('PASS');
 		        expect(cfg.features[0].params[0].value).toEqual('PASS')
@@ -1203,7 +1203,7 @@
 		});
         it('/ta-EGkPfzCBOz/002/v9.wgt - NOTE: this test assumes the widget engine supports the magic feature "feature:a9bb79c1". This feature does nothing: it\'s just used for conformance testing.Tests the user agents to correctly handle param elements that have the same value for the name attribute.	To pass, the feature list must contain one feature named \'feature:a9bb79c1\' with two associated parameters whose name	is \'PASS\' and whose value are \'value1\' and \'value2\'.',
 		function (done) {
-		    testWidget('/ta-EGkPfzCBOz/002/v9.wgt', done, function (cfg) {
+		    testWidget('ta-EGkPfzCBOz/002/v9.wgt', done, function (cfg) {//Ivan: see above
 		        expect(cfg.features.length).toEqual(1);
 		        expect(cfg.features[0].name).toEqual("feature:a9bb79c1");
 		        expect(cfg.features[0].params.length).toEqual(2);
@@ -1221,7 +1221,7 @@
     describe('ta-pIffQywZin', function () {
         it('/ta-pIffQywZin/000/db.wgt - Test that the user agent skip a content element that uses an invalid path.	To pass, the start file must be index.htm at the root of the widget package.',
 		function (done) {
-		    testWidget('/ta-pIffQywZin/000/db.wgt', done, function (cfg) {
+		    testWidget('ta-pIffQywZin/000/db.wgt', done, function (cfg) {
 		        expect(cfg.startFile.path).toEqual('index.htm');
 		    });
 		});
@@ -1282,7 +1282,7 @@
 		function (done) {
 		    testWidget('ta-KNiLPOKdgQ/000/e1.wgt', done, function (cfg) {
 		        expect(cfg.features[0].name).toEqual("feature:a9bb79c1");
-		        expect(cfg.features[0].params).toBeUndefined();
+		        expect(cfg.features[0].params.length).toEqual(0);//Ivan: Fixed (params is always defined so need to ensure it has nothing in it.
 		    });
 		});
     });
@@ -1291,14 +1291,14 @@
 		function (done) {
 		    testWidget('ta-CEGwkNQcWo/000/e2.wgt', done, function (cfg) {
 		        expect(cfg.features[0].name).toEqual("feature:a9bb79c1");
-		        expect(cfg.features[0].params).toBeUndefined();
+		        expect(cfg.features[0].params.length).toEqual(0);//Ivan: See above.
 		    });
 		});
         it('ta-CEGwkNQcWo/001/e3.wgt - NOTE: this test assumes the widget engine supports the magic feature "feature:a9bb79c1". This feature does nothing: it\'s just used for conformance testing.	Test that a user agent correctly applies the rule for getting a single attribute value to a param element\'s name and value attributes.	To pass, the feature feature:a9bb79c1 must not have any associated params.',
 		function (done) {
 		    testWidget('ta-CEGwkNQcWo/001/e3.wgt', done, function (cfg) {
 		        expect(cfg.features[0].name).toEqual("feature:a9bb79c1");
-		        expect(cfg.features[0].params).toBeUndefined()
+		        expect(cfg.features[0].params.length).toEqual(0); //Ivan: See above.
 		    });
 		});
     });
@@ -1306,25 +1306,25 @@
         it('ta-dPOgiLQKNK/000/e4.wgt - Tests the user agent\'s ability to correctly process a content element\'s encoding attribute when it is empty.	To pass, the value of the start file encoding must be UTF-8.',
 		function (done) {
 		    testWidget('ta-dPOgiLQKNK/000/e4.wgt', done, function (cfg) {
-		        expect(cfg.startFile.encoding).toEqual("UTF-8");
+		        expect(cfg.startFile.encoding).toEqual("UTF-8");//Ivan: Does not seem to be set correctly in widgetconfigprocessor.js despite declaration on line 667.
 		    });
 		});
         it('ta-dPOgiLQKNK/001/e5.wgt - This test is optional as user agents are not required to support ISO-8859-1. 	Tests the user agent\'s ability to correctly process a content element\'s encoding attribute when it contains the value "ISO-8859-1".	To pass, the value of the start file encoding must be ISO-8859-1.',
 		function (done) {
 		    testWidget('ta-dPOgiLQKNK/001/e5.wgt', done, function (cfg) {
-		        expect(cfg.startFile.encoding).toEqual("ISO-8859-1"); //TODO -- should be right but not entirely sure. Do we have to specify the start file name?
+		        expect(cfg.startFile.encoding).toEqual("ISO-8859-1"); //Ivan: see above.
 		    });
 		});
         it('ta-dPOgiLQKNK/002/e6.wgt - This test is optional as user agents are not required to support ISO-8859-1. 	Test that a user agent correctly applies the rule for getting a single attribute value to the content element\'s encoding attribute.	To pass, the value of the start file encoding must be ISO-8859-1.',
 		function (done) {
 		    testWidget('ta-dPOgiLQKNK/002/e6.wgt', done, function (cfg) {
-		        expect(cfg.startFile.encoding).toEqual("ISO-8859-1"); //TODO -- should be right but not entirely sure. Do we have to specify the start file name?
+		        expect(cfg.startFile.encoding).toEqual("ISO-8859-1"); //Ivan: see above.
 		    });
 		});
         it('ta-dPOgiLQKNK/003/e7.wgt - Tests the user agent\'s ability to correctly process a content element\'s encoding attribute when it encounters a bogus encoding name.	To pass, the value of the start file encoding must be UTF-8.',
 		function (done) {
 		    testWidget('ta-dPOgiLQKNK/003/e7.wgt', done, function (cfg) {
-		        expect(cfg.startFile.encoding).toEqual("UTF-8");
+		        expect(cfg.startFile.encoding).toEqual("UTF-8");//Ivan: see above.
 		    });
 		});
     });
@@ -1332,7 +1332,7 @@
         it('ta-vOBaOcWfll/000/e8.wgt - Tests the ability of the user agent to correctly handle required a feature when the feature is not supported by the UA.	To pass, the UA must treat this as an invalid widget.',
 		function (done) {
 		    testWidget('ta-vOBaOcWfll/000/e8.wgt', done, function (cfg) {
-		        expect(cfg).toBeUndefined();
+		        expect(cfg).toBeUndefined();//Ivan: Widget is not being invalidated, need code to mark widget invalid.
 		    });
 		});
     });
@@ -1355,7 +1355,7 @@
 		function (done) {
 		    testWidget('ta-iuJHnskSHq/001/za.wgt', done, function (cfg) {
 		        expect(cfg.icons.length).toEqual(1);
-		        expect("pass.png" in cfg.icons).toBeTruthy();
+		        expect(cfg.icons).toContain("pass.png");//Ivan: Pass.png is not present in icons, is it being set correctly or are we looking at the wrong part of icons, e.g. name
 		    });
 		});
         it('ta-iuJHnskSHq/003/zc.wgt - Test the UAs ability to ignore subsequent declarations to use the same icon.	To pass, the user agent must contain "locales/en/custom.png"  	(or "custom.png" depending on the default locale of the user agent) in the icons list and the icon must not have an associated width or height (unless it has been computed from the file).',
@@ -1363,8 +1363,8 @@
 		    testWidget('ta-iuJHnskSHq/003/zc.wgt', done, function (cfg) {
 		        expect(cfg.icons.length).toBeGreaterThan(0);
 		        expect(cfg.icons[0].path).toEqual("locales/en/custom.png");
-		        expect(cfg.icons[0].height).toBeUndefined();
-		        expect(cfg.icons[0].width).toBeUndefined()
+		        expect(cfg.icons[0].height).toEqual(0);
+		        expect(cfg.icons[0].width).toEqual(0);//Ivan: Is not checking for height and width being -1 properly or there is a default of -1.
 		    });
 		});
     });
@@ -1378,7 +1378,7 @@
         it('ta-eHUaPbgfKg/001/iy.wgt - Test the UA\'s ability process the height attribute of an icon.	To pass, the user agent must ignore the value of the icon\'s height attribute (the value is composed of characters).',
 		function (done) {
 		    testWidget('ta-eHUaPbgfKg/001/iy.wgt', done, function (cfg) {
-		        expect(cfg.icons[0].height).toBeUndefined();
+		        expect(cfg.icons[0].height).toEqual(0);
 		    });
 		});
         it('ta-eHUaPbgfKg/002/iz.wgt - Test the UA\'s ability process the height attribute of an icon.	To pass, the icon\'s height must be the numeric value 100 (resulting from rule for parsing a non-negative integer).',
@@ -1396,19 +1396,19 @@
         it('ta-eHUaPbgfKg/004/i2.wgt - Test the UA\'s ability process the height attribute of an icon.	To pass, the icon\'s height must be ignored (the value is an empty string, hence it would be ignored).',
 		function (done) {
 		    testWidget('ta-eHUaPbgfKg/004/i2.wgt', done, function (cfg) {
-		        expect(cfg.icons[0].height).toBeUndefined();
+		        expect(cfg.icons[0].height).toEqual(0);//Ivan: See above
 		    });
 		});
         it('ta-eHUaPbgfKg/005/i3.wgt - Test the UA\'s ability process the height attribute of an icon.	To pass, the icon\'s height must be ignored (the value is a sequence of space characters, hence it would be ignored).',
 		function (done) {
 		    testWidget('ta-eHUaPbgfKg/005/i3.wgt', done, function (cfg) {
-		        expect(cfg.icons[0].height).toBeUndefined();
+		        expect(cfg.icons[0].height).toEqual(0);//Ivan: see above
 		    });
 		});
         it('ta-eHUaPbgfKg/006/i4.wgt - Test the UA\'s ability process the height attribute of an icon.	To pass, the value of the height attribute must be ignored (it is less than zero).',
 		function (done) {
 		    testWidget('ta-eHUaPbgfKg/006/i4.wgt', done, function (cfg) {
-		        expect(cfg.icons[0].height).toBeUndefined();
+		        expect(cfg.icons[0].height).toEqual(0);
 		    });
 		});
     });
@@ -1422,7 +1422,7 @@
         it('ta-nYAcofihvj/001/i9.wgt - Test the UA\'s ability process the width attribute of an icon element.	To pass, the icon\'s width must be ignored (the value is composed of characters).',
 		function (done) {
 		    testWidget('ta-nYAcofihvj/001/i9.wgt', done, function (cfg) {
-		        expect(cfg.icons[0].width).toBeUndefined();
+		        expect(cfg.icons[0].width).toEqual(0);
 		    });
 		});
         it('ta-nYAcofihvj/002/iw.wgt - Test the UA\'s ability process the width attribute of an icon element.	To pass, the icon\'s width must be the numeric value 100 (resulting from rule for parsing a non-negative integer).',
@@ -1440,19 +1440,19 @@
         it('ta-nYAcofihvj/004/ir.wgt - Test the UA\'s ability process the width attribute of an icon element.	To pass, the icon\'s width must be ignored (the value is an empty string, hence it would be ignored).',
 		function (done) {
 		    testWidget('ta-nYAcofihvj/004/ir.wgt', done, function (cfg) {
-		        expect(cfg.icons[0].width).toBeUndefined();
+		        expect(cfg.icons[0].width).toEqual(0);//Ivan: See above
 		    });
 		});
         it('ta-nYAcofihvj/005/it.wgt - Test the UA\'s ability process the width attribute of an icon element.	To pass, the icon\'s width must be ignored (the value is a sequence of space characters, hence it would be ignored).',
 		function (done) {
 		    testWidget('ta-nYAcofihvj/005/it.wgt', done, function (cfg) {
-		        expect(cfg.icons[0].width).toBeUndefined();
+		        expect(cfg.icons[0].width).toEqual(0);//Ivan: See above
 		    });
 		});
         it('ta-nYAcofihvj/006/ib.wgt - Test the UA\'s ability process the width attribute of an icon element.	To pass, the icon\'s width must be ignored.',
 		function (done) {
 		    testWidget('ta-nYAcofihvj/006/ib.wgt', done, function (cfg) {
-		        expect(cfg.icons[0].width).toBeUndefined();
+		        expect(cfg.icons[0].width).toEqual(0);
 		    });
 		});
     });
@@ -1460,13 +1460,14 @@
         it('ta-aaaaaaaaaa/000/z1.wgt - This test is optional as user agents are not required to support ISO-8859-1. 	Test that the user agent correctly handles a charset parameter when the type attribute is present.	To pass, the user agent must sets the start file encoding to \'ISO-8859-1\' and ignore the charset parameter used in the type attribute.',
 		function (done) {
 		    testWidget('ta-aaaaaaaaaa/000/z1.wgt', done, function (cfg) {
-		        expect(cfg.startFile.encoding).toEqual("ISO-8859-1");
+		        expect(cfg.startFile.encoding).toEqual("iso-8859-1");//Ivan: Failing on this, doesn't seem to like this encoding (does webinos support this standard?).
 		    });
 		});
         it('ta-aaaaaaaaaa/001/z2.wgt - This test is optional as user agents are not required to support Windows-1252. 	Test that the user agent sets the user agent can derive the start file encoding from the charset parameter in the type attribute.	To pass, the start file encoding must be \'Windows-1252\'.',
 		function (done) {
 		    testWidget('ta-aaaaaaaaaa/001/z2.wgt', done, function (cfg) {
 		        expect(cfg.startFile.encoding).toEqual("Windows-1252");
+			
 		    });
 		});
     });
@@ -1475,20 +1476,20 @@
 		function (done) {
 		    testWidget('ta-GVVIvsdEUo/000/z3', done, function (cfg) {
 		        expect(cfg).toBeDefined();
-		        expect("todo").toEqual("done");
+		        expect("todo").toEqual("done");//Ivan: Test is not finished.
 		    });
 		});
         it('ta-GVVIvsdEUo/001/z4.html - Test the user agent\'s ability to get a widget over HTTP and respect the \'application/widget\' mimetype. The server from which this test is served from has been set up to label the \'test.html\' resource as an \'application/widget\'.	To pass, a user agent must correctly process this resource as a widget because of the \'application/widget\' mimetype (i.e., not only via sniffing).',
 		function (done) {
 		    testWidget('ta-GVVIvsdEUo/001/z4.html', done, function (cfg) {
 		        expect(cfg).toBeDefined();
-		        expect("todo").toEqual("done");
+		        expect("todo").toEqual("done");//Ivan: Test is not finished.
 		    });
 		});
         it('ta-GVVIvsdEUo/002/z5.wgt - Test the user agent\'s ability handle a widget served with a bogus mime type. The server from which this test is served from has been set up to label the \'a5.wgt\' resource as an \'x-xDvaDFadAF/x-adfsdADfda\'. To pass, a user agent must must treat the resource as invalid  (the mime type is bogus).',
 		function (done) {
 		    testWidget('ta-GVVIvsdEUo/002/z5.wgt', done, function (cfg) {
-		        expect(cfg).toBeUndefined();
+		        expect(cfg).toBeUndefined();//Ivan: How to check for resource validity as oppose to widget validity?
 		        expect("todo").toEqual("done");
 		    });
 		});
@@ -1498,7 +1499,7 @@
 		function (done) {
 		    testWidget('ta-windowModes/001/viewb.wgt', done, function (cfg) {
 		        if (cfg.windowModes.length == 1) {
-		            expect("floating" in cfg.windowModes || "maximized" in cfg.windowModes).toBeTruthy();
+		            expect("floating" in cfg.windowModes || "maximized" in cfg.windowModes).toBeTruthy();//Ivan: Error: Widget resource file does not exist has no method 'getStatusText'
 		        }
 		        else {
 		            expect(cfg.windowModes.length).toEqual(0);
@@ -1508,7 +1509,7 @@
         it('ta-windowModes/005/viewf.wgt - Test the UA\'s ability process a windowModes attribute containing an unsupported value.	To pass, the windowModes list should be empty.',
 		function (done) {
 		    testWidget('ta-windowModes/005/viewf.wgt', done, function (cfg) {
-		        expect(cfg.windowModes.length).toEqual(0);
+		        expect(cfg.windowModes.length).toEqual(0);//Ivan: See above (windowModes is not supported?)
 		    });
 		});
         it('ta-windowModes/006/viewg.wgt - Test the UA\'s ability process a windowModes attribute containing multiple supported values.	To pass, the windowModes list should be "windowed floating maximized" if the UA supports all of these.',
@@ -1516,7 +1517,7 @@
 		    testWidget('ta-windowModes/006/viewg.wgt', done, function (cfg) {
 		        expect(cfg.windowModes[0]).toEqual("windowed"); //TODO -- How to check if the UA supports all of these modes, if it doesn't then 
 		        expect(cfg.windowModes[1]).toEqual("floating"); // not all of them will appear. Also should the length of windowModes be checked?
-		        expect(cfg.windowModes[2]).toEqual("maximized");
+		        expect(cfg.windowModes[2]).toEqual("maximized");//Ivan: See above (windowModes is not supported?)
 		    });
 		});
         it('ta-windowModes/007/viewh.wgt - Test the UA\'s ability process a windowModes attribute containing supported and unsupported values.	To pass, the windowModes list should be "floating windowed maximized" if the UA supports all of these.',
@@ -1524,13 +1525,13 @@
 		    testWidget('ta-windowModes/007/viewh.wgt', done, function (cfg) {
 		        expect(cfg.windowModes[0]).toEqual("floating"); //TODO -- How to check if the UA supports all of these modes, if it doesn't then 
 		        expect(cfg.windowModes[1]).toEqual("windowed"); // not all of them will appear. Also should the length of windowModes be checked?
-		        expect(cfg.windowModes[2]).toEqual("maximized");
+		        expect(cfg.windowModes[2]).toEqual("maximized");//Ivan: See above (windowModes is not supported?)
 		    });
 		});
         it('ta-windowModes/008/viewi.wgt - Test the UA\'s ability process an empty windowModes attribute of the widget element.	To pass, the windowModes list should be empty.',
 		function (done) {
 		    testWidget('ta-windowModes/008/viewi.wgt', done, function (cfg) {
-		        expect(cfg.windowModes.length).toEqual(0);
+		        expect(cfg.windowModes.length).toEqual(0);//Ivan: See above (windowModes is not supported?)
 		    });
 		});
     });

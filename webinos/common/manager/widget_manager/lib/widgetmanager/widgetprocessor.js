@@ -105,7 +105,7 @@ this.WidgetProcessor = (function() {
 
   var isSupportedEncoding = function(encoding) {
     for(var i in config.capabilities.encodings) {
-      if(config.capabilities.encodings[i].toLowerCase() == type) return true;
+      if(config.capabilities.encodings[i].toLowerCase() == encoding) return true;
     }
     return false;
   };
@@ -388,7 +388,7 @@ this.WidgetProcessor = (function() {
           return;
         }
       }
-      that.setInvalid("ta-RGNHRBWNZV");
+      that.setInvalid("ta-RGNHRBWNZV"); //Ivan: This does not appear to be checking for case (requirement of test).
     };
 
     step9 = function() {
@@ -409,7 +409,7 @@ this.WidgetProcessor = (function() {
        *    C. Move onto the next file name in the default icons table.
        */
       var widgetConfig = processingResult.widgetConfig;
-      var icons = {};
+      var icons = []; //Ivan: Should the default icon be copied over into icons?
       var configIcons = widgetConfig.icons || [];
       if(configIcons) {
         for(var i in configIcons){
