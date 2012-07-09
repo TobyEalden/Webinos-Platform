@@ -43,8 +43,10 @@ this.ManagerUtils = (function () {
     ManagerUtils.mkdirs = function (dirPath) {
         dirPath = dirPath.replace(/\\/g, '/');
         var pathElements = dirPath.split('/');
-        dirPath = (dirPath[0] == '/') ? '/' : '';
-//        dirPath = (dirPath[1] == ':') ? dirPath.substr(0,3) : '';
+        
+        if (process.platform == 'win32') dirPath = (dirPath[1] == ':') ? dirPath.substr(0, 3) : '';
+        else dirPath = (dirPath[0] == '/') ? '/' : '';
+        
         while (pathElements.length) {
             var elt = pathElements.shift();
             if (elt == '') continue;
