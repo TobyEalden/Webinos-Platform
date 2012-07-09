@@ -105,7 +105,7 @@ this.WidgetProcessor = (function() {
 
   var isSupportedEncoding = function(encoding) {
     for(var i in config.capabilities.encodings) {
-      if(config.capabilities.encodings[i].toLowerCase() == type) return true;
+      if(config.capabilities.encodings[i].toLowerCase() == encoding) return true;
     }
     return false;
   };

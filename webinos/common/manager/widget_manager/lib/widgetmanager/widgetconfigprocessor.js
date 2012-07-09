@@ -66,7 +66,7 @@ this.WidgetConfigProcessor = (function () {
     var processUriAttr = function (str) {
         str = processTextAttr(str);
         var result = url.parse(str);
-        if (typeof result.host === "undefined" || typeof result.protocol === "undefined") { 
+        if (typeof result.host === "undefined" || typeof result.protocol === "undefined") {
             result = undefined;
         } else {
             // Undo the lowercase-ing of the protocol and host performed by url.parse
