@@ -51,9 +51,9 @@
 
             if (runTests) {
                 try {
-                    console.log("");
-                    console.log(res.getInstallId());
-                    console.log(that.path);
+//                    console.log("");
+//                    console.log(res.getInstallId());
+//                    console.log(that.path);
 
                     // Pass the widget config on to the test callback.
                     runTests(res.widgetConfig);
