@@ -298,12 +298,20 @@ this.WidgetConfigProcessor = (function () {
                     * ignore the attribute.
                     */
                     var width = processNonNegativeIntAttr(attrs.width);
-                    if (width == -1) {
+		    /*Ivan: Should we be using a function like function isNumber(n) {
+  		    *							return !isNaN(parseFloat(n)) && isFinite(n);
+		    *					}
+		    *to check is width is numerical?
+		    */
+		    
+                    if (width == -1 || width <= 0) {//Ivan: Less than or equal zero fixes an error (width must be greater than 0)
                         Logger.logAction(Logger.LOG_MINOR, "ta-UScJfQHPPy", "ignoring invalid widgetWidth");
+			
                     } else {
                         Logger.logAction(Logger.LOG_MINOR, "ta-UScJfQHPPy", "set widgetWidth");
                         widgetConfig.width = width;
                     }
+
                 }
 
                 if ('viewmodes' in attrs) {
@@ -360,7 +368,7 @@ this.WidgetConfigProcessor = (function () {
                     */
                     beginLocalisableElement(elt, parent, nameElements);
                     if (elt.isValid && 'short' in attrs)
-                        elt.shortName = processLocalisableTextAttr(attrs['short'], dir);
+                        elt.shortName = processLocalisableTextAttr(attrs['short'], dir);//Ivan: Is this code actually checking to see if this is the first name element?
 
                 } else if (isWidget && eltName == 'description') {
                     /*
@@ -375,8 +383,11 @@ this.WidgetConfigProcessor = (function () {
                     *    a description element.
                     * 2. let widget description be the result of applying the rule for
                     *    getting text content to this element.
-                    */
-                    beginLocalisableElement(elt, parent, descriptionElements);
+                    *
+		    * if (descriptionElement) { //Ivan: Is this the correct way of checking to see if description element has been added?
+		    *	return;
+		    *   }*/
+                    beginLocalisableElement(elt, parent, descriptionElements);//Ivan: Is this actually making an assertion that description should not be reset?
 
                 } else if (isWidget && eltName == 'author') {
                     /*
@@ -385,7 +396,7 @@ this.WidgetConfigProcessor = (function () {
                     * agent, then the user agent MUST ignore this element.
                     */
                     if (authorElement) {
-                        elt.isValid = false;
+                        elt.isValid = false;//Ivan: this doesn't seem to be working as a check. 
                         return;
                     }
                     /*
@@ -558,6 +569,7 @@ this.WidgetConfigProcessor = (function () {
                         * then the user agent MUST ignore this element.
                         */
                         Logger.logAction(Logger.LOG_MINOR, "ta-hkWmGJgfve", "ignoring duplicate content element");
+			//Ivan: This fails on the test, probably because it is just checking to make sure duplicate content element is not being set. The tests stipulates that the widget should be invalid (elt.isValid = false?)
                         return;
                     }
                     contentElement = elt;
@@ -633,6 +645,7 @@ this.WidgetConfigProcessor = (function () {
                     } else {
                         processingResult.setError(new Artifact(WidgetConfig.STATUS_CAPABILITY_ERROR, Artifact.CODE_INCOMPATIBLE_CONTENT, 'ta-paIabGIIMC', null));
                         parser.emit('error', new Error('ta-paIabGIIMC'));
+			
                         return;
                     }
                     /*
@@ -733,6 +746,7 @@ this.WidgetConfigProcessor = (function () {
                         */
                         if (required) {
                             Logger.logAction(Logger.LOG_ERROR, 'ta-vOBaOcWfll', 'rejecting unsupported required feature: ' + name);
+			
                             processingResult.setError(new Artifact(
 									WidgetConfig.STATUS_CAPABILITY_ERROR,
 									Artifact.CODE_INCOMPATIBLE_FEATURE,
@@ -751,6 +765,7 @@ this.WidgetConfigProcessor = (function () {
                         * required-feature is false, then the user agent MUST ignore this
                         * element.
                         */
+			//Ivan: Error codes should not be stored in features!
                         Logger.logAction(Logger.LOG_MINOR, "ta-ignore-unrequired-feature-with-invalid-name, ta-luyKMFABLX", "ignoring invalid or unsupported not-required feature");
                     }
 
