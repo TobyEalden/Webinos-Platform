@@ -279,7 +279,7 @@ this.WidgetConfigProcessor = (function () {
                     * ignore the attribute.
                     */
                     var height = processNonNegativeIntAttr(attrs.height);
-                    if (height == -1) {
+                    if (height <= 0) {
                         Logger.logAction(Logger.LOG_MINOR, "ta-BxjoiWHaMr", "ignoring invalid widgetHeight");
                     } else {
                         Logger.logAction(Logger.LOG_MINOR, "ta-BxjoiWHaMr", "set widgetHeight");
@@ -290,23 +290,17 @@ this.WidgetConfigProcessor = (function () {
                 if ('width' in attrs) {
                     /*
                     * ASSERTION # ta-BxjoiWHaMr
-                    * If the height attribute is used, then let normalized height be the
+                    * If the width attribute is used, then let normalized width be the
                     * result of applying the rule for parsing a non-negative integer to
-                    * the value of the attribute. If the normalized height is not in error
-                    * and greater than 0, then let widget height be the value of normalized
-                    * height. If the height attribute is in error, then the user agent MUST
+                    * the value of the attribute. If the normalized width is not in error
+                    * and greater than 0, then let widget width be the value of normalized
+                    * width. If the width attribute is in error, then the user agent MUST
                     * ignore the attribute.
                     */
                     var width = processNonNegativeIntAttr(attrs.width);
-		    /*Ivan: Should we be using a function like function isNumber(n) {
-  		    *							return !isNaN(parseFloat(n)) && isFinite(n);
-		    *					}
-		    *to check is width is numerical?
-		    */
 		    
-                    if (width == -1 || width <= 0) {//Ivan: Less than or equal zero fixes an error (width must be greater than 0)
-                        Logger.logAction(Logger.LOG_MINOR, "ta-UScJfQHPPy", "ignoring invalid widgetWidth");
-			
+                    if (width <= 0) {
+                        Logger.logAction(Logger.LOG_MINOR, "ta-UScJfQHPPy", "ignoring invalid widgetWidth");			
                     } else {
                         Logger.logAction(Logger.LOG_MINOR, "ta-UScJfQHPPy", "set widgetWidth");
                         widgetConfig.width = width;
@@ -368,7 +362,7 @@ this.WidgetConfigProcessor = (function () {
                     */
                     beginLocalisableElement(elt, parent, nameElements);
                     if (elt.isValid && 'short' in attrs)
-                        elt.shortName = processLocalisableTextAttr(attrs['short'], dir);//Ivan: Is this code actually checking to see if this is the first name element?
+                        elt.shortName = processLocalisableTextAttr(attrs['short'], dir);
 
                 } else if (isWidget && eltName == 'description') {
                     /*
@@ -384,10 +378,8 @@ this.WidgetConfigProcessor = (function () {
                     * 2. let widget description be the result of applying the rule for
                     *    getting text content to this element.
                     *
-		    * if (descriptionElement) { //Ivan: Is this the correct way of checking to see if description element has been added?
-		    *	return;
-		    *   }*/
-                    beginLocalisableElement(elt, parent, descriptionElements);//Ivan: Is this actually making an assertion that description should not be reset?
+		            */
+                    beginLocalisableElement(elt, parent, descriptionElements);
 
                 } else if (isWidget && eltName == 'author') {
                     /*
@@ -396,7 +388,7 @@ this.WidgetConfigProcessor = (function () {
                     * agent, then the user agent MUST ignore this element.
                     */
                     if (authorElement) {
-                        elt.isValid = false;//Ivan: this doesn't seem to be working as a check. 
+                        elt.isValid = false;
                         return;
                     }
                     /*
@@ -569,7 +561,6 @@ this.WidgetConfigProcessor = (function () {
                         * then the user agent MUST ignore this element.
                         */
                         Logger.logAction(Logger.LOG_MINOR, "ta-hkWmGJgfve", "ignoring duplicate content element");
-			//Ivan: This fails on the test, probably because it is just checking to make sure duplicate content element is not being set. The tests stipulates that the widget should be invalid (elt.isValid = false?)
                         return;
                     }
                     contentElement = elt;
@@ -765,7 +756,6 @@ this.WidgetConfigProcessor = (function () {
                         * required-feature is false, then the user agent MUST ignore this
                         * element.
                         */
-			//Ivan: Error codes should not be stored in features!
                         Logger.logAction(Logger.LOG_MINOR, "ta-ignore-unrequired-feature-with-invalid-name, ta-luyKMFABLX", "ignoring invalid or unsupported not-required feature");
                     }
 

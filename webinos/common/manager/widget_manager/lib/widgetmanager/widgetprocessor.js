@@ -388,7 +388,7 @@ this.WidgetProcessor = (function() {
           return;
         }
       }
-      that.setInvalid("ta-RGNHRBWNZV"); //Ivan: This does not appear to be checking for case (requirement of test).
+      that.setInvalid("ta-RGNHRBWNZV"); 
     };
 
     step9 = function() {
@@ -409,7 +409,7 @@ this.WidgetProcessor = (function() {
        *    C. Move onto the next file name in the default icons table.
        */
       var widgetConfig = processingResult.widgetConfig;
-      var icons = []; //Ivan: Should the default icon be copied over into icons?
+      var icons = []; 
       var configIcons = widgetConfig.icons || [];
       if(configIcons) {
         for(var i in configIcons){
