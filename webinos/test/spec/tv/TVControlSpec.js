@@ -367,7 +367,7 @@ describe("tv module API", function() {
 		});
 		
 		waitsFor(function() {
-			return errored || successed;
+			return errored || successed;
 		}, "some callback (success or error) for getting TV source to be called.", 1000);
 		
 		runs(function() {
