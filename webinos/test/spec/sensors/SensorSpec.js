@@ -148,12 +148,12 @@ describe ( "api.sensors", function () {
         	expect(event.sensorValues[0]).toBeLessThan(initial); 
   	 //Test that we don\'t get random changes
 		var previous = event.sensorValues[0];
-		var variance = previous/1000; // How sensitive are the different sensors? Perhaps this needs to look at the resolution?
-		while (var count < 10) {
-			setTimeout(function(){
-				expect(event.sensorValues[0]).toBeCloseTo(previous, variance);
-				previous = event.sensorValues[0];
-			},3000);
-		}
+		// var variance = previous/1000; // How sensitive are the different sensors? Perhaps this needs to look at the resolution?
+		// while (var count < 10) {
+			// setTimeout(function(){
+				// expect(event.sensorValues[0]).toBeCloseTo(previous, variance);
+				// previous = event.sensorValues[0];
+			// },3000);
+		// }
   	
 });

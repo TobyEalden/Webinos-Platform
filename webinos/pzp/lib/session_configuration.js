@@ -26,11 +26,11 @@ var log         = new common.debug("config");
 var session_configuration = exports;
 
 // If modifying, please change both ports
-session_configuration.pzhPort    = 80; // used by PZP
-session_configuration.farmPort   = 80; // used by farm when starting
+session_configuration.pzhPort    = 8000; // used by PZP
+session_configuration.farmPort   = 8000; // used by farm when starting
 
 // PZH webserver uses these ports
-session_configuration.webServerPort  = 443;
+session_configuration.webServerPort  = 9000;
 
 //PZP webserver uses these ports
 session_configuration.pzpHttpServerPort = 8081;

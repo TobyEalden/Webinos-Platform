@@ -20,6 +20,7 @@ var vows  = require('vows'),
   webinos = require('webinos')(__dirname),
   os      = require('os'),
   cs      = require('child_process').exec;
+  path 	  = require('path');
 
 var pzh     = webinos.global.require(webinos.global.pzh.location, 'lib/pzh');
 var pzp     = webinos.global.require(webinos.global.pzp.location, 'lib/pzp');
@@ -190,11 +191,14 @@ desc5.addBatch({
   'Cleanup': {
     'topic': function() {
       if (os.platform()!== "android") {
-        var path = session.common.webinosConfigPath();
-        console.log(path);
-        cs('rm -rf ' + path +'/config/Alicé.json', this.callback);
-        cs('rm -rf ' + path +'/config/'+name+'_PzhFarm.json', this.callback);
-        cs('rm -rf ' + path +'/config/'+name+'_Pzp.json', this.callback);
+        var webinosPath = session.common.webinosConfigPath();
+        console.log(webinosPath);
+		var delCmd = 'rm -rf ';
+		if (os.platform() === 'win32')
+			delCmd = 'del ';
+        cs(delCmd + path.join(webinosPath,'/config/Alicé.json'), this.callback);
+        cs(delCmd + path.join(webinosPath,'/config/'+name+'_PzhFarm.json'), this.callback);
+        cs(delCmd + path.join(webinosPath,'/config/'+name+'_Pzp.json'), this.callback);
       }
     },
     'check if deleted': function(err) {

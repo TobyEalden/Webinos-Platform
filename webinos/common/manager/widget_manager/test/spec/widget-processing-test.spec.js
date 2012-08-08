@@ -29,7 +29,8 @@
     ToDo - parameterise this path
     */
     //WidgetTestProcessor.suitePath = '/home/toby/dev/2006/waf/widgets/test-suite/test-cases/';
-    WidgetTestProcessor.suitePath = '/home/ivan/2006/waf/widgets/test-suite/test-cases/';
+    //WidgetTestProcessor.suitePath = '/home/ivan/2006/waf/widgets/test-suite/test-cases/';
+	WidgetTestProcessor.suitePath = "D:\\code\\webinos\\w3c widget test suite\\2006\\waf\\widgets\\test-suite\\test-cases\\";
 
 
     WidgetTestProcessor.prototype.process = function (finished, runTests) {
@@ -63,7 +64,7 @@
                 } catch (e) {
                     // An exception occurred during execution of the tests.
                     if (e.message) {
-                        console.log("caught exception: " + e.message);
+                        //console.log("caught exception: " + e.message);
                         expect(e.message).toBeUndefined();
                     } else {
                         var caughtException = true;
