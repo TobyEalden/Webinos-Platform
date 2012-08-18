@@ -147,9 +147,11 @@
 	};
 	
 	exports.boot = function (req, res) {
+		console.log("apps.boot");
 		var installId = req.param('id', '404');
 		var cfg = wm.widgetmanager.getWidgetConfig(installId);
 		if (typeof(cfg) === "undefined") {
+			console.log("bad widget id: " + installId);
 		} else {
 			var startFile = cfg.startFile.path;
 			// Support remote start locations
@@ -165,6 +167,7 @@
 	};
 	
 	exports.run = function (req, res) {
+		console.log("apps.run");
 		var pathName = url.parse(req.url).pathname.substr("widget/".length);
 		var widgetId = req.param('id', '404');
 		
@@ -191,54 +194,16 @@
 			}
 		}); 
 	};
-	
-	exports.bootTest = function (req, res) {
+		
+	exports.about = function (req, res) {
+		console.log("apps.about");
 		var installId = req.param('id', '404');
-		var storage = new wm.WidgetStorage(path.join(wm.Config.get().wrtHome,"/tests"));	
-		var wmTestWidgetManager =  new wm.WidgetManager(storage);		
-		var cfg = wmTestWidgetManager.getWidgetConfig(installId);
+		var cfg = wm.widgetmanager.getWidgetConfig(installId);
 		if (typeof(cfg) === "undefined") {
+			console.log("bad widget id: " + installId);
 		} else {
-			var startFile = cfg.startFile.path;
-			// Support remote start locations
-			var startFileProtocol = url.parse(startFile).protocol;
-			if (typeof startFileProtocol === "undefined") {
-				// Normal widget with local start file.
-				res.redirect(req.url + "/" + startFile);
-			} else {
-				// Redirect to remote start location.
-				res.redirect(startFile);
-			}
+			res.render("aboutWidget", { pageTitle: "about widget", cfg: cfg });
 		}
 	};
 	
-	exports.runTest = function (req, res) {
-		var pathName = url.parse(req.url).pathname.substr("widget/".length);
-		var widgetId = req.param('id', '404');
-		
-		var relPath = pathName.replace(widgetId,"");
-		if (relPath === "/")
-			relPath = "index.html";
-		
-		var testPath = path.join(wm.Config.get().wrtHome,"/tests");
-		var storePath1 = path.join(testPath, widgetId);
-		var storePath2 = path.join(storePath1, "wgt");
-		var filename = path.join(storePath2, relPath);
-		
-		path.exists(filename, function(exists) {
-			if(!exists) {
-				res.writeHead(200, {'Content-Type': 'text/plain'});
-				res.write('404 Not Found\n');
-				res.end();
-				return;
-			} else {        
-				var mimeType = mimeTypes[path.extname(filename).split(".")[1]];
-				res.writeHead(200, mimeType);
-
-				var fileStream = fs.createReadStream(filename);
-				fileStream.pipe(res);
-			}
-		}); 
-	};
-
 }(module.exports));

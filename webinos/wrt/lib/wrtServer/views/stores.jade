@@ -1,28 +1,17 @@
 extends layout
 
 block content
-	script(type="text/javascript")
-		$(function() {
-			var timers = [];
-			$(".widgetStoreListItem").hover(
-				function() { 
-					$(this).addClass("widgetStoreListItemHighlight"); 
-				}, 
-				function() { 
-					$(this).removeClass("widgetStoreListItemHighlight"); 
-				}
-			);
-		});
 	- if (stores.length)
-		div.widgetStoreList
+		div.list
 			- stores.forEach(function(item){
-				div.widgetStoreListItem
-					img(width="64px", height="64px", src="#{item.logo}")
-					div.widgetStoreListItemDetails
-						div #{item.name}&nbsp;
+				div.listItem
+					a(target="_blank", href="#{item.location}")
+						img(width="64px", height="64px", src="#{item.logo}")
+					div.listItemDetails
+						a(target="_blank", href="#{item.location}") #{item.name}
 						div= item.description			
 						br
-						a(target="_blank", href="#{item.location}") visit
+						//a(target="_blank", href="#{item.location}") visit
 			- })
 	- else
 		h3 unable to contact store

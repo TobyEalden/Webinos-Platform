@@ -37,6 +37,7 @@
 		app.get('/apps', apps.installed);
 		app.get('/install/:id', apps.install);
 		app.get('/uninstall/:id', apps.uninstall);
+		app.get('/widget/about/:id', apps.about);
 		app.get('/widget/:id', apps.boot);
 		app.get('/widget/:id/*', apps.run);
 		app.get('/sideLoad/:id', apps.sideLoad);

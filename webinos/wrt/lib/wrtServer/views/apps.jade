@@ -37,9 +37,11 @@ block content
 						div.widgetListItemDetails
 							div.widgetListOptions
 								div.widgetListOption
-									a(href="/") about
+									a(href="/uninstall/#{item.installId}") remove&nbsp;&nbsp;&nbsp;&nbsp;
 								div.widgetListOption
-									a(href="/uninstall/#{item.installId}") uninstall
+									a(target="_blank",href="/widget/about/#{item.installId}") about&nbsp;&nbsp;&nbsp;&nbsp;
+								div.widgetListOption
+									a(style="font-weight:bold;",target="_blank",href="widget/" + item.installId) run&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							div.widgetListItemIcon
 								- if (item.prefIcon)
 									//img(src='wgt://#{item.installId}/#{item.prefIcon}', width="64px", height="64px")
@@ -62,7 +64,7 @@ block content
 		div There are currently no apps installed.
 		div
 			br
-			a(href="/store") Go to online store
+			a(href="/stores") Go to online stores
 			
 	- if (typeof feedback !== "undefined" && feedback.length > 0)
 		div.feedback.success #{feedback}

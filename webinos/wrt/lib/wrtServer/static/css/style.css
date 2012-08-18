@@ -3,7 +3,7 @@
 	padding: 0px;
 	margin: 0px;
 	background-color: #E4EFF2;
-	line-height: 1.4em;
+	/*line-height: 1.4em;*/
 }
 
 html, body, input
@@ -55,7 +55,7 @@ a:hover
 {
     background-color: #ffffff;
     width: 90%;
-		min-width: 600px;
+	min-width: 600px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -75,6 +75,7 @@ a:hover
     top: 5px;
     background-color: White;
     margin-left: 54px;
+	color: #D33427;
 }
 
 .header
@@ -166,9 +167,45 @@ a:hover
     padding: 0 10px 10px 10px;
 }
 
+/*
+.content a 
+{
+	background-image: url('/images/green-link.png');
+	background-position: 0px 1px;
+	background-repeat: no-repeat;
+	padding-left: 16px;
+}
+
+.content a:hover
+{
+	background-image: url('/images/red-link.png');
+}
+*/
+
+a.external 
+{
+	background-image: url('/images/green-external.png');
+	background-position: right 5px;
+	background-repeat: no-repeat;
+	padding-right: 11px;
+}
+
+a:hover.external
+{
+	background-image: url('/images/red-external.png');
+}
+
+a.widget-link
+{
+	background-image: url('/images/widget-icon.png');
+	background-position: 0px 0px;
+	background-repeat: no-repeat;
+	padding: 0px 0px 0px 20px;
+}
+
 .footer
 {
-		background-color: #006d88;
+	background-color: #006d88;
     min-height: 20px;
     padding: 10px;
     margin-bottom: 10px;
@@ -183,9 +220,14 @@ a:hover
 
 .infoPanel
 {
-    margin-left: 24px;
-    border-left: 1px dotted #006d88;
+    margin-left: 38px;
+    /*border-left: 1px solid #006d88;*/
     padding-left: 10px;
+}
+
+.connectionStatus img
+{
+	vertical-align: middle;
 }
 
 .widgetList
@@ -193,17 +235,18 @@ a:hover
    
 }
 
-.widgetList td
-{
-    width: 80px;
-}
-
 .widgetListItem
 {
     border: 1px solid transparent;
     height: 100px;
     width: 100px;
-		float: left;
+	float: left;
+}
+
+.widgetListItem a
+{
+	background-image: none;
+	padding-left: 0px;
 }
 
 .widgetListItemHighlight
@@ -235,19 +278,27 @@ a:hover
 
 .widgetListOption
 {
+	/*
 	background-color: #057591;
 	padding: 4px;
 	margin: 2px;
+	*/
+	border-bottom: 1px solid #ddd;
 }
 
 .widgetListOption a
 {
-    color: #C5DEE4;
+    /*color: #C5DEE4;
+	background-image: url('/images/green-link.png');
+	*/
+	background-position: 0px 1px;
+	background-repeat: no-repeat;
+	padding-left: 16px;
 }
 
 .widgetListOption a:hover
 {
-    color: #ffffff;
+	background-image: url('/images/red-link.png');
 }
 
 .loadingIndicator
@@ -259,30 +310,30 @@ a:hover
 	margin-bottom:	100px;
 }
 
-.widgetStoreList
+.list
 {
 }
 
-.widgetStoreListItem
+.listItem
 {
     clear:both;
-    padding: 4px 0px 4px 0px;
+    padding: 4px 4px 4px 4px;
     min-height: 68px;
     border-bottom: 1px dotted #9FC6D0;
 }
 
-.widgetStoreListItem img
+.listItem img
 {
     float:left;
     min-width: 64px;
 }
 
-.widgetStoreListItemHighlight
+.listItemHighlight
 {
     background-color: #e0e0e0;
 }
 
-.widgetStoreListItemDetails
+.listItemDetails
 {
     margin-left: 68px;
 }
@@ -301,6 +352,7 @@ a:hover
 .settingSubmit
 {
     width: 464px;
+	margin-bottom: 10px;
 }
 
 .settingSubmit input
@@ -331,7 +383,62 @@ a:hover
 
 .testSection
 {
-	background-color: #006d88;		
-	color: #9FC6D0;
-	padding: 10px;
+	border-bottom: 1px dotted #9FC6D0;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
+
+/* about widget */
+.widgetAboutPanel
+{
+	padding: 4px;
+	font-size: 1.1em;
+	font-weight: bold;
+	border-bottom: 1px solid #ddd;
+	color: #006d88;
+	cursor: pointer;
+}
+
+.widgetAboutField
+{
+	font-size: .9em;
+	padding: 4px;
+	margin-left: 50px;
+	color: black;
+}
+
+.widgetAboutFieldData
+{
+	font-size: .9em;
+	font-weight: normal;
+	background-color: white;
+	padding: 2px 4px 2px 4px;
+}
+
+.widgetAboutHeader
+{
+	background-color: white;
+	background-image: url('/images/webinos_logo.png');
+	background-repeat: no-repeat;
+	background-position: 0px 4px;
+	min-height: 40px;
+	color: #333;
+	font-weight: bold;
+}
+
+.widgetAboutTitle
+{
+	padding-left: 210px;
+	padding-top: 32px;
+	font-size: 1.3em;
+}
+
+.widgetAboutOptions
+{
+	display:none;
+	text-align: left;
+	font-size: 1em;
+	padding-top: 10px;
+	padding-left: 4px;
+}
+

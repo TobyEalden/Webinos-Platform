@@ -131,7 +131,7 @@ FunctionEnd
 
 Function FinishRun
   ExecShell "" "$INSTDIR\bin\wrt\webinosNodeServiceUI.exe"
-	Sleep 5000
+	Sleep 10000
 	ExecShell "" "$INSTDIR\bin\wrt\webinosBrowser.exe"
 FunctionEnd
 
@@ -254,11 +254,14 @@ noPZH:
 	FileWrite $0 "{$\"nodePath$\": $\"$1$\",$\"workingDirectoryPath$\": $\"$2$\",$\"nodeArgs$\": $\"webinos_pzp.js$\",$\"instance$\": $\"0$\"}"
 	FileClose $0
 
-	CreateDirectory $APPDATA\webinos\wrt
 	${StrRep} $1 $INSTDIR\bin "\" "\\"
 	${StrRep} $2 $INSTDIR "\" "\\"
 	FileOpen $0 $APPDATA\webinos\wrt\webinos_pzh.json w
 	FileWrite $0 "{$\"nodePath$\": $\"$1$\",$\"workingDirectoryPath$\": $\"$2$\",$\"nodeArgs$\": $\"webinos_pzh.js$\",$\"instance$\": $\"0$\"}"
+	FileClose $0
+
+	FileOpen $0 $APPDATA\webinos\wrt\webinos_stores.json w
+	FileWrite $0 "[{$\"name$\": $\"Megastore$\",$\"description$\": $\"Fraunhofer FOKUS Megastore$\",$\"location$\": $\"http://webinos.fokus.fraunhofer.de/store/$\",$\"logo$\": $\"http://www.fokus.fraunhofer.de/en/fame/_images/_logos/megastore_logo.png$\"},{$\"name$\": $\"UbiApps$\",$\"description$\": $\"UbiApps demonstration webinos app store$\",$\"location$\": $\"http://webinos.two268.com/$\",$\"logo$\": $\"http://ubiapps.com/files/2012/05/ubiapps-120.png$\"}]"
 	FileClose $0
 	
 	DetailPrint "OpenSSL DLLs" 
