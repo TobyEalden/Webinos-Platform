@@ -2,6 +2,7 @@ doctype 5
 html(lang="en")
 	head
 		link(type="text/css",href="/css/style.css",rel="stylesheet")
+		title about #{cfg.shortName ? cfg.shortName.unicode : (cfg.name ? cfg.name.unicode : "widget")}
 		script(type="text/javascript",src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js")
 		script(type="text/javascript")
 			$(function() {
@@ -21,8 +22,10 @@ html(lang="en")
 				$(".widgetAboutOptions").show();
 			});
 	body
-		div.widgetAboutHeader
-			div.widgetAboutTitle - about #{(cfg.shortName ? cfg.shortName.unicode : (cfg.name ? cfg.name.unicode : "widget"))}
+		div.widgetAboutHeader			
+			div.widgetAboutTitle 
+				img(src='/images/webinos_logo_small.png')
+				|&nbsp;&nbsp;|&nbsp;&nbsp;about #{(cfg.shortName ? cfg.shortName.unicode : (cfg.name ? cfg.name.unicode : "widget"))}
 			div.widgetAboutOptions
 				a(id="show",href="#") show 
 				|&nbsp;&middot;&nbsp;
