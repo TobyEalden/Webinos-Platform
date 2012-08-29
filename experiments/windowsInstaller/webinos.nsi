@@ -166,7 +166,7 @@ Section -pre
 
 SectionEnd
 
-Section "Add ${PRODUCT_NAME} local PZH" SecWebinosLocalPZH
+Section /o "Add ${PRODUCT_NAME} local PZH" SecWebinosLocalPZH
 	DetailPrint "Configuring windows to autostart ${PRODUCT_NAME} PZH"
 
 	; Service (auto starting)
