@@ -439,9 +439,9 @@ a.widget-link
 .widgetAboutOptions
 {
 	display:none;
-	text-align: left;
+	text-align: right;
 	font-size: 1em;
 	padding-top: 10px;
-	padding-left: 4px;
+	padding-right: 4px;
 }
 

@@ -27,9 +27,7 @@ html(lang="en")
 				img(src='/images/webinos_logo_small.png')
 				|&nbsp;&nbsp;|&nbsp;&nbsp;about #{(cfg.shortName ? cfg.shortName.unicode : (cfg.name ? cfg.name.unicode : "widget"))}
 			div.widgetAboutOptions
-				a(id="show",href="#") show 
-				|&nbsp;&middot;&nbsp;
-				a(id="hide",href="#") hide
+				a(id="show",href="#") show all
 		div.widgetAboutPanel.interesting name 
 			div.widgetAboutField long name 
 				div.widgetAboutFieldData= (cfg.name ? cfg.name.unicode : "n/a")
