@@ -362,20 +362,30 @@
           return new PendingOperation();         
         }
 
+	    if(this.items.length==0){        
+		    error.code = PaymentError.prototype.PAYMENT_CHARGE_FAILED;
+		    error.message = "No items to check out.";
+		    errorCallback(error); 
+		    return new PendingOperation();         
+	    }
+
         // checkout for GSMA type payment
         if(implServiceProviderID=="GSMA"){
-            if(this.items.length==0){        
-                    error.code = PaymentError.prototype.PAYMENT_CHARGE_FAILED;
-                    error.message = "No items to check out.";
-                    errorCallback(error); 
-                    return new PendingOperation();         
-            }
 
            GSMA_Checkout ( successCallback, errorCallback, implCustomerID, implShopID,  this.totalBill, this.items[0].currency);
            this.items=null;
            implShoppingBasketState=2;
            return new PendingOperation();
-         }
+         } else if (implServiceProviderID=="mWallet" && process.platform === "android"){
+	
+           var mWallet = require("bridge").load("org.webinos.impl.PaymentImpl", module);
+
+	   mWallet.checkout(successCallback, errorCallback, implCustomerID, implShopID, this.totalBill, this.items[0].currency);
+
+           this.items=null;
+           implShoppingBasketState=2;
+           return new PendingOperation();
+	}
         
         // for local version we just release the shopping basket
         console.log("Implementation of checkout called");
