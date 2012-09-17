@@ -39,7 +39,7 @@ SetCompressor lzma
 !define INSTALLER_BANNER "installBanner.bmp"
 
 !define PRODUCT_NAME "webinos"
-!define VERSION "0.6.05"
+!define VERSION "0.6.06"
 
 ; XP Compatibility
 !ifndef SF_SELECTED
@@ -166,6 +166,7 @@ Section -pre
 
 SectionEnd
 
+/*
 Section /o "Add ${PRODUCT_NAME} local PZH" SecWebinosLocalPZH
 	DetailPrint "Configuring windows to autostart ${PRODUCT_NAME} PZH"
 
@@ -173,6 +174,7 @@ Section /o "Add ${PRODUCT_NAME} local PZH" SecWebinosLocalPZH
 	nsSCM::Install /NOUNLOAD "webinos_pzh" "webinos pzh" 16 2 "$INSTDIR\bin\wrt\webinosNodeService.exe" "" "" "" ""
 
 SectionEnd
+*/
 
 Section "${PRODUCT_NAME} Core Components" SecWebinosUserSpace
 SectionIn RO
@@ -226,6 +228,9 @@ SectionIn RO
 	DetailPrint "Configuring windows to autostart ${PRODUCT_NAME} PZP"
 	;!insertmacro WriteRegStringIfUndef HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}PZP"  "$INSTDIR\bin\node.exe $\"$INSTDIR\webinos_pzp.js$\""
 
+  ; Remove PZH local option for the time being.
+  Goto noPZH
+	
   ; Create services based on whether user wants a local PZH or not.
   SectionGetFlags ${SecWebinosLocalPZH} $0
   IntOp $0 $0 & ${SF_SELECTED}
@@ -233,15 +238,11 @@ SectionIn RO
 	
 localPZH:
 
-	; messageBox MB_OK "local PZH?"
-	
 	; Create PZP service with dependency on PZH service.
 	nsSCM::Install /NOUNLOAD "webinos_pzp" "webinos pzp" 16 2 "$INSTDIR\bin\wrt\webinosNodeService.exe" "" "webinos_pzh" "" ""
 	Goto afterPZH
 
 noPZH:
-	
-	; messageBox MB_OK "no PZH?"
 
 	; Create PZP service with no dependency.
 	nsSCM::Install /NOUNLOAD "webinos_pzp" "webinos pzp" 16 2 "$INSTDIR\bin\wrt\webinosNodeService.exe" "" "" "" ""
