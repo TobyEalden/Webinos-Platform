@@ -6,12 +6,27 @@
 
 	exports.stores = function (req, res) {
 		fs.readFile((common.webinosConfigPath() + '/wrt/webinos_stores.json'), function (err, data) {
+			var storesData;
 			if (err) {
 				console.log(err);
+storesData = '[{\
+ \"name\": \"Megastore\", \
+ \"description\": \"Fraunhofer FOKUS Megastore\", \
+ \"location\": \"http://webinos.fokus.fraunhofer.de:3010/store/", \
+ \"logo\": \"http://webinos.fokus.fraunhofer.de:3010/store/public/images/logo_webinos.png\" \
+}, \
+{ \
+ \"name\": \"UbiApps\", \
+ \"description\": \"UbiApps demonstration webinos app store\", \
+ \"location\": \"http://webinos.two268.com/\", \
+ \"logo\": \"http://ubiapps.com/files/2012/05/ubiapps-120.png\" \
+} \
+]';
+
 			} else {
-				var storesData = data.toString('utf8');
-				var stores = JSON.parse(storesData);
+				storesData = data.toString('utf8');
 			}
+			var stores = JSON.parse(storesData);
 			res.render('stores', { pageTitle: 'online stores', stores: stores });
 		});
 	};
