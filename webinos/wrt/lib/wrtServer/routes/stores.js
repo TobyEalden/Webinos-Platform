@@ -12,8 +12,8 @@
 storesData = '[{\
  \"name\": \"Megastore\", \
  \"description\": \"Fraunhofer FOKUS Megastore\", \
- \"location\": \"http://webinos.fokus.fraunhofer.de:3010/store/", \
- \"logo\": \"http://webinos.fokus.fraunhofer.de:3010/store/public/images/logo_webinos.png\" \
+ \"location\": \"http://webinos.fokus.fraunhofer.de/store/", \
+ \"logo\": \"http://www.fokus.fraunhofer.de/en/fame/_images/_logos/megastore_logo.png\" \
 }, \
 { \
  \"name\": \"UbiApps\", \

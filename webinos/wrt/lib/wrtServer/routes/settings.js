@@ -5,12 +5,14 @@
 
     function extractKey(line, key) {
         var val = '';
-        var idx = line.indexOf(key);
-        if (idx >= 0) {
-            val = line.substr(idx + key.length);
-            idx = val.indexOf('"');
-            val = val.substr(0, idx);
-        }
+	if (typeof(line) !== 'undefined') {
+		var idx = line.indexOf(key);
+		if (idx >= 0) {
+		    val = line.substr(idx + key.length);
+		    idx = val.indexOf('"');
+		    val = val.substr(0, idx);
+		}
+	}
 
         return val;
     }
@@ -61,20 +63,25 @@
 
     exports.saveSettings = function (req, res) {
         readPZPConfig(function (pzpConfig) {
-            pzpConfig.workingDirectoryPath = req.body.webinosPath;
-            pzpConfig.nodePath =  pzpConfig.workingDirectoryPath + "/bin"; //req.body.nodePath;
-            //pzpConfig.nodeArgs = 'webinos_pzp.js --auth-code=\"' + req.body.authCode + '\" --pzh-name=\"' + req.body.pzhName + '\"';
-            pzpConfig.instance++;
+		if (typeof(pzpConfig) === 'undefined') {
+	            pzpConfig = {};
+		    pzpConfig.workingDirectoryPath = "";
+		} else {
+		    pzpConfig.workingDirectoryPath = req.body ? req.body.webinosPath : "";
+		}
+	    pzpConfig.nodePath =  pzpConfig.workingDirectoryPath + "/bin"; //req.body.nodePath;
+	    //pzpConfig.nodeArgs = 'webinos_pzp.js --auth-code=\"' + req.body.authCode + '\" --pzh-name=\"' + req.body.pzhName + '\"';
+	    pzpConfig.instance++;
 
-            fs.writeFile((common.webinosConfigPath() + '/wrt/webinos_pzp.json'), JSON.stringify(pzpConfig, null, ' '), function (err) {
-                if (err) {
-                    console.log('error saving pzp configuration file');
-                    res.redirect('/settings/failure');
-                } else {
-                    console.log('saved configuration file');
-                    res.redirect('/settings/success');
-                }
-            });
+	    fs.writeFile((common.webinosConfigPath() + '/wrt/webinos_pzp.json'), JSON.stringify(pzpConfig, null, ' '), function (err) {
+	        if (err) {
+	            console.log('error saving pzp configuration file');
+	            res.redirect('/settings/failure');
+	        } else {
+	            console.log('saved configuration file');
+	            res.redirect('/settings/success');
+	        }
+	    });
         });
     };
 
