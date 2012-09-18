@@ -16,7 +16,7 @@
     }
 
     function readPZPConfig(callback) {
-        var pzpConfig = {};
+        var pzpConfig;
 
         fs.readFile((common.webinosConfigPath() + '/wrt/webinos_pzp.json'), function (err, data) {
             if (err) {
@@ -49,9 +49,13 @@
 
     exports.getSettings = function (req, res) {
         readPZPConfig(function (pzpConfig) {
+		if (typeof(pzpConfig) === 'undefined') {
+            res.render('settings', { pageTitle: 'settings', authCode: "unknown", pzhName: "unknown", nodePath: "", webinosPath: "", saved: req.param('saved', '') });
+		} else {
             var authCode = extractKey(pzpConfig.nodeArgs, '--auth-code=\"');
             var pzhName = extractKey(pzpConfig.nodeArgs, '--pzh-name=\"');
             res.render('settings', { pageTitle: 'settings', authCode: authCode, pzhName: pzhName, nodePath: pzpConfig.nodePath, webinosPath: pzpConfig.workingDirectoryPath, saved: req.param('saved', '') });
+		}
         });
     };
 

@@ -64,7 +64,11 @@ this.ZipWidgetResource = (function() {
   };
 
   ZipWidgetResource.prototype.dispose = function() {
+	try {
+// ToDo - fix this - destroy is not a method on zipfile 
     this.zipfile.destroy();
+} catch (e) {
+}
   };
 
   return ZipWidgetResource;
