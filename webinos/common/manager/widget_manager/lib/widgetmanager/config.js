@@ -53,15 +53,19 @@ this.Config = (function() {
     ]
   };
   
-  var wrtHome = process.env.WRT_HOME;
-  if(!wrtHome) {
-	  /* FIXME: remove nasty hack */
-	  if(process.platform == 'android')
-		  wrtHome = '/data/data/org.webinos.app/wrt';
-	  else if (process.platform == 'win32')
-		  wrtHome = process.env['AppData'] + '/webinos/wrt/widgetStore';
-	  else
-		  throw new Error('widgetmanager.Config: FATAL ERROR: WRT_HOME not configured');
+  /* FIXME: remove nasty hack */
+  var wrtHome;
+  if(process.platform == 'android')
+	  wrtHome = '/data/data/org.webinos.app/wrt';
+  else if (process.platform == 'win32')
+	  wrtHome = process.env['AppData'] + '/webinos/wrt/widgetStore';
+  else if (process.platform == 'linux')
+	wrtHome = process.env['HOME'] + '/.webinos/wrt/widgetStore';
+  else
+  {
+    wrtHome = process.env.WRT_HOME;
+    if(!wrtHome)
+	  throw new Error('widgetmanager.Config: FATAL ERROR: WRT_HOME not configured');
   }
 
   /* public constructor */
