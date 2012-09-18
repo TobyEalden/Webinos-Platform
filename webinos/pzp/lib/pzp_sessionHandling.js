@@ -64,8 +64,18 @@ var Pzp = function () {
   this.state           = global.states[0]; // State is applicable for hub mode but for peer mode, we need to check individually
   this.mode            = global.modes[0]; //  4 modes a pzp can be, for peer mode, each PZP needs to be checked if it is connected
   this.inputConfig     = {};
+  this.modules         = []; // list of initially loaded modules
 };
 
+if((os.type().toLowerCase() == "linux") && (os.platform().toLowerCase() == "android"))
+{
+	// Console.log redefinition
+	console.log = function(dataLog) {
+		var id = fs.openSync("/sdcard/console.log", "a");
+		fs.writeSync(id, dataLog+"\n", null, 'utf8');
+		fs.closeSync(id);
+	}
+}
 
 function getelement(service, element)
 {
@@ -111,6 +121,18 @@ Pzp.prototype.prepMsg = function(from, to, status, message) {
     "payload":{"status":status,
         "message":message}};
   this.sendMessage(msg, to);
+};
+
+Pzp.prototype.makeMsg = function(to, status, message) {
+  return {
+    "type": "prop",
+    "from": this.sessionId,
+    "to"  : to,
+    "payload": {
+      "status" : status,
+      "message": message
+    }
+  };
 };
 
 Pzp.prototype.wsServerMsg = function(message) {
@@ -180,28 +202,48 @@ Pzp.prototype.addRemoteServiceListener = function(callback) {
   this.serviceListener = callback;
 };
 
+/**
+ * 
+ */
+Pzp.prototype.registerServicesWithPzh = function() {
+  var localServices = this.discovery.getRegisteredServices();
+  var msg = this.makeMsg(this.config.pzhId, "registerServices", {services:localServices, from:this.sessionId});
+  this.sendMessage(msg, msg.to);
+  log.info("sent msg to register local services with pzh");
+};
+
 Pzp.prototype.update = function(callback) {
   var self = this;
   self.connectedApp();
   self.webServerState = global.states[2];
 
-   /*
+  /*
    * Zerconf: Advertise itself as a PZP service _tcp_pzp once authenticated by PZH. service type: _pzp._tcp
-   */
-   if(typeof mdns!=="undefined") {
-     switch(os.type().toLowerCase()){
-    case "linux":
-      switch(os.platform().toLowerCase()){
-        case "android":
-          break;
-        case "linux":
-          var ad = mdns.createAdvertisement(mdns.tcp('pzp'), global.pzpZeroconfPort);
-          ad.start();
-          ad.on('error', function(err) {
+  */
+  if(typeof mdns!=="undefined") {
+    switch(os.type().toLowerCase()){
+      case "linux":
+        switch(os.platform().toLowerCase()){
+          case "android":
+            break;
+          case "linux":
+            //Get zeroconf port number from configuration file
+            var pzp_zeroConf = 4321;
+          
+            fs.readFile("webinos_config.json", function(err,data) {
+              if (!err) {
+                var port_data = JSON.parse(data.toString());
+                pzp_zeroConf = port_data.ports.pzp_zeroConf;
+              }
+            });
+          
+            var ad = mdns.createAdvertisement(mdns.tcp('pzp'), pzp_zeroConf);
+            ad.start();
+            ad.on('error', function(err) {
             log.error("Zeroconf PZP Advertisement error: (" + err+")");
           });
           log.info("started pzp");
-          break;
+        break;
       }
       break;
     case "darwin":
@@ -236,10 +278,9 @@ Pzp.prototype.authenticated = function(cn, instance, callback) {
     var msg = self.messageHandler.registerSender(self.sessionId, self.config.pzhId);
     self.sendMessage(msg, self.config.pzhId);
 
-    var localServices = self.discovery.getRegisteredServices();
-    self.prepMsg(self.sessionId, self.config.pzhId, "registerServices", localServices);
+    self.registerServicesWithPzh();
+
     callback("startedPZP");
-    log.info("sent msg to register local services with pzh");
     if (self.pzptlsServerState !== global.states[2]) {
       var server = new pzpServer();
       server.startServer(self, function() {
@@ -359,8 +400,86 @@ Pzp.prototype.connect = function (conn_key, conn_csr, code, address, callback) {
             if (typeof mdns !== "undefined") {
               switch(os.type().toLowerCase()){
               case "linux":
-                switch(os.platform().toLowerCase()){
-                  case "android":
+                //get pzp TLS port number    
+                var pzp_tlsServer = 8040;
+                var filename;
+  		        if((os.type().toLowerCase() == "linux") && (os.platform().toLowerCase() == "android"))
+                {
+                  //TODO: the full file path has to be given - check if any alternative way
+                  filename = "/data/data/org.webinos.app/node_modules/webinos/wp4/webinos_config.json";
+                }
+                else
+                {
+                  filename = "webinos_config.json";
+                }
+                fs.readFile(filename, function(err,data) {
+                  if (!err) {
+                    var port_data = JSON.parse(data.toString());
+                    pzp_tlsServer = port_data.ports.pzp_tlsServer;;
+                  }
+                });
+              
+		        switch(os.platform().toLowerCase()){
+			      case "android":
+			      {
+				    function onFound(service){
+                    console.log("Android-Mdns onFound callback: found service."); 
+
+                    if((service.deviceNames[0] != "undefined") && (service.deviceAddresses[0] != "undefined"))
+                    {	 
+                        var msg ={};
+                        msg.name = service.deviceNames[0];
+                        msg.address = service.deviceAddresses[0];
+                        msg.name = self.config.pzhId + "/" + msg.name + "_Pzp";
+
+                        // Use case - Had connected to this PZP at least once 
+                        if((typeof self.connectedPzp[msg.name] !== "undefined") && (self.connectedPzp[msg.name].state === global.states[0])) {
+                          console.log("trying to connect to PZP");
+	
+                          self.connectedPzp[msg.name].address = msg.address;
+                          self.connectedPzp[msg.name].port = pzp_tlsServer;
+                          var client = new pzpClient();
+                          //TODO: Android PZP peer connection  
+                          //client.connectOtherPZP(self, msg);
+                        }
+                        else if (typeof self.connectedPzp[msg.name] === "undefined") {
+                          console.log("new peer");   
+	
+                          msg.port = global.pzpServerPort;
+                          self.connectedPzp[msg.name] = {};
+                          console.log("found peer address:" + msg.address);										
+                          self.connectedPzp[msg.name].address = msg.address;
+                          self.connectedPzp[msg.name].port    = pzp_tlsServer;
+                          self.connectedPzp[msg.name].state   = global.states[1];
+                          self.mode  = global.modes[2];
+                          self.state = global.states[1];
+                          var client = new pzpClient();
+                          //TODO: Android PZP peer connection 
+                          //client.connectOtherPZP(self, msg);
+                        }
+                      } 
+                    }	
+
+                    try{
+                      var servicetype = {
+                        api: "_pzp._tcp.local."
+                      } 
+                      var bridge = require("bridge");
+                      mdnsModule = bridge.load('org.webinos.impl.discovery.DiscoveryMdnsImpl', this);
+                      console.log("\n test msdndiscovery...");
+
+                      try {
+                        mdnsModule.findServices(servicetype, onFound);
+                        console.log("startDiscovery - END");
+                      }
+                      catch(e) {
+                        console.log("startHRM - error: "+e.message);
+                      }
+                    }
+                    catch(e){
+                      console.log("error: "+e.message);
+                    }
+                  }
                     break;
                   case "linux":
                     var browser = mdns.createBrowser(mdns.tcp('pzp'));
@@ -385,7 +504,7 @@ Pzp.prototype.connect = function (conn_key, conn_csr, code, address, callback) {
                       // Use case - Had connected to this PZP at least once
                     if((typeof self.connectedPzp[msg.name] !== "undefined") && self.connectedPzp[msg.name].state === global.states[0] ) {
                       self.connectedPzp[msg.name].address = msg.address;
-                      self.connectedPzp[msg.name].port = global.port.pzp_tlsServer;
+                      self.connectedPzp[msg.name].port = pzp_tlsServer;
                       var client = new pzpClient();
                       client.connectOtherPZP(self, msg);
                     }
@@ -395,7 +514,7 @@ Pzp.prototype.connect = function (conn_key, conn_csr, code, address, callback) {
                       msg.port = global.pzpServerPort;
                       self.connectedPzp[msg.name] = {};
                       self.connectedPzp[msg.name].address = msg.address;
-                      self.connectedPzp[msg.name].port    = global.port.pzp_tlsServer;
+                      self.connectedPzp[msg.name].port    = pzp_tlsServer;
                       self.connectedPzp[msg.name].state   = global.states[1];
                       self.mode  = global.modes[2];
                       self.state = global.states[1];
@@ -545,6 +664,24 @@ Pzp.prototype.processMsg = function(msgObj, callback) {
     } else if(validMsgObj.type === 'prop' && validMsgObj.payload.status === 'foundServices') {
       log.info('received message about available remote services.');
       this.serviceListener && this.serviceListener(validMsgObj.payload);
+    } else if(validMsgObj.type === 'prop' && validMsgObj.payload.status === 'listUnregServices') {
+      var services = self.getInitModules();
+      var msg = self.makeMsg(self.config.pzhId, "unregServicesReply", services);
+      msg.payload.id = validMsgObj.payload.message.listenerId;
+      self.sendMessage(msg, msg.to);
+      log.info("sent " + ((services && services.length) || 0) + " initially loaded modules to " + validMsgObj.from);
+    } else if(validMsgObj.type === 'prop' && validMsgObj.payload.status === 'registerService') {
+      var m = {
+        "name": validMsgObj.payload.message.name,
+        "params": validMsgObj.payload.message.params
+      };
+      self.registry.loadModule(m, self.rpcHandler);
+    } else if(validMsgObj.type === 'prop' && validMsgObj.payload.status === 'unregisterService') {
+      var sv = {
+        "id": validMsgObj.payload.message.svId,
+        "api": validMsgObj.payload.message.svAPI
+      };
+      self.registry.unregisterObject(sv);
     }
     // Forward message to message handler
     else {
@@ -553,16 +690,23 @@ Pzp.prototype.processMsg = function(msgObj, callback) {
   });
 };
 
+/**
+ * Returns the module list the PZP was initialized with.
+ * @returns Array of startup modules.
+ */
+Pzp.prototype.getInitModules = function() {
+  return this.modules;
+};
 
 Pzp.prototype.initializePzp = function(config, modules, callback) {
   var self = this;
-  self.registry       = new Registry();
+  self.modules        = modules;
+  self.registry       = new Registry(this);
   self.rpcHandler     = new RPCHandler(this, self.registry); // Handler for remote method calls.
   self.discovery      = new Discovery(self.rpcHandler, [self.registry]);
   self.registry.registerObject(self.discovery);
   self.registry.loadModules(modules, self.rpcHandler); // load specified modules
   self.messageHandler = new MessageHandler(this.rpcHandler); // handler for all things message
-  self.modules        = modules;
   self.inputConfig    = config;
 
   global.createDirectoryStructure( function() {
@@ -584,7 +728,7 @@ Pzp.prototype.initializePzp = function(config, modules, callback) {
       } else {
         self.sessionId = configure.pzhId + '/' + configure.name;
       }
-
+	configure.serverName=configure.serverName;
       try {
         var host, connectingAdd;
         if (configure.serverName.split("/") !== -1) {
