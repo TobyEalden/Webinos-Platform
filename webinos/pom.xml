@@ -96,11 +96,11 @@
                 <id>compile-node-module</id>
                 <phase>compile</phase>
                 <configuration>
-                  <executable>webinos-gyp</executable>
+                  <executable>node-gyp.cmd</executable>
                   <workingDirectory>${basedir}/src</workingDirectory>
                   <arguments>
-                    <argument>module.gyp</argument>
-                    <argument>make</argument>             
+                    <argument>configure</argument>
+                    <argument>build</argument>            
                   </arguments>
                   <successCodes>
                     <param>0</param>
@@ -131,6 +131,7 @@
                  <configuration>
                    <executable>jsdoc.cmd</executable>
                    <arguments>
+                     <argument>-r</argument>
                      <argument>-d</argument>
                      <argument>${basedir}/target/site/jsdoc</argument>
                      <argument>${basedir}/lib/</argument>
@@ -194,7 +195,7 @@
                   <id>compile-node-module</id>
                   <phase>compile</phase>
                   <configuration>
-                    <executable>node-waf</executable>
+                    <executable>node-gyp</executable>
                     <arguments>
                       <argument>configure</argument>
                       <argument>build</argument>
@@ -229,6 +230,7 @@
                   <configuration>
                     <executable>jsdoc</executable>
                     <arguments>
+                      <argument>-r</argument>
                       <argument>-d</argument>
                       <argument>${basedir}/target/site/jsdoc</argument>
                       <argument>${basedir}/lib/</argument>

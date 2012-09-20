@@ -293,14 +293,13 @@ function connectPzh(pzp, cmd, from, to, authCode) {
 
   var options = {
     host: to,
-    port: global.webServerPort,
+    port: global.port.farm_webServerPort,
     path: path,
     method: 'POST',
     headers: {
       'Content-Length': JSON.stringify(payload).length
     }
   };
-
 
   var req = https.request(options, function(res) {
     res.on('data', function(data) {
