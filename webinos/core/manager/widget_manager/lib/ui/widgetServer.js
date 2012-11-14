@@ -21,7 +21,8 @@
 
     app.configure(function () {
       app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-      app.use(express.logger());
+	  // Un-comment this line to switch on request logging.
+      //app.use(express.logger());
     });
 
     app.use(app.router);
@@ -31,6 +32,7 @@
     var apps = require('./routes/apps');
     var settings = require('./routes/settings');
     var widgetTests = require('./routes/widgetTests');
+    var widgetDigSigTests = require('./routes/widgetDigSigTests');
 
       /**
        * Expose the current communication channel websocket port using this virtual file.
@@ -51,6 +53,7 @@
     
     // widget testing
     app.get('/widget-tests', widgetTests.listTestWidgets);
+    app.get('/widget-dig-sig-tests', widgetDigSigTests.listTestWidgets);
 
     // stores routing
     app.get('/stores', stores.stores);

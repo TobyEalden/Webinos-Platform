@@ -6,6 +6,14 @@
     var path = require('path');
     var wm = require('../../../index.js');
     var pzp = require('../../../../../pzp/lib/pzp');
+	var logMsg = 'test';
+	
+	function logHandler(msg) {
+		logMsg += msg;
+		logMsg += "\r\n";
+	}
+	
+	wm.Logger.setLogHandler(logHandler);
     
     // ToDo - is there a 3rd party library we can use for this?
     var mimeTypes = {
@@ -77,7 +85,7 @@
             if (installId) {
                 wm.widgetmanager.abortInstall(installId);
             }
-            callback(false);
+            callback({ title: "widget installation", status: processingResult.status, text: processingResult.error.getReasonText() });
         } else {
             // Pending install OK => complete the install.
             console.log("******** completing install: " + installId);
@@ -85,10 +93,10 @@
             var result = wm.widgetmanager.completeInstall(installId, true);
             if (result) {
                 console.log('wm: completeInstall error: install: ' + result);
-                callback(false);
+                callback({ title: "widget installation", status: result, text: "completing installation failed"});
             } else {
                 console.log('wm: install complete');
-                callback(true, installId);
+                callback(null, installId);
             }
         }
       }
@@ -145,38 +153,52 @@
     exports.sideLoad = function (req, res) {
       var wgt = decodeURIComponent(req.param('id', 'missing id!'));
       console.log("side-loading: " + wgt);
-      installWidget(wgt, function (ok, installId) {
-        if (ok) {        
+      installWidget(wgt, function (err, installId) {
+        if (installId) {        
           //var redirect = '/widget/' + installId;
           //var redirect = 'wgt://' + installId;
+		  // We need to use this trick so that the renderer re-loads the browser instance
+		  // and sets the new widget attributes up (width, height, widget interface etc).
           var redirect = 'webinos://sideLoadComplete/' + installId;
           console.log("sideload redirecting to " + redirect);
           res.redirect(redirect);
         } else {      
-          //res.render('install', { pageTitle: 'install failed', id: req.param('id', 'missing!'), success: ok });
-          res.redirect("webinos://sideLoadFailed/");
+			//res.render("error", err);          
+			var reason = encodeURIComponent(err.text);
+			res.redirect("webinos://sideLoadFailed/" + reason);
         }        
       });      
     };
 
     // Start running a widget => redirect to widget start file.
     exports.boot = function (req, res) {
-      console.log("apps.boot");
+      console.log("apps.boot - " + req.url);
       var installId = req.param('id', '404');
       var cfg = wm.widgetmanager.getWidgetConfig(installId);
       if (typeof(cfg) === "undefined") {
         console.log("bad widget id: " + installId);
       } else {
-        var startFile = cfg.startFile.path;
-        // Support remote start locations
-        var startFileProtocol = url.parse(startFile).protocol;
-        if (typeof startFileProtocol === "undefined") {
-          // Normal widget with local start file.
-          res.redirect(req.url + "/" + startFile);
-        } else {
-          // Redirect to remote start location.
-          res.redirect(startFile);
-        }
+		// Validate the widget signature (if present).
+		var storePath1 = path.join(wm.Config.get().wrtHome, installId);
+		var storePath2 = path.join(storePath1, "wgt");
+		var wgtResource = new wm.DirectoryWidgetResource(storePath2);
+		var validator = new wm.WidgetValidator(wgtResource);
+		var result = validator.validate();
+		
+		if (result.status >= wm.WidgetConfig.STATUS_UNSIGNED) {
+			var startFile = cfg.startFile.path;
+			// Support remote start locations
+			var startFileProtocol = url.parse(startFile).protocol;
+			if (typeof startFileProtocol === "undefined") {
+			  // Normal widget with local start file.
+			  res.redirect(req.url + "/" + startFile);
+			} else {
+			  // Redirect to remote start location.
+			  res.redirect(startFile);
+			}
+		} else {
+			res.render("error", { title: "signature validation", status: result.status, text: result.errorArtifact.getReasonText()});
+		}
       }
     };
 
