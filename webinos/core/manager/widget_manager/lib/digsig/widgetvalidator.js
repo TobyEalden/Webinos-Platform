@@ -30,7 +30,7 @@ this.WidgetValidator = (function() {
 	}
 
 	var isAuthorSignature = WidgetValidator.isAuthorSignature = function(name) {
-		return name == 'author.xml';
+		return name == 'author-signature.xml';
 	};
 
 	var isDistributorSignature = WidgetValidator.isDistributorSignature = function(name) {
@@ -57,7 +57,10 @@ this.WidgetValidator = (function() {
 			} else if(sigNum = isDistributorSignature(i)) {
 				signatureNames[sigNum] = i;
 			} else {
-				nonSignatureEntries.push(i);
+				// HACK - don't add directory paths (todo - fix with fs.stat?)
+				if (i.lastIndexOf('/') < i.length-1) {
+					nonSignatureEntries.push(i);
+				}
 			}
 		}
 		for(var i in signatureNames) {
@@ -69,7 +72,7 @@ this.WidgetValidator = (function() {
 	
 	WidgetValidator.prototype.setInvalid = function(str) {
 		this.status = WidgetConfig.STATUS_INVALID;
-		console.log('setInvalid: ' + str);
+		console.log('setInvalid: ' + str);		
 		this.errorArtifact = new Artifact(WidgetConfig.STATUS_INVALID, Artifact.CODE_MALFORMED, str);
 	};
 	
