@@ -193,8 +193,8 @@ SectionIn RO
 	File "${RedistPath}\Openssl\libeay32.dll"
   File "${RedistPath}\Openssl\ssleay32.dll"
 
-  SetOutPath "$INSTDIR\webinos\testbed_root"  
-  File /r /x certificates /x *.txt /x tools /x apps /x build.xml "${SRCROOT}\webinos\testbed_root\*.*"
+  SetOutPath "$INSTDIR\webinos\web_root"  
+  File /r /x certificates /x *.txt /x tools /x apps /x build.xml "${SRCROOT}\webinos\web_root\*.*"
   
 ;  SetOutPath "$INSTDIR\storage"
   
