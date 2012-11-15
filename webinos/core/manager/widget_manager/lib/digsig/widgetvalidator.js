@@ -83,7 +83,7 @@ this.WidgetValidator = (function() {
 	};
 	
 	WidgetValidator.prototype.addSignature = function(signature) {
-		if(signature.name == 'author.xml')
+		if(signature.name == 'author-signature.xml')
 			this.authorSignature = signature;
 		else
 			this.distributorSignatures.push(signature);
