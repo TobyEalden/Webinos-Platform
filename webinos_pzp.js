@@ -32,6 +32,7 @@ function help() {
   console.log("--friendly-name=[name]   friendly name (currently unused)");
   console.log("--widgetServer           start widget server");
   console.log("--policyEditor           start policy editor server");
+  console.log("--signedOnly				only allow signed widgets");
   process.exit();
 }
 
@@ -66,6 +67,9 @@ process.argv.forEach(function (arg) {
         case "--widgetServer":
           options.startWidgetServer = true;
           break;
+		case "--signedOnly":
+		  options.signedOnly = true;
+		  break;
         case "--policyEditor":
           __EnablePolicyEditor = true;
           break;
@@ -139,7 +143,7 @@ function initializeWidgetServer() {
   var wrt = require("./webinos/core/manager/widget_manager/lib/ui/widgetServer");
   if (typeof wrt !== "undefined") {
     // Attempt to start the widget server.
-    wrt.start(function (msg, wrtPort) {
+    wrt.start(options.signedOnly, function (msg, wrtPort) {
       if (msg === "startedWRT") {
         // Write the websocket and widget server ports to file so the renderer can pick them up.
         var wrtConfig = {};
