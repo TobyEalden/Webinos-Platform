@@ -1,19 +1,11 @@
 (function(exports) {
-
     var http = require('http');
     var url = require('url');
     var fs = require('fs');
     var path = require('path');
     var wm = require('../../../index.js');
     var pzp = require('../../../../../pzp/lib/pzp');
-	var logMsg = 'test';
-	
-	function logHandler(msg) {
-		logMsg += msg;
-		logMsg += "\r\n";
-	}
-	
-	wm.Logger.setLogHandler(logHandler);
+	var signedOnly = false;
     
     // ToDo - is there a 3rd party library we can use for this?
     var mimeTypes = {
@@ -88,16 +80,21 @@
             callback({ title: "widget installation", status: processingResult.status, text: processingResult.error.getReasonText() });
         } else {
             // Pending install OK => complete the install.
-            console.log("******** completing install: " + installId);
-        
-            var result = wm.widgetmanager.completeInstall(installId, true);
-            if (result) {
-                console.log('wm: completeInstall error: install: ' + result);
-                callback({ title: "widget installation", status: result, text: "completing installation failed"});
-            } else {
-                console.log('wm: install complete');
-                callback(null, installId);
-            }
+			if (signedOnly && processingResult.validationResult.status != wm.WidgetConfig.STATUS_VALID) {
+				console.log("failing installation of unsigned widget");
+				callback({ title: "widget installation", status: processingResult.validationResult.status, text: "widget not signed - installation failed"});				
+			} else {
+				console.log("******** completing install: " + installId);
+			
+				var result = wm.widgetmanager.completeInstall(installId, true);
+				if (result) {
+					console.log('wm: completeInstall error: install: ' + result);
+					callback({ title: "widget installation", status: result, text: "completing installation failed"});
+				} else {
+					console.log('wm: install complete');
+					callback(null, installId);
+				}
+			}			
         }
       }
 
@@ -185,7 +182,9 @@
 		var validator = new wm.WidgetValidator(wgtResource);
 		var result = validator.validate();
 		
-		if (result.status >= wm.WidgetConfig.STATUS_UNSIGNED) {
+		if (signedOnly && result.status != wm.WidgetConfig.STATUS_VALID) {
+			res.render("error", { title: "signature validation", status: result.status, text: "widget signature missing or invalid"});
+		} else if (result.status >= wm.WidgetConfig.STATUS_UNSIGNED) {
 			var startFile = cfg.startFile.path;
 			// Support remote start locations
 			var startFileProtocol = url.parse(startFile).protocol;
@@ -242,5 +241,9 @@
         res.render("aboutWidget", { pageTitle: "about widget", cfg: cfg });
       }
     };
-  
+
+	exports.setSignedOnly = function(signedOnlyFlag) {
+	  signedOnly = signedOnlyFlag;
+	}
+	
 }(module.exports));

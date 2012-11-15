@@ -1,12 +1,12 @@
 ﻿(function (exports) {
 
-  exports.start = function (callback) {
+  exports.start = function (signedWidgetsOnly, callback) {
     var express = require('express');
     var http = require('http');
     var fs = require('fs');
     var path = require('path');
     var logger = require('../../../../util/lib/logging.js')(__filename);
-
+	var signedOnly = signedWidgetsOnly;
 
     // Default port
     var runtimeServerPort = 53510;
@@ -34,12 +34,14 @@
     var widgetTests = require('./routes/widgetTests');
     var widgetDigSigTests = require('./routes/widgetDigSigTests');
 
-      /**
-       * Expose the current communication channel websocket port using this virtual file.
-       * This code must have the same result with the handleRequest on the pzp_websocket.js
-       * webinos\pzp\lib\pzp_websocket.js
-       */
-      app.get('/webinosConfig.json', settings.getWebinosConfig);
+	apps.setSignedOnly(signedOnly);
+	
+	/**
+	* Expose the current communication channel websocket port using this virtual file.
+	* This code must have the same result with the handleRequest on the pzp_websocket.js
+	* webinos\pzp\lib\pzp_websocket.js
+	*/
+	app.get('/webinosConfig.json', settings.getWebinosConfig);
 
     // apps routing
     app.get('/', apps.installed);

@@ -45,6 +45,6 @@
 			console.log(e);
 		}
 		
-		res.render('widgetDigSigTests', { pageTitle: 'widget digital signature tests', widgets: list, baseDir: __dirname });
+		res.render('widgetDigSigTests', { pageTitle: 'widget dig. sig. tests', widgets: list, baseDir: __dirname });
     };
 }(module.exports));
