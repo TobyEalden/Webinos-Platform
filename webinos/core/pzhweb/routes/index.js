@@ -228,4 +228,16 @@ module.exports = function (app, address, port, state) {
     function getUserPath(user) {
         return encodeURIComponent(user.emails[0].value);
     }
+
+    app.post('/main/:user/getInstalledWidgets', ensureAuthenticated, function(req, res) {
+        var dataSend = {
+            payload:{
+                status: "getInstalledWidgets",
+                from: req.body.from,
+                csr: req.body.csr,
+                code: req.body.authCode
+            }
+        };
+        pzhadaptor.fromWeb(req.user, dataSend, res);
+    });
 };

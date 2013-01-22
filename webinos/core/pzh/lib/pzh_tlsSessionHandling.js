@@ -28,9 +28,11 @@ var Pzh = function () {
     var logging = util.webinosLogging || console;
     var auth_code = require("./pzh_authcode");
     var pzh_otherManager = require("./pzh_otherManager");
+    var pzh_remoteManager = require("./pzh_remoteManager");
 
     var self = this;
     self.pzh_otherManager = "";
+    self.pzh_remoteManager = "";
     self.pzp_pzh = {};
     self.config = {};// Holds PZH Configuration, it is persistent data
     self.pzh_state = {
@@ -271,6 +273,7 @@ var Pzh = function () {
                     self.pzh_state.sessionId = _uri;
                     self.pzh_state.logger.addId(self.config.userData.email[0].value);
                     self.pzh_otherManager = new pzh_otherManager(self);
+                    self.pzh_remoteManager = new pzh_remoteManager (self);
                     self.pzh_pzh = new Pzh_Pzh(self);
                     self.revoke = new RevokePzp(self);
                     self.enroll = new AddPzp(self);

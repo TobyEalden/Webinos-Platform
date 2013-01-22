@@ -169,6 +169,10 @@
       $("#userId").html(payload.name);
       webinosPZH.commands.getZoneStatus(DisplayListOfDevices);
   }
+  function getInstalledWidgetsCB(payload) {
+    alert("getInstalledWidgetsCB: " + payload.installedList[0].name.visual + "!!");
+  }
+  
   $(document).ready(function() {
     webinosPZH.init(function(){
       webinosPZH.commands.getUserDetails(listUserDetails);
@@ -180,7 +184,8 @@
       webinosPZH.commands.authCode(displayQRCode);
     });
     $("#connectPzh").click(function(){
-      webinosPZH.commands.getAllPzh(pzhList);
+//      webinosPZH.commands.getAllPzh(pzhList);
+      webinosPZH.commands.getFarmPZHs(pzhList);
     });
     $("#revokeCert").click(function(){
       webinosPZH.commands.getPzps(listPzpsToRevoke);
@@ -270,5 +275,8 @@
     </article><!-- end of styles article -->
     <div class="spacer"></div>
   </section>
+  <div>
+    <input type="button" value="get widgets" onclick="webinosPZH.commands.getInstalledWidgets('', getInstalledWidgetsCB)" />
+  </div>
 </body>
 </html>

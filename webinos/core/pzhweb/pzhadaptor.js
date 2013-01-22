@@ -169,7 +169,13 @@ function manageStatus(payload, user, res) {
         case 'enrollPzpAuthCode':
             pzhTLS.send(user, {type:"authCode"}, pzpResponder(payload.user, payload.port, payload.address, payload.pzpPort, res));
             break;
-        default:
+        case 'getFarmPZHs':
+            pzhTLS.send (user, {type:"getFarmPZHs"}, responseHandler (res));
+            break;
+        case 'getInstalledWidgets':
+            pzhTLS.send (user, {type:"getInstalledWidgets", targetPzp:payload.targetPzp, name:payload.name}, responseHandler (res));
+            break;
+         default:
             responseHandler(res).err({"error":"not valid message type"});
             break;
 

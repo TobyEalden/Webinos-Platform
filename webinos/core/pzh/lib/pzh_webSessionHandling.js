@@ -42,7 +42,9 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "authCode":authCode,
         "csrAuthCodeByPzp":csrAuthCodeByPzp,
         "getAllPzh":getAllPzhList,
-        "approveUser":approveUser
+        "approveUser"        :approveUser,
+        "getFarmPZHs"        :getFarmPZHs,
+        "getInstalledWidgets":getInstalledWidgets
     };
 
     function getLock() {
@@ -465,5 +467,46 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
             conn.resume();
         }
     };
+
+    function getFarmPZHs (conn, obj, userObj) {
+        var list = [];
+        for (var pzhId in pzhs) {
+          if (pzhs.hasOwnProperty(pzhId)) {
+            list.push ({
+                url:pzhId,
+                username   :pzhs[pzhId].config.userData.name,
+                email      :pzhs[pzhId].config.userData.email[0].value });
+            for (var connectedPzh in pzhs[pzhId].pzh_state.connectedPzh) {
+              list.push({
+                url:connectedPzh,
+                username   :connectedPzh,
+                email      :connectedPzh});
+            }
+          }
+        }
+        //var lst = getFarmPzh (userObj.pzh_state.sessionId, userObj);
+        sendMsg (conn, obj.user, list);
+    }
+    
+    function getInstalledWidgets (conn, obj, userObj) {
+      var pzpId = obj.message.targetPzp;
+      console.log("---------------------------" + pzpId);
+      var id = userObj.pzh_remoteManager.addMsgCallback (function (installedList) {
+        console.log("------------------------ calling back to web i/f");
+        sendMsg (conn, obj.user, { type:"getInstalledWidgets", message:installedList });          
+      });
+      var msg = {
+                  "type":"prop", 
+                  "from":userObj.pzh_state.sessionId, 
+                  "to":pzpId,
+                  "payload"    :{
+                    "status":"getInstalledWidgets", 
+                    "message":{
+                      listenerId:id
+                    }
+                  }
+                };
+      userObj.sendMessage (msg, pzpId);
+    }
 };
 module.exports = pzhWI

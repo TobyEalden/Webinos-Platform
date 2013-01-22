@@ -54,6 +54,15 @@ var webinosPZH = {
                     case 'approveUser':
                         if (typeof webinosPZH.callbacks.approveUser === 'function') webinosPZH.callbacks.approveUser(msg.message);
                         break;
+                    case 'getFarmPZHs':
+                        if (typeof webinosPZH.callbacks.getFarmPZHs === 'function') webinosPZH.callbacks.getFarmPZHs (msg.message);
+                        break;
+                    case 'getInstalledWidgets':
+                        if (typeof webinosPZH.callbacks.getInstalledWidgets === 'function') webinosPZH.callbacks.getInstalledWidgets (msg.message);
+                        break;
+                    default:
+                        console.log("unknown command - " + msg.cmd);
+                        break;
                 }
             }
         }
@@ -81,7 +90,9 @@ var webinosPZH = {
         revokePzp:null,
         listAllServices:null,
         getAllPzh:null,
-        approveUser:null
+        approveUser    :null,
+        getFarmPZHs     :null,
+        getInstalledWidgets: null
     },
     commands:{
         getZoneStatus:function (callback) {
@@ -138,6 +149,15 @@ var webinosPZH = {
         approveUser:function (callback) {
             webinosPZH.callbacks.approveUser = callback;
             webinosPZH.send({payload:{status:'approveUser'}});
+        },
+        getFarmPZHs        :function (callback) {
+            webinosPZH.callbacks.getFarmPZHs = callback;
+            webinosPZH.send ({payload:{status:'getFarmPZHs'}});
+        },
+        getInstalledWidgets :function (at, callback) {
+            webinosPZH.callbacks.getInstalledWidgets = callback;
+            var targetPzp = "192.168.1.81_toby.ealden@gmail.com/TE-Dev_Pzp";
+            webinosPZH.send ({payload:{status:'getInstalledWidgets', "targetPzp": targetPzp }});
         }
     }
 };

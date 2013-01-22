@@ -189,6 +189,11 @@ var Pzh_RPC = function (_parent) {
                     case "sync_compare":
                         self.syncUpdateHash (validMsgObj.from, validMsgObj.payload.message);
                         break;
+                    default:
+                        if (!_parent.pzh_remoteManager.processMsg(validMsgObj)) {
+                          _parent.pzh_state.logger.log("unknown message: " + validMsgObj.payload.status);
+                        }
+                        break;
                 }
             } else {
                 try {

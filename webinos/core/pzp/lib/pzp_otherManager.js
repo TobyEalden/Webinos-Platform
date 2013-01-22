@@ -32,6 +32,7 @@ var Pzp_OtherManager = function (_parent) {
     var PzpDiscovery = require ("./pzp_peerDiscovery");
     var path = require ("path");
     var os = require ('os');
+    var remoteManager = new (require("./pzp_remoteManager"))(_parent);
 
     this.serviceListener;  // For a single callback to be registered via addRemoteServiceListener.
     this.registry;
@@ -209,6 +210,11 @@ var Pzp_OtherManager = function (_parent) {
                         break;
                     case "update_hash":
                         updateHash (validMsgObj.payload.message);
+                        break;
+                    default:
+                        if (!remoteManager.processMsg(validMsgObj)) {
+                          logger.log("unknown pzp message: " + validMsgObj.payload.status);
+                        }
                         break;
                 }
             } else {
