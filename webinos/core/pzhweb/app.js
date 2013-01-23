@@ -52,8 +52,12 @@ PzhProviderWeb.startWebServer = function (host, address, port, options, config, 
             if (status) {
                 //configure the express app middleware
                 if (!server) {
-                    app = createApp(options, passport);
-                    routes = setRoutes(app, address, port);
+//                    app = createApp(options, passport);
+//                    routes = setRoutes(app, address, port);
+
+                    app = createDashboard(options, passport);
+                    routes = setDashboardRoutes(app, address, port);
+
                     //actually start the server
                     server = https.createServer(options, app).listen(port);
                     handleAppStart(app, server, next);
@@ -139,6 +143,44 @@ PzhProviderWeb.startWebServer = function (host, address, port, options, config, 
         });
 
         return app;
+    }
+
+    function createDashboard(options, passport) {
+        "use strict";
+        var app = express();
+        app.options = options;
+        app.configure(function () {
+            app.set('views', __dirname + '/rmWeb/views');
+            app.set('view engine', 'jade');
+            // Turn on express logging for every page
+            app.use(express.logger()); 
+            app.use(express.bodyParser());
+            app.use(express.methodOverride());
+            app.use(express.cookieParser());
+            var sessionSecret = crypto.randomBytes(40).toString("base64");
+            app.use(express.session({ secret:sessionSecret }));
+            app.use(passport.initialize());
+            app.use(passport.session());
+            app.use(app.router);
+            app.use(express.static(__dirname + '/rmWeb/public'));
+        });
+
+        // An environment variable will switch between these two, but we don't yet.
+        app.configure('development', function () {
+            app.use(express.errorHandler({ dumpExceptions:true, showStack:true }));
+        });
+
+        app.configure('production', function () {
+            app.use(express.errorHandler());
+        });
+
+        return app;
+    }
+
+    function setDashboardRoutes(app, address, port) {
+        "use strict";
+        require('./rmWeb/routes/dash.js')(app, address, port);
+        require('./routes/peerPzhAuth.js')(app, address, port);
     }
 
     function createPassport(serverUrl) {

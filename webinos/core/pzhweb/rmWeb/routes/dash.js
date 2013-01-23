@@ -20,18 +20,34 @@ module.exports = function (app, address, port, state) {
     "use strict";
     var dependency = require("find-dependencies")(__dirname),
         logger = dependency.global.require(dependency.global.util.location, "lib/logging.js")(__filename) || console,
-        pzhadaptor = require('../pzhadaptor.js'),
+        pzhadaptor = require('../../pzhadaptor.js'),
         passport = require('passport'),
-        helper = require('./helper.js');
+        helper = require('../../routes/helper.js');
 
+    var appTitle = "UbiApps - ";
+    
     app.get('/', ensureAuthenticated, function (req, res) {
-        if (req.session.isPzp) {
-            pzhadaptor.fromWeb(req.user, {payload:{status:"enrollPzpAuthCode", address:address, port:port, pzpPort:req.session.pzpPort, user:getUserPath(req.user)}}, res);
-            req.session.isPzp = "";
-            req.session.pzpPort = "";
-        } else {
-            res.redirect('/main/' + getUserPath(req.user) + "/");
-        }
+      var user = req.user;
+      if (typeof req.user === 'object') {
+        user = getUserPath(req.user);
+      }
+      res.render('dash', { user: user, id:"home", title: appTitle + "dashboard"});
+    });
+
+    app.get('/:user/remote', ensureAuthenticated, function (req, res) {
+      console.log("remote request for: " + req.params.user);
+      var dataSend = {          payload:{
+              status: "getFarmPZHs"
+          }
+      };
+      pzhadaptor.fromWeb(req.user, dataSend, function(lst) {
+        console.log("got response! " + require("util").inspect(lst));
+        res.render('remote', { user: req.params.user, id:"remote", title: appTitle + "remote management", pzhList: lst.message });
+      });
+    });
+    
+    app.get('/:user/:pzpId/pzh', ensureAuthenticated, function(req, res) {
+      res.render('pzh', { user: req.params.user, id:"pzh", title: appTitle + "pzh details", pzpList: [] });
     });
 
     app.post('/main/:user/enrollPzp/', function (req, res) { // to use ensure authenticated, for some reason req.isAuthenticated retuns false
@@ -164,15 +180,14 @@ module.exports = function (app, address, port, state) {
             req.session.isPzp = true;
             req.session.pzpPort = req.query.port;
         }
-        res.render('login', { user:req.user });
+        res.render('login', { user:req.user, id:"login", title: appTitle + "login" });
     });
     // GET /auth/google
     //   Use passport.authenticate() as route middleware to authenticate the
     //   request.  The first step in Google authentication will involve redirecting
     //   the user to google.com.  After authenticating, Google will redirect the
     //   user back to this application at /auth/google/return
-    app.get('/auth/google',
-        passport.authenticate('google', { failureRedirect:'/login' }),
+    app.get('/auth/google', passport.authenticate('google', { failureRedirect:'/login' }),        
         function (req, res) {
             res.redirect('/');
         }
@@ -228,5 +243,4 @@ module.exports = function (app, address, port, state) {
     function getUserPath(user) {
         return encodeURIComponent(user.emails[0].value);
     }
-
 };

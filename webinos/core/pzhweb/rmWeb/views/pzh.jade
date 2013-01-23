@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  div(data-role='content')
+    ul(data-role='listview', data-inset='true', data-theme='b')
+      - for (var pzp in pzpList) {
+          li
+            a(href='#') #{pzpList[pzp].name}
+      - }
+  div(data-role='footer')
+    span Copyright 2013 UbiApps
+  
