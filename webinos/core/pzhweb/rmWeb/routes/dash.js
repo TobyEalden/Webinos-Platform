@@ -24,43 +24,58 @@ module.exports = function (app, address, port, state) {
         passport = require('passport'),
         helper = require('../../routes/helper.js');
 
-    var appTitle = "UbiApps - ";
+    var appTitle = "UbiApps";
+    
+    function getCurrentFarm(user) {
+      return address + "/" + decodeURIComponent(getUserPath(user));
+    }
     
     app.get('/', ensureAuthenticated, function (req, res) {
-      var user = req.user;
-      if (typeof req.user === 'object') {
-        user = getUserPath(req.user);
-      }
-      res.render('dash', { user: user, id:"home", title: appTitle + "dashboard"});
+      res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "dashboard" });
     });
 
-    app.get('/:user/remote', ensureAuthenticated, function (req, res) {
-      console.log("remote request for: " + req.params.user);
+    app.get('/remote', ensureAuthenticated, function (req, res) {
       var dataSend = {          payload:{
           status: "getFarmPZHs"
         }
       };
       pzhadaptor.fromWeb(req.user, dataSend, function(lst) {
-        res.render('remote', { user: req.params.user, id:"remote", title: appTitle + "remote management", pzhList: lst.message });
+        res.render('remote', { serverName: getCurrentFarm(req.user), id:"remote", appTitle: appTitle, title: "remote management", pzhList: lst.message });
       });
     });
     
-    app.get('/:user/:pzhId/pzh', ensureAuthenticated, function(req, res) {
+    app.get('/pzh/:pzhId', ensureAuthenticated, function(req, res) {
       var dataSend = {          
         payload:{
           status: "getZoneStatus"
         }
       };
       pzhadaptor.fromWeb(req.user, dataSend, function(result) {
-        console.log("got response! " + require("util").inspect(result));
-        res.render('pzh', { user: req.params.user, id:"pzh", title: appTitle + "pzh details", pzpList: result.message.pzps });
+        res.render('pzh', { serverName: getCurrentFarm(req.user), id:"pzh", appTitle: appTitle, title: "pzh details", pzpList: result.message.pzps });
       });
     });
 
-    app.get('/:user/:pzhId/:pzpId/pzp', ensureAuthenticated, function(req, res) {
-      res.render('pzp', { user: req.params.user, id:"pzp", title: appTitle + "pzp details"});
+    app.get('/pzp/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
+      res.render('pzp', { serverName: getCurrentFarm(req.user), id:"pzp", appTitle: appTitle, title: "pzp action", pzh: req.params.pzhId, pzp: req.params.pzpId});
     });
 
+    app.get('/installed/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
+      var dataSend = {          
+        payload:{
+          status: "getInstalledWidgets",
+          targetPzp: req.params.pzhId + "/" + req.params.pzpId
+        }
+      };
+      pzhadaptor.fromWeb(req.user, dataSend, function(result) {
+        console.log("got response! " + require("util").inspect(result));
+        res.render('installed', { serverName: getCurrentFarm(req.user), id:"installed", appTitle: appTitle, title: "installed widgets", widgetList: result.message.installedList, pzh: req.params.pzhId, pzp: req.params.pzpId });
+      });      
+    });
+    
+    app.get('/nyi', function(req,res) {
+      res.render('nyi',{ serverName: getCurrentFarm(req.user), id:"nyi", appTitle: appTitle, title: "not implemented"});
+    });
+    
     app.post('/main/:user/enrollPzp/', function (req, res) { // to use ensure authenticated, for some reason req.isAuthenticated retuns false
         pzhadaptor.fromWeb(req.params.user,
             {payload:{status:"enrollPzp", csr:req.body.csr, authCode:req.body.authCode, from:req.body.from}}, res);
@@ -191,7 +206,7 @@ module.exports = function (app, address, port, state) {
             req.session.isPzp = true;
             req.session.pzpPort = req.query.port;
         }
-        res.render('login', { user:req.user, id:"login", title: appTitle + "login" });
+        res.render('login', { user:req.user, id:"login", appTitle: appTitle, title: "login" });
     });
     // GET /auth/google
     //   Use passport.authenticate() as route middleware to authenticate the

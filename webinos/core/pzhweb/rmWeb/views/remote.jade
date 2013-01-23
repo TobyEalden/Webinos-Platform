@@ -2,11 +2,10 @@ extends layout
 
 block content
   div(data-role='content')
+    p connected PZHs
     ul(data-role='listview', data-inset='true', data-theme='b')
       - for (var pzh in pzhList) {
           li
-            a(href='/#{user}/#{pzhList[pzh].url}/pzh',data-transition="flip") #{pzhList[pzh].url}
+            a(href='/pzh/#{pzhList[pzh].url}',data-transition="slide") #{pzhList[pzh].url}
       - }
-  div(data-role='footer')
-    span Copyright 2013 UbiApps
   

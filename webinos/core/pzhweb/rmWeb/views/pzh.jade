@@ -2,11 +2,26 @@ extends layout
 
 block content
   div(data-role='content')
+    p connected PZPs
+    - var counter = 0;
     ul(data-role='listview', data-inset='true', data-theme='b')
       - for (var pzp in pzpList) {
-          li
-            a(href='/#{user}/#{pzpList[pzp].url}/pzp',data-transition="flip"') #{pzpList[pzp].url}
+          - if (pzpList[pzp].isConnected) {
+            - counter++;
+            li
+              a(href='/pzp/#{pzpList[pzp].url}',data-transition="slide") #{pzpList[pzp].url}
+          - }
       - }
-  div(data-role='footer')
-    span Copyright 2013 UbiApps
+      - if (counter === 0) {
+          li none
+      - }
+    - if (counter !== pzpList.length) {
+    p not connected PZPs
+    ul(data-role='listview', data-inset='true', data-theme='b')
+      - for (var pzp in pzpList) {
+          - if (!pzpList[pzp].isConnected) {
+              li #{pzpList[pzp].url}
+          - }
+      - }
+    - }
   

@@ -1,0 +1,11 @@
+extends layout
+
+block head
+  script
+    $( document ).delegate("##{id}", "pageinit", function() {
+    });
+
+block content
+  div(data-role='content')
+    p coming soon...
+    a(href="#", data-rel="back", data-role="button", data-inline="true") back

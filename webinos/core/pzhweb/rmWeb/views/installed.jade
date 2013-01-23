@@ -1,0 +1,18 @@
+extends layout
+
+block head
+  script
+    $( document ).delegate("##{id}", "pageinit", function() {
+      $("#installed-refresh").click(function() { window.location.reload(true); return false; });
+    });
+
+block content
+  div(data-role='content')
+    ul(data-role='listview', data-inset='true', data-theme='b')
+      - for (var wgt in widgetList) {
+      -   var name = widgetList[wgt].name ? widgetList[wgt].name.visual : widgetList[wgt].id;
+          li
+            a(href='#',data-transition="slide") #{name}
+      - }
+    a(id="installed-refresh",href="#", data-role="button", data-inline="true") refresh
+  
