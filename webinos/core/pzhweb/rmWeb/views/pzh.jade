@@ -9,7 +9,7 @@ block content
           - if (pzpList[pzp].isConnected) {
             - counter++;
             li
-              a(href='/pzp/#{pzpList[pzp].url}',data-transition="slide") #{pzpList[pzp].url}
+              a(href='/pzp/#{pzpList[pzp].url}',data-transition="slide") #{pzpList[pzp].id}
           - }
       - }
       - if (counter === 0) {

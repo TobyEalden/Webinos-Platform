@@ -31,7 +31,13 @@ module.exports = function (app, address, port, state) {
     }
     
     app.get('/', ensureAuthenticated, function (req, res) {
-      res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "dashboard" });
+        if (req.session.isPzp) {
+            pzhadaptor.fromWeb(req.user, {payload:{status:"enrollPzpAuthCode", address:address, port:port, pzpPort:req.session.pzpPort, user:getUserPath(req.user)}}, res);
+            req.session.isPzp = "";
+            req.session.pzpPort = "";
+        } else {
+          res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "dashboard" });
+        }
     });
 
     app.get('/remote', ensureAuthenticated, function (req, res) {
@@ -56,7 +62,7 @@ module.exports = function (app, address, port, state) {
     });
 
     app.get('/pzp/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
-      res.render('pzp', { serverName: getCurrentFarm(req.user), id:"pzp", appTitle: appTitle, title: "pzp action", pzh: req.params.pzhId, pzp: req.params.pzpId});
+      res.render('pzp', { serverName: getCurrentFarm(req.user), id:"pzp", appTitle: appTitle, title: req.params.pzpId, pzh: req.params.pzhId, pzp: req.params.pzpId});
     });
 
     app.get('/installed/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
@@ -68,7 +74,7 @@ module.exports = function (app, address, port, state) {
       };
       pzhadaptor.fromWeb(req.user, dataSend, function(result) {
         console.log("got response! " + require("util").inspect(result));
-        res.render('installed', { serverName: getCurrentFarm(req.user), id:"installed", appTitle: appTitle, title: "installed widgets", widgetList: result.message.installedList, pzh: req.params.pzhId, pzp: req.params.pzpId });
+        res.render('installed', { serverName: getCurrentFarm(req.user), id:"installed", appTitle: appTitle, title: req.params.pzpId + " widgets", widgetList: result.message.installedList, pzh: req.params.pzhId, pzp: req.params.pzpId });
       });      
     });
     

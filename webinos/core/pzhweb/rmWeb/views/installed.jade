@@ -1,11 +1,5 @@
 extends layout
 
-block head
-  script
-    $( document ).delegate("##{id}", "pageinit", function() {
-      $("#installed-refresh").click(function() { window.location.reload(true); return false; });
-    });
-
 block content
   div(data-role='content')
     ul(data-role='listview', data-inset='true', data-theme='b')
@@ -14,5 +8,5 @@ block content
           li
             a(href='#',data-transition="slide") #{name}
       - }
-    a(id="installed-refresh",href="#", data-role="button", data-inline="true") refresh
+    a(class="dash-refresh",href="#", data-role="button", data-inline="true") refresh
   

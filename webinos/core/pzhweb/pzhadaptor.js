@@ -47,7 +47,7 @@ function responseHandler(res) {
 function pzpResponder(user, port, address, pzpPort, res) {
     return {
         success:function (authCode) {
-            res.render("enroll-pzp", {address:address, port:port, authCode:authCode.message.payload.code, user:user, pzpPort:pzpPort});
+            res.render("enroll-pzp", {address:address, port:port, authCode:authCode.message.payload.code, user:user, pzpPort:pzpPort, appTitle: "UbiApps", title: "enrolling pzp", id: "enroll-pzp" });
         }
     }
 }

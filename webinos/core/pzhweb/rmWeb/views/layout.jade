@@ -8,6 +8,7 @@ html
     script(src='/js/jquery/jquery.mobile-1.2.0.min.js')
     script
       $( document ).delegate("##{id}", "pageinit", function() {
+        $(".dash-refresh").click(function() { window.location.reload(true); return false; });
       });
     title #{title}
     block head

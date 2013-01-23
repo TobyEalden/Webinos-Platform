@@ -68,7 +68,7 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
     function getConnectedPzp(_instance) {
         var i, pzps = [], list = Object.keys(_instance.config.trustedList.pzp);
         for (i = 0; i < list.length; i = i + 1) {
-            if (_instance.pzh_state.connectedPzp.hasOwnProperty(list[i])) {
+            if (_instance.pzh_state.connectedPzp.hasOwnProperty(list[i])) {            
                 pzps.push({id:list[i].split("/")[1], url:list[i], isConnected:true});
             } else {
                 pzps.push({id:list[i].split("/")[1], url:list[i], isConnected:false});
