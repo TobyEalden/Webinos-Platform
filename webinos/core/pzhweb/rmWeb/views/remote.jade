@@ -2,8 +2,8 @@ extends layout
 
 block content
   div(data-role='content')
-    p connected PZHs
-    ul(data-role='listview', data-inset='true', data-theme='b')
+    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
+      li(data-role="list-divider",role="heading") PZHs hosted by this provider
       - for (var pzh in pzhList) {
           li
             a(href='/pzh/#{pzhList[pzh].url}',data-transition="slide") #{pzhList[pzh].url}

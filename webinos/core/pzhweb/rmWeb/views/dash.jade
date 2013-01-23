@@ -2,17 +2,19 @@ extends layout
 
 block content
   div(data-role='content')
-    ul(data-role='listview', data-inset='true', data-theme='b')
+    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
+      li(data-role="list-divider",role="heading") Options
       li
         a(href='/nyi') Invite a friend
       li
-        a(href='/nyi') Service Configuration
+        a(href='/nyi') About this PZH
+      li
+          a(href="logout") Logout
+      li(data-role="list-divider",role="heading") Administration
       li
         a(href='/remote', data-transition="flip") Remote Management
       li
+        a(href='/nyi') Service Configuration
+      li
         a(href='/nyi') Diagnostics
-      li
-        a(href='/nyi') About
-      li
-        a(href="logout") Logout
   

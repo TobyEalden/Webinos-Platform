@@ -2,11 +2,16 @@ extends layout
 
 block content
   div(data-role='content')
-    ul(data-role='listview', data-inset='true', data-theme='b')
-      - for (var wgt in widgetList) {
-      -   var name = widgetList[wgt].name ? widgetList[wgt].name.visual : widgetList[wgt].id;
-          li
-            a(href='#',data-transition="slide") #{name}
-      - }
-    a(class="dash-refresh",href="#", data-role="button", data-inline="true") refresh
+    - if (widgetList.length > 0) {
+      ul(data-role='listview', data-inset='true', data-theme='b', data-theme="a", data-divider-theme="b")
+        li(data-role="list-divider", role="heading") Widgets installed on #{pzp}
+        - for (var wgt in widgetList) {
+        -   var name = widgetList[wgt].name ? widgetList[wgt].name.visual : widgetList[wgt].id;
+            li
+              a(href='#',data-transition="slide") #{name}
+        - }
+    - } else {
+      p no widgets installed
+    - }
+    a(class="dash-refresh",href="#", data-role="button", data-inline="true", data-mini="true") refresh
   

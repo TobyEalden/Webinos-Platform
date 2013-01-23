@@ -2,7 +2,8 @@ extends layout
 
 block content
   div(data-role='content')
-    ul(data-role='listview', data-inset='true', data-theme='b')
+    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
+      li(data-role="list-divider", role="heading") PZP options
       li
         a(href='/installed/#{pzh}/#{pzp}', data-transition="slide") Show Installed Widgets
       li

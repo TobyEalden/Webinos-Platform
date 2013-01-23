@@ -2,9 +2,9 @@ extends layout
 
 block content
   div(data-role='content')
-    p connected PZPs
     - var counter = 0;
-    ul(data-role='listview', data-inset='true', data-theme='b')
+    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
+      li(data-role="list-divider", role="heading") Connected PZPs
       - for (var pzp in pzpList) {
           - if (pzpList[pzp].isConnected) {
             - counter++;
@@ -16,8 +16,8 @@ block content
           li none
       - }
     - if (counter !== pzpList.length) {
-    p not connected PZPs
-    ul(data-role='listview', data-inset='true', data-theme='b')
+    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
+      li(data-role="list-divider", role="heading") Disconnected PZPs
       - for (var pzp in pzpList) {
           - if (!pzpList[pzp].isConnected) {
               li #{pzpList[pzp].url}
