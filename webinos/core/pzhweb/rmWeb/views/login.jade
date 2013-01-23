@@ -3,15 +3,13 @@ extends layout
 block head
   script
     $( document ).delegate("##{id}", "pageinit", function() {
-      //$("#googleAuth").click(function() { window.location.href = "./auth/google"; return false; });
-      $("#yahooAuth").click(function() { window.location.href = "./auth/yahoo"; return false; });
     });
 
 block content
   div(id="loginPage", data-role="content")
     a(id="googleAuth",href="/auth/google",data-role="button",rel="external")
       img(src='https://ssl.gstatic.com/images/logos/google_logo_41.png', width='100px')
-    a(id="yahooAuth",href="/auth/yahoo",data-role="button")
+    a(id="yahooAuth",href="/auth/yahoo",data-role="button",rel="external")
       img(src='http://l.yimg.com/a/images/ww/met/slimheader/yahoo-logo-sm-png8.png', width='100px')
   div(data-role="footer")
     a(href='http://wwww.webinos.org') Powered by webinos      

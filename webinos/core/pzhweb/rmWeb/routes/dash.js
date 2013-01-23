@@ -37,17 +37,28 @@ module.exports = function (app, address, port, state) {
     app.get('/:user/remote', ensureAuthenticated, function (req, res) {
       console.log("remote request for: " + req.params.user);
       var dataSend = {          payload:{
-              status: "getFarmPZHs"
-          }
+          status: "getFarmPZHs"
+        }
       };
       pzhadaptor.fromWeb(req.user, dataSend, function(lst) {
-        console.log("got response! " + require("util").inspect(lst));
         res.render('remote', { user: req.params.user, id:"remote", title: appTitle + "remote management", pzhList: lst.message });
       });
     });
     
-    app.get('/:user/:pzpId/pzh', ensureAuthenticated, function(req, res) {
-      res.render('pzh', { user: req.params.user, id:"pzh", title: appTitle + "pzh details", pzpList: [] });
+    app.get('/:user/:pzhId/pzh', ensureAuthenticated, function(req, res) {
+      var dataSend = {          
+        payload:{
+          status: "getZoneStatus"
+        }
+      };
+      pzhadaptor.fromWeb(req.user, dataSend, function(result) {
+        console.log("got response! " + require("util").inspect(result));
+        res.render('pzh', { user: req.params.user, id:"pzh", title: appTitle + "pzh details", pzpList: result.message.pzps });
+      });
+    });
+
+    app.get('/:user/:pzhId/:pzpId/pzp', ensureAuthenticated, function(req, res) {
+      res.render('pzp', { user: req.params.user, id:"pzp", title: appTitle + "pzp details"});
     });
 
     app.post('/main/:user/enrollPzp/', function (req, res) { // to use ensure authenticated, for some reason req.isAuthenticated retuns false

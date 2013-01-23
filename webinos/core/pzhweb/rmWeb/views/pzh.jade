@@ -5,7 +5,7 @@ block content
     ul(data-role='listview', data-inset='true', data-theme='b')
       - for (var pzp in pzpList) {
           li
-            a(href='#') #{pzpList[pzp].name}
+            a(href='/#{user}/#{pzpList[pzp].url}/pzp',data-transition="flip"') #{pzpList[pzp].url}
       - }
   div(data-role='footer')
     span Copyright 2013 UbiApps

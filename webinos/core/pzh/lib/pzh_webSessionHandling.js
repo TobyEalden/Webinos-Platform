@@ -484,15 +484,12 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
             }
           }
         }
-        //var lst = getFarmPzh (userObj.pzh_state.sessionId, userObj);
-        sendMsg (conn, obj.user, list);
+        sendMsg (conn, obj.user, { type: "getFarmPZHs", message:list });
     }
     
     function getInstalledWidgets (conn, obj, userObj) {
       var pzpId = obj.message.targetPzp;
-      console.log("---------------------------" + pzpId);
       var id = userObj.pzh_remoteManager.addMsgCallback (function (installedList) {
-        console.log("------------------------ calling back to web i/f");
         sendMsg (conn, obj.user, { type:"getInstalledWidgets", message:installedList });          
       });
       var msg = {

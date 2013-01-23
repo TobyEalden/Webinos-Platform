@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  div(data-role='content')
+    ul(data-role='listview', data-inset='true', data-theme='b')
+      li
+        a(href='/#{user}/#{pzpList[pzp].url}/pzp') Installed Widgets
+      li
+        a(href='#') Install Widget
+      li
+        a(href='#') Wipe
+      li
+        a(href='#') Diagnostics
+  div(data-role='footer')
+    span Copyright 2013 UbiApps
+  
