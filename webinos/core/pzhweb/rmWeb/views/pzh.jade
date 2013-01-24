@@ -2,9 +2,25 @@ extends layout
 
 block content
   div(data-role='content')
-    - var counter = 0;
     ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
-      li(data-role="list-divider", role="heading") Connected PZPs
+      li(data-role="list-divider",role="heading") #{pzh}
+      li
+        a(href='/nyi') Invite a Friend
+      li
+        a(href='/nyi') Approve a Friend
+      li
+        a(href='/about-me') About this PZH
+      li(data-role="list-divider",role="heading") Administration
+      li
+        a(href='/remote', data-transition="flip") Remote Management
+      li
+        a(href='/nyi') Service Configuration
+      li
+        a(href='/nyi') Diagnostics
+
+    - var counter = 0;
+    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")      
+      li(data-role="list-divider", role="heading")  Connected PZPs
       - for (var pzp in pzpList) {
           - if (pzpList[pzp].isConnected) {
             - counter++;
@@ -15,13 +31,13 @@ block content
       - if (counter === 0) {
           li none
       - }
-    - if (counter !== pzpList.length) {
-    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
-      li(data-role="list-divider", role="heading") Disconnected PZPs
-      - for (var pzp in pzpList) {
-          - if (!pzpList[pzp].isConnected) {
-              li #{pzpList[pzp].url}
-          - }
+      - if (counter !== pzpList.length) {
+        li(data-role="list-divider", role="heading") Disconnected PZPs
+        - for (var pzp in pzpList) {
+            - if (!pzpList[pzp].isConnected) {
+                li #{pzpList[pzp].url}
+            - }
+        - }
       - }
-    - }
-  
+      li(data-role="list-divider", role="heading")
+        a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh

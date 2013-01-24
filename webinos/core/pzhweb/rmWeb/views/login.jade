@@ -1,16 +1,11 @@
 extends layout
 
-block head
-  script
-    $( document ).delegate("##{id}", "pageinit", function() {
-    });
-
 block content
   div(id="loginPage", data-role="content", data-theme="c")
     img(src='/images/logo.png', style='float:left;padding-right:10px;')
     p 
       strong Welcome 
-      | to the UbiApps PZH Farm. Please choose an authentication provider.
+      | to the UbiApps PZH Farm. Please choose an authentication provider and sign in.
     div(id="login-choice")
       a(id="googleAuth",href="/auth/google",data-role="button",rel="external")
         img(src='https://ssl.gstatic.com/images/logos/google_logo_41.png', width='100px')

@@ -44,6 +44,7 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "getAllPzh":getAllPzhList,
         "approveUser"        :approveUser,
         "getFarmPZHs"        :getFarmPZHs,
+        "getPZHPZPs"         :getPZHPZPs,
         "getInstalledWidgets":getInstalledWidgets
     };
 
@@ -487,8 +488,18 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         sendMsg (conn, obj.user, { type: "getFarmPZHs", message:list });
     }
     
+    function getPZHPZPs (conn, obj, userObj) {
+      var pzhId = obj.message.targetPZH;
+      var list = [];
+      if (pzhs.hasOwnProperty(pzhId)) {
+        list = getConnectedPzp(pzhs[pzhId]);
+      }
+      
+      sendMsg (conn, obj.user, { type: "getPZHPZPs", message:list });
+    }
+    
     function getInstalledWidgets (conn, obj, userObj) {
-      var pzpId = obj.message.targetPzp;
+      var pzpId = obj.message.targetPZP;
       var id = userObj.pzh_remoteManager.addMsgCallback (function (installedList) {
         sendMsg (conn, obj.user, { type:"getInstalledWidgets", message:installedList });          
       });

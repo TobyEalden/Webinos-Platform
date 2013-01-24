@@ -36,7 +36,14 @@ module.exports = function (app, address, port, state) {
             req.session.isPzp = "";
             req.session.pzpPort = "";
         } else {
-          res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps PZH Farm" });
+//          res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps PZH Farm" });
+          var dataSend = {          payload:{
+              status: "getFarmPZHs"
+            }
+          };
+          pzhadaptor.fromWeb(req.user, dataSend, function(lst) {
+            res.render('remote', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps PZH Farm", pzhList: lst.message });
+          });
         }
     });
 
@@ -46,18 +53,19 @@ module.exports = function (app, address, port, state) {
         }
       };
       pzhadaptor.fromWeb(req.user, dataSend, function(lst) {
-        res.render('remote', { serverName: getCurrentFarm(req.user), id:"remote", appTitle: appTitle, title: "remote management", pzhList: lst.message });
+        res.render('remote', { serverName: getCurrentFarm(req.user), id:"remote", appTitle: appTitle, title: "Remote Management", pzhList: lst.message });
       });
     });
     
     app.get('/pzh/:pzhId', ensureAuthenticated, function(req, res) {
       var dataSend = {          
         payload:{
-          status: "getZoneStatus"
+          status: "getPZHPZPs",
+          targetPZH: req.params.pzhId
         }
       };
       pzhadaptor.fromWeb(req.user, dataSend, function(result) {
-        res.render('pzh', { serverName: getCurrentFarm(req.user), id:"pzh", appTitle: appTitle, title: "pzh details", pzpList: result.message.pzps });
+        res.render('pzh', { serverName: getCurrentFarm(req.user), id:"pzh", appTitle: appTitle, title: "PZH Details", pzh: req.params.pzhId, pzpList: result.message });
       });
     });
 
@@ -69,7 +77,7 @@ module.exports = function (app, address, port, state) {
       var dataSend = {          
         payload:{
           status: "getInstalledWidgets",
-          targetPzp: req.params.pzhId + "/" + req.params.pzpId
+          targetPZP: req.params.pzhId + "/" + req.params.pzpId
         }
       };
       pzhadaptor.fromWeb(req.user, dataSend, function(result) {
@@ -78,8 +86,18 @@ module.exports = function (app, address, port, state) {
       });      
     });
     
+    app.get('/about-me', ensureAuthenticated, function(req,res) {
+      var dataSend = {
+        payload: {
+          status: "getUserDetails" }
+        };
+        pzhadaptor.fromWeb(req.user, dataSend, function(result) {
+          res.render('about-me', { serverName: getCurrentFarm(req.user), id:"about-me", appTitle: appTitle, title: "About PZH", about: result.message });
+        });
+    });
+    
     app.get('/nyi', function(req,res) {
-      res.render('nyi',{ serverName: getCurrentFarm(req.user), id:"nyi", appTitle: appTitle, title: "not implemented"});
+      res.render('nyi',{ serverName: getCurrentFarm(req.user), id:"nyi", appTitle: appTitle, title: "Not Implemented"});
     });
     
     app.post('/main/:user/enrollPzp/', function (req, res) { // to use ensure authenticated, for some reason req.isAuthenticated retuns false

@@ -57,6 +57,9 @@ var webinosPZH = {
                     case 'getFarmPZHs':
                         if (typeof webinosPZH.callbacks.getFarmPZHs === 'function') webinosPZH.callbacks.getFarmPZHs (msg.message);
                         break;
+                    case 'getPZHPZPs':
+                        if (typeof webinosPZH.callbacks.getPZHPZPs === 'function') webinosPZH.callbacks.getPZHPZPs(msg.message);
+                        break;
                     case 'getInstalledWidgets':
                         if (typeof webinosPZH.callbacks.getInstalledWidgets === 'function') webinosPZH.callbacks.getInstalledWidgets (msg.message);
                         break;
@@ -92,6 +95,7 @@ var webinosPZH = {
         getAllPzh:null,
         approveUser    :null,
         getFarmPZHs     :null,
+        getPZHPZPs: null,
         getInstalledWidgets: null
     },
     commands:{
@@ -154,10 +158,13 @@ var webinosPZH = {
             webinosPZH.callbacks.getFarmPZHs = callback;
             webinosPZH.send ({payload:{status:'getFarmPZHs'}});
         },
-        getInstalledWidgets :function (at, callback) {
+        getPZHPZPs: function(targetPZH,callback) {
+          webinosPZH.callbacks.getPZHPZPs = callback;
+          webinosPZH.send({payload:{status: "getPZHPZPs", "targetPZH": targetPZH);
+        },
+        getInstalledWidgets :function (targetPZP, callback) {
             webinosPZH.callbacks.getInstalledWidgets = callback;
-            var targetPzp = "192.168.1.81_toby.ealden@gmail.com/TE-Dev_Pzp";
-            webinosPZH.send ({payload:{status:'getInstalledWidgets', "targetPzp": targetPzp }});
+            webinosPZH.send ({payload:{status:'getInstalledWidgets', "targetPZP": targetPZP }});
         }
     }
 };

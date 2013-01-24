@@ -52,11 +52,11 @@ PzhProviderWeb.startWebServer = function (host, address, port, options, config, 
             if (status) {
                 //configure the express app middleware
                 if (!server) {
-//                    app = createApp(options, passport);
-//                    routes = setRoutes(app, address, port);
+                    // app = createApp(options, passport);
+                    // routes = setRoutes(app, address, port);
 
-                    app = createDashboard(options, passport);
-                    routes = setDashboardRoutes(app, address, port);
+                   app = createDashboard(options, passport);
+                   routes = setDashboardRoutes(app, address, port);
 
                     //actually start the server
                     server = https.createServer(options, app).listen(port);

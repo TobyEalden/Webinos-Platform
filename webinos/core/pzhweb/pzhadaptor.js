@@ -172,8 +172,11 @@ function manageStatus(payload, user, res) {
         case 'getFarmPZHs':
             pzhTLS.send (user, {type:"getFarmPZHs"}, responseHandler (res));
             break;
+        case 'getPZHPZPs':
+            pzhTLS.send (user, {type:"getPZHPZPs", targetPZH:payload.targetPZH}, responseHandler(res));
+            break;
         case 'getInstalledWidgets':
-            pzhTLS.send (user, {type:"getInstalledWidgets", targetPzp:payload.targetPzp, name:payload.name}, responseHandler (res));
+            pzhTLS.send (user, {type:"getInstalledWidgets", targetPZP:payload.targetPZP}, responseHandler (res));
             break;
          default:
             responseHandler(res).err({"error":"not valid message type"});
