@@ -212,7 +212,7 @@ module.exports = function (app, address, port, state) {
             req.session.isPzp = true;
             req.session.pzpPort = req.query.port;
         }
-        res.render('login', { user:req.user, id:"login", appTitle: appTitle, title: "login" });
+        res.render('login', { user:req.user, id:"login", appTitle: appTitle, title: "UbiApps PZH Farm" });
     });
     // GET /auth/google
     //   Use passport.authenticate() as route middleware to authenticate the
