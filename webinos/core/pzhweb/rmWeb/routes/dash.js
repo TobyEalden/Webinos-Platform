@@ -42,19 +42,9 @@ module.exports = function (app, address, port, state) {
             }
           };
           pzhadaptor.fromWeb(req.user, dataSend, function(lst) {
-            res.render('remote', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps PZH Farm", pzhList: lst.message });
+            res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps PZH Farm", pzhList: lst.message });
           });
         }
-    });
-
-    app.get('/remote', ensureAuthenticated, function (req, res) {
-      var dataSend = {          payload:{
-          status: "getFarmPZHs"
-        }
-      };
-      pzhadaptor.fromWeb(req.user, dataSend, function(lst) {
-        res.render('remote', { serverName: getCurrentFarm(req.user), id:"remote", appTitle: appTitle, title: "Remote Management", pzhList: lst.message });
-      });
     });
     
     app.get('/pzh/:pzhId', ensureAuthenticated, function(req, res) {

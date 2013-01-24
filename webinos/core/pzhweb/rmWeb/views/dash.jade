@@ -3,20 +3,11 @@ extends layout
 block content
   div(data-role='content')
     ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
-      li(data-role="list-divider",role="heading") Options
-      li
-        a(href='/nyi') Invite a Friend
-      li
-        a(href='/nyi') Approve a Friend
-      li
-        a(href='/about-me') About this PZH
-      li
-          a(href="logout") Sign Out
-      li(data-role="list-divider",role="heading") Administration
-      li
-        a(href='/remote', data-transition="flip") Remote Management
-      li
-        a(href='/nyi') Service Configuration
-      li
-        a(href='/nyi') Diagnostics
-  
+      li(data-role="list-divider",role="heading") PZHs hosted on this farm
+      - for (var pzh in pzhList) {
+          li
+            a(href='/pzh/#{pzhList[pzh].url}',data-transition="slide") #{pzhList[pzh].url}
+      - }
+      li(data-role="list-divider", role="heading")
+        a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
+        a(href="logout", data-role="button", data-inline="true", data-mini="true", style="float:right;") Sign Out        
