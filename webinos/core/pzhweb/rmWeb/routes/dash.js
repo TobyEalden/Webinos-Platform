@@ -36,7 +36,7 @@ module.exports = function (app, address, port, state) {
             req.session.isPzp = "";
             req.session.pzpPort = "";
         } else {
-          res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "dashboard" });
+          res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps PZH Farm" });
         }
     });
 
