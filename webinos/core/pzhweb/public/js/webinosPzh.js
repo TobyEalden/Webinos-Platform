@@ -54,15 +54,6 @@ var webinosPZH = {
                     case 'approveUser':
                         if (typeof webinosPZH.callbacks.approveUser === 'function') webinosPZH.callbacks.approveUser(msg.message);
                         break;
-                    case 'getFarmPZHs':
-                        if (typeof webinosPZH.callbacks.getFarmPZHs === 'function') webinosPZH.callbacks.getFarmPZHs (msg.message);
-                        break;
-                    case 'getPZHPZPs':
-                        if (typeof webinosPZH.callbacks.getPZHPZPs === 'function') webinosPZH.callbacks.getPZHPZPs(msg.message);
-                        break;
-                    case 'getInstalledWidgets':
-                        if (typeof webinosPZH.callbacks.getInstalledWidgets === 'function') webinosPZH.callbacks.getInstalledWidgets (msg.message);
-                        break;
                     default:
                         console.log("unknown command - " + msg.cmd);
                         break;
@@ -93,10 +84,7 @@ var webinosPZH = {
         revokePzp:null,
         listAllServices:null,
         getAllPzh:null,
-        approveUser    :null,
-        getFarmPZHs     :null,
-        getPZHPZPs: null,
-        getInstalledWidgets: null
+        approveUser    :null
     },
     commands:{
         getZoneStatus:function (callback) {
@@ -154,17 +142,5 @@ var webinosPZH = {
             webinosPZH.callbacks.approveUser = callback;
             webinosPZH.send({payload:{status:'approveUser'}});
         },
-        getFarmPZHs        :function (callback) {
-            webinosPZH.callbacks.getFarmPZHs = callback;
-            webinosPZH.send ({payload:{status:'getFarmPZHs'}});
-        },
-        getPZHPZPs: function(targetPZH,callback) {
-          webinosPZH.callbacks.getPZHPZPs = callback;
-          webinosPZH.send({payload:{status: "getPZHPZPs", "targetPZH": targetPZH);
-        },
-        getInstalledWidgets :function (targetPZP, callback) {
-            webinosPZH.callbacks.getInstalledWidgets = callback;
-            webinosPZH.send ({payload:{status:'getInstalledWidgets', "targetPZP": targetPZP }});
-        }
     }
 };

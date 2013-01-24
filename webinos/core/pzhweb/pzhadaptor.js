@@ -175,6 +175,9 @@ function manageStatus(payload, user, res) {
         case 'getPZHPZPs':
             pzhTLS.send (user, {type:"getPZHPZPs", targetPZH:payload.targetPZH}, responseHandler(res));
             break;
+        case 'getPZHDetails':
+            pzhTLS.send (user, {type:"getPZHDetails", targetPZH:payload.targetPZH}, responseHandler(res));
+            break;
         case 'getInstalledWidgets':
             pzhTLS.send (user, {type:"getInstalledWidgets", targetPZP:payload.targetPZP}, responseHandler (res));
             break;

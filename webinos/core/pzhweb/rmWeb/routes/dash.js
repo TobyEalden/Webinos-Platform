@@ -76,13 +76,15 @@ module.exports = function (app, address, port, state) {
       });      
     });
     
-    app.get('/about-me', ensureAuthenticated, function(req,res) {
+    app.get('/about-me/:pzhId', ensureAuthenticated, function(req,res) {
       var dataSend = {
-        payload: {
-          status: "getUserDetails" }
+          payload: {
+            status: "getPZHDetails",
+            targetPZH: req.params.pzhId 
+          }
         };
         pzhadaptor.fromWeb(req.user, dataSend, function(result) {
-          res.render('about-me', { serverName: getCurrentFarm(req.user), id:"about-me", appTitle: appTitle, title: "About PZH", about: result.message });
+          res.render('about-me', { serverName: getCurrentFarm(req.user), id:"about-me", appTitle: appTitle, title: "About PZH", about: result.message, pzh: req.params.pzhId });
         });
     });
     

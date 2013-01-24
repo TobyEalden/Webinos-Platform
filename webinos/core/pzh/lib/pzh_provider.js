@@ -148,7 +148,7 @@ var Provider = function (_hostname, _friendlyName) {
         }
         return list;
     }
-
+    
     function isWebInterface(conn) {
         //TODO: Validate the certificate from the connection data.
         if (webInterface === null) {

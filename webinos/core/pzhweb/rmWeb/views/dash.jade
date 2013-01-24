@@ -3,10 +3,14 @@ extends layout
 block content
   div(data-role='content')
     ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
-      li(data-role="list-divider",role="heading") PZHs hosted on this farm
+      li(data-role="list-divider",role="heading") Connected PZHs
       - for (var pzh in pzhList) {
           li
-            a(href='/pzh/#{pzhList[pzh].url}',data-transition="slide") #{pzhList[pzh].url}
+            - if (typeof pzhList[pzh].username === "undefined" || pzhList[pzh].username === "undefined undefined") {
+              a(href='/pzh/#{pzhList[pzh].url}',data-transition="slide") #{pzhList[pzh].url}
+            - } else { 
+              a(href='/pzh/#{pzhList[pzh].url}',data-transition="slide",title="#{pzhList[pzh].url}") #{pzhList[pzh].username}
+            - }
       - }
       li(data-role="list-divider", role="heading")
         a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
