@@ -16,7 +16,7 @@ html
     div(id='#{id}',data-role='page',data-theme="b")
       div(data-role='header',data-theme="b")
         h1 #{title}
-        - if (id !== "home") {
+        - if (id !== "home" && id !== "login") {
           a(href="/",data-role="button",data-icon="home",data-iconpos="notext",data-transition="slide") home
           a(href="#",data-rel="back",data-role="button",data-icon="back",data-iconpos="notext",data-transition="slide") back
         - }
