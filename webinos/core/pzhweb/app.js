@@ -180,7 +180,7 @@ PzhProviderWeb.startWebServer = function (host, address, port, options, config, 
     function setDashboardRoutes(app, address, port) {
         "use strict";
         require('./rmWeb/routes/dash.js')(app, address, port);
-        require('./routes/peerPzhAuth.js')(app, address, port);
+        require('./rmWeb/routes/peerPzhAuth.js')(app, address, port);
     }
 
     function createPassport(serverUrl) {

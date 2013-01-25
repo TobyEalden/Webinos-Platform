@@ -7,20 +7,11 @@ block content
   script(type='text/javascript')
     setTimeout(function() {
     window.location.href = "#{externalPzhUrl}";
-    }, 15000);
+    }, 10000);
   div(id="externalRequestSuccess", data-role="content", data-theme="c")
-    h1 Successfully requested access to #{user}'s personal zone
-    p Your request has been sent for approval.
-    p Your details: 
-      ul
-        li Email: #{externaluser.email}
-        - if (externaluser.fullname) {
-          li Name: #{externaluser.fullname}
-        - } else {
-          li Name: #{externaluser.firstname} #{externaluser.lastname}
-        - }
-        li PZH URL : 
-          a(href="#{externalPzhUrl}") #{externalPzhUrl}
+    h3 Success!
+    p A friend request has been sent to #{user}'s personal zone.
+    p Once #{user} has approved your request you will be able to access their zone.
     p You will shortly be redirected back to your Personal Zone or click 
       a(href="#{externalPzhUrl}") here 
-      |to go manually
+      |to go now.

@@ -190,6 +190,7 @@ var Pzh_RPC = function (_parent) {
                         self.syncUpdateHash (validMsgObj.from, validMsgObj.payload.message);
                         break;
                     default:
+                        // Delegate to remote manager
                         if (!_parent.pzh_remoteManager.processMsg(validMsgObj)) {
                           _parent.pzh_state.logger.log("unknown message: " + validMsgObj.payload.status);
                         }

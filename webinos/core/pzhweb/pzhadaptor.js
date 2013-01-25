@@ -169,18 +169,6 @@ function manageStatus(payload, user, res) {
         case 'enrollPzpAuthCode':
             pzhTLS.send(user, {type:"authCode"}, pzpResponder(payload.user, payload.port, payload.address, payload.pzpPort, res));
             break;
-        case 'getFarmPZHs':
-            pzhTLS.send (user, {type:"getFarmPZHs"}, responseHandler (res));
-            break;
-        case 'getPZHPZPs':
-            pzhTLS.send (user, {type:"getPZHPZPs", targetPZH:payload.targetPZH}, responseHandler(res));
-            break;
-        case 'getPZHDetails':
-            pzhTLS.send (user, {type:"getPZHDetails", targetPZH:payload.targetPZH}, responseHandler(res));
-            break;
-        case 'getInstalledWidgets':
-            pzhTLS.send (user, {type:"getInstalledWidgets", targetPZP:payload.targetPZP}, responseHandler (res));
-            break;
          default:
             responseHandler(res).err({"error":"not valid message type"});
             break;
@@ -188,5 +176,26 @@ function manageStatus(payload, user, res) {
     }
 }
 
+PzhAdaptor.getFarmPZHs = function(res) {
+  pzhTLS.send (user, {type:"getFarmPZHs"}, responseHandler (res));
+}
 
+PzhAdaptor.getPZHPZPs = function(targetPZH,res) {
+  pzhTLS.send (user, {type:"getPZHPZPs", targetPZH:targetPZH}, responseHandler(res));
+}
 
+PzhAdaptor.getPZHDetails = function(targetPZH,res) {
+  pzhTLS.send (user, {type:"getPZHDetails", targetPZH:targetPZH}, responseHandler(res));
+}
+
+PzhAdaptor.getInstalledWidgets = function(targetPZP,res) {
+  pzhTLS.send (user, {type:"getInstalledWidgets", targetPZP:targetPZP}, responseHandler (res));
+}
+
+PzhAdaptor.getPendingFriends = function(targetPZH,res) {
+  pzhTLS.send (user, {type:"getPendingFriends", targetPZH: targetPZH}, responseHandler(res));
+}
+
+PzhAdaptor.approvePZHFriend = function(targetPZH, email) {
+  pzhTLS.send (user, {type:"approvePZHFriend", targetPZH: targetPZH, email: email}, responseHandler(res));
+}

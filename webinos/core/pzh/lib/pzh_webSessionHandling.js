@@ -46,7 +46,8 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "getFarmPZHs"        :getFarmPZHs,
         "getPZHPZPs"         :getPZHPZPs,
         "getPZHDetails"      :getPZHDetails,
-        "getInstalledWidgets":getInstalledWidgets
+        "getInstalledWidgets":getInstalledWidgets,
+        "getPendingFriends"  :getPendingFriends
     };
 
     function getLock() {
@@ -528,5 +529,21 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
                 };
       pzhs[pzhId].sendMessage (msg, obj.message.targetPZP);
     }
+
+    function getPendingFriends(conn, obj, userObj) {
+      var list = [];
+      var pzhId = obj.message.targetPZH;
+
+      if (pzhs.hasOwnProperty(pzhId)) {      
+        for (var item in pzhs[pzhId].config.untrustedCert) {
+            if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(item)) {
+                list.push({name:item, url:pzhs[pzhId].config.untrustedCert[item].url});
+            }
+        }
+      }
+
+      sendMsg(conn, obj.user, { type:"getPendingFriends", message:list });
+    }
+
 };
 module.exports = pzhWI

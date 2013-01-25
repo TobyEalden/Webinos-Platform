@@ -41,7 +41,7 @@ module.exports = function (app, address, port, state) {
               status: "getFarmPZHs"
             }
           };
-          pzhadaptor.fromWeb(req.user, dataSend, function(result) {
+          pzhadaptor.getFarmPZHs(req.user, function(result) {
             res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps PZH Farm", pzhList: result.message });
           });
         }
@@ -88,7 +88,7 @@ module.exports = function (app, address, port, state) {
         });
     });
 
-    app.get('/invite/:pzhId', function(req,res) {
+    app.get('/invite/:pzhId', ensureAuthenticated, function(req,res) {
       var dataSend = {          payload:{
           status: "getFarmPZHs"
         }
@@ -98,10 +98,25 @@ module.exports = function (app, address, port, state) {
       });
     });
     
+    app.get('/approve/:pzhId', ensureAuthenticated, function(req,res) {
+      var dataSend = {          payload:{
+          status: "getPendingFriends",
+          targetPZH: req.params.pzhId
+        }
+      };
+      pzhadaptor.fromWeb(req.user, dataSend, function(lst) {
+        res.render('approve', { serverName: getCurrentFarm(req.user), id:"approve", appTitle: appTitle, title: "Approve friend", pzh: req.params.pzhId, requestList: lst.message });
+      });
+    });
+    
+    app.get('/approve/:pzhId/:friendUrl', ensureAuthenticated, function(req,res) {
+      res.render('problem',{ serverName: getCurrentFarm(req.user), id:"problem", appTitle: appTitle, title: "Problem", error: "Not implemented."});
+    });
+    
     app.get('/nyi', function(req,res) {
       res.render('nyi',{ serverName: getCurrentFarm(req.user), id:"nyi", appTitle: appTitle, title: "Not Implemented"});
     });
-    
+        
     app.post('/main/:user/enrollPzp/', function (req, res) { // to use ensure authenticated, for some reason req.isAuthenticated retuns false
         pzhadaptor.fromWeb(req.params.user,
             {payload:{status:"enrollPzp", csr:req.body.csr, authCode:req.body.authCode, from:req.body.from}}, res);
@@ -114,21 +129,6 @@ module.exports = function (app, address, port, state) {
         } else {
             res.redirect('/pzh/' + address + "_" + req.params.user);
         }
-    });
-
-    // Arbitrary query interface.
-    app.post('/main/:user/query', ensureAuthenticated, function (req, res) {
-        logger.log("Body: " + require("util").inspect(req.body));
-        pzhadaptor.fromWeb(req.user, req.body, res);
-    });
-
-    // A couple of unused REST interfaces
-    app.post('/main/:user/zonestatus/', ensureAuthenticated, function (req, res) {
-        pzhadaptor.getZoneStatus(req.user, res);
-    });
-
-    app.all('/main/:user/about-me/', ensureAuthenticated, function (req, res) {
-        res.json(req.user);
     });
 
     // present certificates to an external party.
@@ -161,8 +161,7 @@ module.exports = function (app, address, port, state) {
         logger.log("External: " + externalEmail + " - " + externalPZH);
         if (externalEmail === req.user.emails[0].value) {
             logger.log('Cannot register own PZH ' + externalEmail);
-            res.writeHead(200);
-            res.end('Cannot register own PZH ' + externalEmail);
+            res.render("problem",{ serverName: getCurrentFarm(req.user), id:"problem", appTitle: appTitle, title: "Problem", error: "You cannot make friends with yourself."});
         } else {
             //get those certificates
             //"https://" + externalPZH + "/main/" + encodeURIComponent(externalEmail) + "/certificates/"
@@ -179,14 +178,12 @@ module.exports = function (app, address, port, state) {
                         res.redirect(redirectUrl);
                     } else {
                         logger.log('Certificate already exchanged');
-                        res.writeHead(200);
-                        res.end('Certificate already exchanged');
+                        res.render("problem",{ serverName: getCurrentFarm(req.user), id:"problem", appTitle: appTitle, title: "Problem", error: "This person is already your friend, or there is a pending friend request.<br /><br />Certificate already exchanged."});
                     }
                 });
             }, function (err) {
                 logger.log('Failed to retrieve certificate from remote host');
-                res.writeHead(200);
-                res.end('Failed to retrieve certificate from remote host');
+                res.render("problem",{ serverName: getCurrentFarm(req.user), id:"problem", appTitle: appTitle, title: "Problem", error: "Failed to retrieve certificate from remote host."});
             });
         }
 
@@ -213,8 +210,7 @@ module.exports = function (app, address, port, state) {
             if (answer.message) {
                 res.render("approve-user", {user:req.user, externalUser:req.params.externalemail});
             } else {
-                res.writeHead(200);
-                res.end('Failed to approve user ' + req.params.externalemail);
+                res.render("problem",{ serverName: getCurrentFarm(req.user), id:"problem", appTitle: appTitle, title: "Problem", error: "Failed to approve user " + req.params.externalemail + "."});
             }
         });
         //Args: None
@@ -223,13 +219,14 @@ module.exports = function (app, address, port, state) {
         //Actions: have a button that, once approved, add the external user's certificate details to the trusted list.
     });
 
-    app.post('/main/:user/make-user-decision/', ensureAuthenticated, function (req, res) {
-        if (req.body.decision && req.user) {
-            pzhadaptor.approveFriend(req.user, req.body.decision, res);
-        } else {
-            pzhadaptor.rejectFriend(req.user, req.body.decision, res);
-        }
-        res.redirect('/');
+    app.get('/approveFriend/:pzhId/:email', ensureAuthenticated, function (req, res) {
+      pzhadaptor.approveFriend(req.user, req.params.email, res);
+      res.redirect('/pzh/' + req.params.pzhId);
+    });
+
+    app.get('/rejectFriend/:pzhId/:email', ensureAuthenticated, function (req, res) {
+      pzhadaptor.rejectFriend(req.user, req.params.email, res);
+      res.redirect('/pzh/' + req.params.pzhId);
     });
 
     app.get('/login', function (req, res) {

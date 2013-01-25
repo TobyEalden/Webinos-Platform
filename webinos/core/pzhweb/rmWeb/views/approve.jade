@@ -1,0 +1,19 @@
+extends layout
+
+block content    
+  div(data-role='content')
+      ul(data-role='listview', data-inset='true',data-theme='a', data-divider-theme='b')
+        li(data-role='list-divider', role='heading')
+          |Pending friend requests
+        - if (requestList.length > 0) {
+          - for (var p in requestList) {
+                li #{requestList[p].name}
+                  div(style='text-align:right;')
+                    a(data-mini="true",data-inline="true",data-role="button",href='/approveFriend/#{pzh}/#{encodeURIComponent(requestList[p].url)}',data-icon='check') Approve
+                    a(data-mini="true",data-inline="true",data-role="button",href='/rejectFriend/#{pzh}/#{encodeURIComponent(requestList[p].url)}',data-icon='delete') Reject
+          - }
+        - } else {
+          li You have no pending friend requests.
+        - }
+        li(data-role="list-divider", role="heading")
+          a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh

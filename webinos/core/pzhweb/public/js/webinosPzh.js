@@ -54,9 +54,6 @@ var webinosPZH = {
                     case 'approveUser':
                         if (typeof webinosPZH.callbacks.approveUser === 'function') webinosPZH.callbacks.approveUser(msg.message);
                         break;
-                    default:
-                        console.log("unknown command - " + msg.cmd);
-                        break;
                 }
             }
         }
@@ -141,6 +138,6 @@ var webinosPZH = {
         approveUser:function (callback) {
             webinosPZH.callbacks.approveUser = callback;
             webinosPZH.send({payload:{status:'approveUser'}});
-        },
+        }
     }
 };

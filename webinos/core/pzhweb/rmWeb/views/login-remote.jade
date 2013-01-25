@@ -5,7 +5,9 @@ block content
     img(src='/images/logo.png', style='float:left;padding-right:10px;')
     p 
       strong Welcome 
-      | to the UbiApps PZH Farm. Please choose an authentication provider and sign in.
+      | to the UbiApps PZH Farm. 
+    p(style='clear:both;') To continue with your friend request, please sign-in to your friends' zone.
+    p Choose an authentication provider and sign in.
     div(id="login-choice")
       a(id="googleAuth",href="/main/#{user}/request-access-authenticate?externalprovider=google&externalCertUrl=#{externalCertUrl}&externalPZHUrl=#{externalPZHUrl}&externalEmailId=#{externalEmailId}",data-role="button",rel="external")
         img(src='https://ssl.gstatic.com/images/logos/google_logo_41.png', width='100px')

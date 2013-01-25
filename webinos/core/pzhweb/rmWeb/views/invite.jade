@@ -1,12 +1,26 @@
 extends layout
 
 block content
+  script
+    $(document).delegate('##{id}','pageinit',function() {
+      $('#inviteBtn').click(function() { 
+        var reqpzh = $('#manualPZH').val();
+        if (!reqpzh || reqpzh.length == 0 || reqpzh.indexOf('_') === -1) {
+          $('#feedback').html("Invalid PZH address.");
+        } else {
+          window.location.href = '/connect-friend/' + reqpzh;
+        }
+      });
+    });
+    
   div(data-role='content')
       ul(data-role='listview', data-inset='true',data-theme='a', data-divider-theme='b')
         li(data-role='list-divider', role='heading')
           |Invite somebody from this farm
+        - var counter = 0;
         - for (var p in pzhList) {
           - if (pzhList[p].url !== pzh) {
+            - counter++;
               li
                 - if (typeof pzhList[p].username === "undefined" || pzhList[p].username === "undefined undefined") {
                     a(href='/connect-friend/#{pzhList[p].url}')= pzhList[p].url
@@ -15,12 +29,15 @@ block content
                 - }
           - }
         - }
+        - if (counter === 0) {
+          li There is no-one else...
+        - }
         li(data-role="list-divider", role="heading")
           a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
-      form
-        ul(data-role='listview', data-inset='true',data-theme='a', data-divider-theme='b')
-          li(data-role='list-divider', role='heading')
-            |Invite somebody else
-          li
-            input(type='text', placeholder='pzh.acme.org/bob@example.com')
-            input(type='submit',value='Invite',data-icon='arrow-r',data-iconpos='right',data-inline='true',style='float:right;')
+      ul(data-role='listview', data-inset='true',data-theme='a', data-divider-theme='b')
+        li(data-role='list-divider', role='heading') Invite somebody else
+        li
+          input(id='manualPZH',type='text', placeholder='pzh.acme.org_bob@example.com')
+          span(id='feedback') 
+        li(data-role='list-divider', role='heading')
+          a(id='inviteBtn',href="#",data-role="button",data-icon='arrow-r',data-iconpos='right',data-inline='true') Invite

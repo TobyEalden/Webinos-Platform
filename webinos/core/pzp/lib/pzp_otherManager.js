@@ -212,6 +212,7 @@ var Pzp_OtherManager = function (_parent) {
                         updateHash (validMsgObj.payload.message);
                         break;
                     default:
+                        // Delegate to remote manager
                         if (!remoteManager.processMsg(validMsgObj)) {
                           logger.log("unknown pzp message: " + validMsgObj.payload.status);
                         }

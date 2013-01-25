@@ -7,9 +7,9 @@ block content
       - for (var pzh in pzhList) {
           li
             - if (typeof pzhList[pzh].username === "undefined" || pzhList[pzh].username === "undefined undefined") {
-              a(href='/pzh/#{pzhList[pzh].url}',data-transition="slide") #{pzhList[pzh].url}
+              a(href='/pzh/#{pzhList[pzh].url}',data-transition="flip") #{pzhList[pzh].url}
             - } else { 
-              a(href='/pzh/#{pzhList[pzh].url}',data-transition="slide",title="#{pzhList[pzh].url}") #{pzhList[pzh].username}
+              a(href='/pzh/#{pzhList[pzh].url}',data-transition="flip",title="#{pzhList[pzh].url}") #{pzhList[pzh].username}
             - }
       - }
       li(data-role="list-divider", role="heading")
