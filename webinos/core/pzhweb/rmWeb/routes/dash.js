@@ -43,8 +43,10 @@ module.exports = function (app, address, port, state) {
     });
     
     app.get('/pzh/:pzhId', ensureAuthenticated, function(req, res) {
-      pzhadaptor.getPZHPZPs(req.user, req.params.pzhId, function(result) {
-        res.render('pzh', { serverName: getCurrentFarm(req.user), id:"pzh", appTitle: appTitle, title: "PZH Details", pzh: req.params.pzhId, pzpList: result.message });
+      pzhadaptor.getPZHPZPs(req.user, req.params.pzhId, function(pzp_result) {
+        pzhadaptor.getPZHPZHs(req.user, req.params.pzhId, function(pzh_result) {
+          res.render('pzh', { serverName: getCurrentFarm(req.user), id:"pzh", appTitle: appTitle, title: "PZH Details", pzh: req.params.pzhId, pzpList: pzp_result.message, pzhList: pzh_result.message });
+        });
       });
     });
 

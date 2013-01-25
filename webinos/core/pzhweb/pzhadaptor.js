@@ -180,6 +180,10 @@ PzhAdaptor.getFarmPZHs = function(user, res) {
   pzhTLS.send (user, {type:"getFarmPZHs"}, responseHandler (res));
 }
 
+PzhAdaptor.getPZHPZHs = function(user, targetPZH,res) {
+  pzhTLS.send (user, {type:"getPZHPZHs", targetPZH:targetPZH}, responseHandler(res));
+}
+
 PzhAdaptor.getPZHPZPs = function(user, targetPZH,res) {
   pzhTLS.send (user, {type:"getPZHPZPs", targetPZH:targetPZH}, responseHandler(res));
 }

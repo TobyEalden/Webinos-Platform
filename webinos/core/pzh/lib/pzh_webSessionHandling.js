@@ -44,6 +44,7 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "getAllPzh":getAllPzhList,
         "approveUser"        :approveUser,
         "getFarmPZHs"        :getFarmPZHs,
+        "getPZHPZHs"         :getPZHPZHs,
         "getPZHPZPs"         :getPZHPZPs,
         "getPZHDetails"      :getPZHDetails,
         "getInstalledWidgets":getInstalledWidgets,
@@ -85,10 +86,13 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
     function getConnectedPzh(_instance) {
         var pzhs = [], i, list = Object.keys(_instance.config.trustedList.pzh);
         for (i = 0; i < list.length; i = i + 1) {
+            var splitIdx = list[i].indexOf("_");
+            var pzhId = list[i].substr(splitIdx+1);
             if (_instance.pzh_state.connectedPzh.hasOwnProperty(list[i])) {
-                pzhs.push({id:list[i].split("_")[1], url:list[i], isConnected:true});
+                pzhs.push({id:pzhId, url:list[i], isConnected:true});
             } else {
-                pzhs.push({id:list[i].split("_")[1], url:list[i], isConnected:false});
+                console.log("!!!!!!!!!!!!!!not connected pzhId: " + pzhId + " url: " + list[i]);
+                pzhs.push({id:pzhId, url:list[i], isConnected:false});
             }
         }
         pzhs.push({id:_instance.config.userData.email[0].value + " (Your Pzh)", url:_instance.config.metaData.serverName, isConnected:true});
@@ -481,15 +485,27 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
                 url:pzhId,
                 username   :pzhs[pzhId].config.userData.name,
                 email      :pzhs[pzhId].config.userData.email[0].value });
+            /*
             for (var connectedPzh in pzhs[pzhId].pzh_state.connectedPzh) {
               list.push({
                 url:connectedPzh,
                 username   :connectedPzh,
                 email      :connectedPzh});
             }
+            */
           }
         }
         sendMsg (conn, obj.user, { type: "getFarmPZHs", message:list });
+    }
+    
+    function getPZHPZHs (conn, obj, userObj) {
+      var pzhId = obj.message.targetPZH;
+      var list = [];
+      if (pzhs.hasOwnProperty(pzhId)) {
+        list = getConnectedPzh(pzhs[pzhId]);
+      }
+      
+      sendMsg (conn, obj.user, { type: "getPZHPZHs", message:list });
     }
     
     function getPZHPZPs (conn, obj, userObj) {

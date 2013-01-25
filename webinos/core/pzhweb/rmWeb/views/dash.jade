@@ -4,12 +4,12 @@ block content
   div(data-role='content')
     ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
       li(data-role="list-divider",role="heading") Connected PZHs
-      - for (var pzh in pzhList) {
+      - for (var p in pzhList) {
           li
-            - if (pzhList[pzh].url === serverName) {
-              a(href='/pzh/#{pzhList[pzh].url}',data-transition="flip",title="#{pzhList[pzh].url}") #{pzhList[pzh].username} (You)
+            - if (pzhList[p].url === serverName) {
+              a(href='/pzh/#{pzhList[p].url}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username} (You)
             - } else { 
-              a(href='/pzh/#{pzhList[pzh].url}',data-transition="flip",title="#{pzhList[pzh].url}") #{pzhList[pzh].username}
+              a(href='/pzh/#{pzhList[p].url}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username}
             - }
       - }
       li(data-role="list-divider", role="heading")

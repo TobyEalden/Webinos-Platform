@@ -8,7 +8,7 @@ block content
         if (!reqpzh || reqpzh.length == 0 || reqpzh.indexOf('_') === -1) {
           $('#feedback').html("Invalid PZH address.");
         } else {
-          window.location.href = '/connect-friend/' + reqpzh;
+          window.location.href = '/connect-friend/#{pzh}/' + reqpzh;
         }
       });
     });

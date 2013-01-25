@@ -41,3 +41,32 @@ block content
       - }
       li(data-role="list-divider", role="heading")
         a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
+
+    - counter = 0;
+    - var haveConnected = false;
+    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")      
+      li(data-role="list-divider", role="heading")  Connected PZHs
+      - for (var p in pzhList) {
+          - if (pzhList[p].isConnected) {
+            - counter++;
+            - if (pzhList[p].url !== pzh) {
+              - haveConnected = true;
+              li
+                a(href='/pzp/#{pzhList[p].url}',data-transition="slide") #{pzhList[p].id}
+            - }
+          - }
+      - }
+      - if (!haveConnected) {
+          li none
+      - }
+      - if (counter !== pzhList.length) {
+        li(data-role="list-divider", role="heading") Disconnected PZHs
+        - for (var p in pzhList) {
+            - if (!pzhList[p].isConnected) {
+                li #{pzhList[p].id}
+            - }
+        - }
+      - }
+      li(data-role="list-divider", role="heading")
+        a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
+        
