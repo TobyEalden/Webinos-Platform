@@ -2,70 +2,77 @@ extends layout
 
 block content
   div(data-role='content')
-    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
-      li(data-role="list-divider",role="heading") #{pzh}
-      - if (pzh === serverName) {
+    div(style="text-align:center") #{pzhName}
+    div(data-role='collapsible',data-content-theme="a")
+      h3 Zone Options
+      ul(data-role='listview', data-divider-theme="d")
+        li(data-role="list-divider",role="heading") General
+        - if (pzh === serverName) {
+          li
+            a(href='/invite/#{pzh}',data-transition='slide') Invite a Friend
+        - }
         li
-          a(href='/invite/#{pzh}',data-transition='slide') Invite a Friend
-      - }
-      li
-        a(href='/approve/#{pzh}',data-transition='slide') Approve a Friend
-      li
-        a(href='/about-me/#{pzh}') About this PZH
-      li(data-role="list-divider",role="heading") Administration
-      li
-        a(href='/nyi') Service Configuration
-      li
-        a(href='/nyi') Diagnostics
+          a(href='/approve/#{pzh}',data-transition='slide') Approve a Friend
+        li
+          a(href='/about-me/#{pzh}',data-transition='slide') About this Zone
+        li(data-role="list-divider",role="heading") Administration
+        li
+          a(href='/nyi',data-transition='slide') Service Configuration
+        li
+          a(href='/nyi',data-transition='slide') Diagnostics
 
-    - var counter = 0;
-    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")      
-      li(data-role="list-divider", role="heading")  Connected PZPs
-      - for (var pzp in pzpList) {
-          - if (pzpList[pzp].isConnected) {
-            - counter++;
-            li
-              a(href='/pzp/#{pzpList[pzp].url}',data-transition="slide") #{pzpList[pzp].id}
-          - }
-      - }
-      - if (counter === 0) {
-          li none
-      - }
-      - if (counter !== pzpList.length) {
-        li(data-role="list-divider", role="heading") Disconnected PZPs
+    div(data-role='collapsible',data-content-theme="a")
+      h3 Devices
+      - var counter = 0;
+      ul(data-role='listview', data-inset='false', data-theme="a", data-divider-theme="d")      
+        li(data-role="list-divider", role="heading")  Devices Online 
         - for (var pzp in pzpList) {
-            - if (!pzpList[pzp].isConnected) {
-                li #{pzpList[pzp].id}
+            - if (pzpList[pzp].isConnected) {
+              - counter++; 
+              li
+                a(href='/pzp/#{pzpList[pzp].url}',data-transition="slide",title="#{pzpList[pzp].url}") #{pzpList[pzp].id}
             - }
         - }
-      - }
-      li(data-role="list-divider", role="heading")
-        a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
-
-    - counter = 0;
-    - var haveConnected = false;
-    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")      
-      li(data-role="list-divider", role="heading")  Connected Friends
-      - for (var p in pzhList) {
-          - if (pzhList[p].isConnected) {
-            - counter++;
-            - if (pzhList[p].url !== pzh) {
-              - haveConnected = true;
-              li #{pzhList[p].id}
-            - }
+        - if (counter === 0) {
+            li(data-theme="c") none
+        - }
+        - if (counter !== pzpList.length) {
+          li(data-role="list-divider", role="heading") Devices Offline
+          - for (var pzp in pzpList) {
+              - if (!pzpList[pzp].isConnected) {
+                  li(title="#{pzpList[pzp].url}",data-theme="c") #{pzpList[pzp].id}
+              - }
           - }
-      - }
-      - if (!haveConnected) {
-          li none
-      - }
-      - if (counter !== pzhList.length) {
-        li(data-role="list-divider", role="heading") Disconnected Friends
+        - }
+        li(data-role="list-divider", role="heading")
+          a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
+
+    div(data-role='collapsible',data-content-theme="a")
+      h3 Friends
+      - counter = 0;
+      - var haveConnected = false;
+      ul(data-role='listview', data-inset='false', data-theme="c", data-divider-theme="d")      
+        li(data-role="list-divider", role="heading")  Friends Online
         - for (var p in pzhList) {
-            - if (!pzhList[p].isConnected) {
-                li #{pzhList[p].id}
+            - if (pzhList[p].isConnected) {
+              - counter++;
+              - if (pzhList[p].url !== pzh) {
+                - haveConnected = true;
+                li(title="#{pzhList[p].url}") #{pzhList[p].id}
+              - }
             - }
         - }
-      - }
-      li(data-role="list-divider", role="heading")
-        a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
-        
+        - if (!haveConnected) {
+            li(data-theme="c") none
+        - }
+        - if (counter !== pzhList.length) {
+          li(data-role="list-divider", role="heading") Friends Offline
+          - for (var p in pzhList) {
+              - if (!pzhList[p].isConnected) {
+                  li(title="#{pzhList[p].url}") #{pzhList[p].id}
+              - }
+          - }
+        - }
+        li(data-role="list-divider", role="heading")
+          a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
+

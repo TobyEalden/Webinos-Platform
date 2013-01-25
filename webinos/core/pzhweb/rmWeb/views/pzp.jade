@@ -2,12 +2,14 @@ extends layout
 
 block content
   div(data-role='content')
-    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
-      li(data-role="list-divider", role="heading") Options for #{pzp}
+    div(style="text-align:center") #{pzp}
+
+    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="d")
+      li(data-role="list-divider", role="heading") Device Options
       li
-        a(href='/installed/#{pzh}/#{pzp}', data-transition="slide") Show Installed Widgets
+        a(href='/installed/#{pzh}/#{pzp}', data-transition="slide") Show Installed Apps
       li
-        a(href='/nyi', data-transition="slide") Install Widget
+        a(href='/nyi', data-transition="slide") Install App
       li
         a(href='/nyi', data-transition="slide") Wipe
       li

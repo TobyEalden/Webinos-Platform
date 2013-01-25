@@ -2,13 +2,13 @@ extends layout
 
 block content
   div(data-role='content')
-      ul(data-role='listview', data-inset='true', data-theme='b', data-theme="a", data-divider-theme="b")
-        li(data-role="list-divider", role="heading") Widgets installed on #{pzp}
+      ul(data-role='listview', data-inset='true', data-theme='b', data-theme="a", data-divider-theme="d")
+        li(data-role="list-divider", role="heading") Apps installed on #{pzp}
         - if (widgetList.length > 0) {
           - for (var wgt in widgetList) {
           -   var name = widgetList[wgt].name ? widgetList[wgt].name.visual : widgetList[wgt].id;
               li
-                a(href='#',data-transition="slide") #{name}
+                a(href='/nyi',data-transition="slide") #{name}
           - }
         - } else {
             li no widgets installed

@@ -37,32 +37,32 @@ module.exports = function (app, address, port, state) {
             req.session.pzpPort = "";
         } else {
           pzhadaptor.getFarmPZHs(req.user, function(result) {
-            res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps PZH Farm", pzhList: result.message });
+            res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps Zone Farm", pzhList: result.message });
           });
         }
     });
     
-    app.get('/pzh/:pzhId', ensureAuthenticated, function(req, res) {
+    app.get('/pzh/:pzhId/:pzhUsername', ensureAuthenticated, function(req, res) {
       pzhadaptor.getPZHPZPs(req.user, req.params.pzhId, function(pzp_result) {
         pzhadaptor.getPZHPZHs(req.user, req.params.pzhId, function(pzh_result) {
-          res.render('pzh', { serverName: getCurrentFarm(req.user), id:"pzh", appTitle: appTitle, title: "PZH Details", pzh: req.params.pzhId, pzpList: pzp_result.message, pzhList: pzh_result.message });
+          res.render('pzh', { serverName: getCurrentFarm(req.user), id:"pzh", appTitle: appTitle, title: "Zone Details", pzhName: req.params.pzhUsername, pzh: req.params.pzhId, pzpList: pzp_result.message, pzhList: pzh_result.message });
         });
       });
     });
 
     app.get('/pzp/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
-      res.render('pzp', { serverName: getCurrentFarm(req.user), id:"pzp", appTitle: appTitle, title: req.params.pzpId, pzh: req.params.pzhId, pzp: req.params.pzpId});
+      res.render('pzp', { serverName: getCurrentFarm(req.user), id:"pzp", appTitle: appTitle, title: "Device", pzh: req.params.pzhId, pzp: req.params.pzpId});
     });
 
     app.get('/installed/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
       pzhadaptor.getInstalledWidgets(req.user, req.params.pzhId + "/" + req.params.pzpId, function(result) {
-        res.render('installed', { serverName: getCurrentFarm(req.user), id:"installed", appTitle: appTitle, title: req.params.pzpId + " widgets", widgetList: result.message.installedList, pzh: req.params.pzhId, pzp: req.params.pzpId });
+        res.render('installed', { serverName: getCurrentFarm(req.user), id:"installed", appTitle: appTitle, title: "Apps", widgetList: result.message.installedList, pzh: req.params.pzhId, pzp: req.params.pzpId });
       });      
     });
     
     app.get('/about-me/:pzhId', ensureAuthenticated, function(req,res) {
         pzhadaptor.getPZHDetails(req.user, req.params.pzhId, function(result) {
-          res.render('about-me', { serverName: getCurrentFarm(req.user), id:"about-me", appTitle: appTitle, title: "About PZH", about: result.message, pzh: req.params.pzhId });
+          res.render('about-me', { serverName: getCurrentFarm(req.user), id:"about-me", appTitle: appTitle, title: "About Zone", about: result.message, pzh: req.params.pzhId });
         });
     });
 
@@ -200,7 +200,7 @@ module.exports = function (app, address, port, state) {
             req.session.isPzp = true;
             req.session.pzpPort = req.query.port;
         }
-        res.render('login', { user:req.user, id:"login", appTitle: appTitle, title: "UbiApps PZH Farm" });
+        res.render('login', { user:req.user, id:"login", appTitle: appTitle, title: "UbiApps Zone Farm" });
     });
     // GET /auth/google
     //   Use passport.authenticate() as route middleware to authenticate the

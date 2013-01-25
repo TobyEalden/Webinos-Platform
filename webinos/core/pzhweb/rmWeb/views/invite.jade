@@ -6,7 +6,7 @@ block content
       $('#inviteBtn').click(function() { 
         var reqpzh = $('#manualPZH').val();
         if (!reqpzh || reqpzh.length == 0 || reqpzh.indexOf('_') === -1) {
-          $('#feedback').html("Invalid PZH address.");
+          $('#feedback').html("Invalid Zone address.");
         } else {
           window.location.href = '/connect-friend/#{pzh}/' + reqpzh;
         }
@@ -14,7 +14,7 @@ block content
     });
     
   div(data-role='content')
-      ul(data-role='listview', data-inset='true',data-theme='a', data-divider-theme='b')
+      ul(data-role='listview', data-inset='true',data-theme='a', data-divider-theme='d')
         li(data-role='list-divider', role='heading')
           |Invite somebody from this farm
         - var counter = 0;
@@ -30,13 +30,13 @@ block content
           - }
         - }
         - if (counter === 0) {
-          li There is no-one else...
+          li(data-theme="c") There is no-one else...
         - }
         li(data-role="list-divider", role="heading")
           a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
-      ul(data-role='listview', data-inset='true',data-theme='a', data-divider-theme='b')
+      ul(data-role='listview', data-inset='true',data-theme='a', data-divider-theme='d')
         li(data-role='list-divider', role='heading') Invite somebody else
-        li
+        li(data-theme="c")
           input(id='manualPZH',type='text', placeholder='pzh.acme.org_bob@example.com')
           span(id='feedback') 
         li(data-role='list-divider', role='heading')

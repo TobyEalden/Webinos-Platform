@@ -2,14 +2,14 @@ extends layout
 
 block content
   div(data-role='content')
-    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
-      li(data-role="list-divider",role="heading") Connected PZHs
+    ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="d")
+      li(data-role="list-divider",role="heading") Zones Online
       - for (var p in pzhList) {
           li
             - if (pzhList[p].url === serverName) {
-              a(href='/pzh/#{pzhList[p].url}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username} (You)
+              a(href='/pzh/#{pzhList[p].url}/#{pzhList[p].username}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username} (You)
             - } else { 
-              a(href='/pzh/#{pzhList[p].url}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username}
+              a(href='/pzh/#{pzhList[p].url}/#{pzhList[p].username}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username}
             - }
       - }
       li(data-role="list-divider", role="heading")

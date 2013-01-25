@@ -12,12 +12,12 @@ block head
       console.error ("Connection Error: " + error.toString ());
     }
     channel.onclose = function () {
-      console.log ("PZP Connection Closed");
+      console.log ("Zone Connection Closed");
     }
     channel.onmessage = function (message) {
       var data = JSON.parse (message.data);
       if (data.payload && data.payload.status === "csrAuthCodeByPzp") {
-        //respond back to the PZP
+        //respond back to the Zone
         var req = new XMLHttpRequest ();
         req.onreadystatechange = function() {
           if (req.readyState === 4) {
@@ -47,5 +47,5 @@ block head
 
 block content
   div(data-role='content')
-    h1  Currently your device is being enrolled at the PZH.. 
-    | Please hold you will redirected automatically to your PZP
+    h1  Currently your device is being enrolled at the Zone.. 
+    | Please hold you will redirected automatically to your Zone
