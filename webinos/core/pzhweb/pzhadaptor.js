@@ -176,26 +176,30 @@ function manageStatus(payload, user, res) {
     }
 }
 
-PzhAdaptor.getFarmPZHs = function(res) {
+PzhAdaptor.getFarmPZHs = function(user, res) {
   pzhTLS.send (user, {type:"getFarmPZHs"}, responseHandler (res));
 }
 
-PzhAdaptor.getPZHPZPs = function(targetPZH,res) {
+PzhAdaptor.getPZHPZPs = function(user, targetPZH,res) {
   pzhTLS.send (user, {type:"getPZHPZPs", targetPZH:targetPZH}, responseHandler(res));
 }
 
-PzhAdaptor.getPZHDetails = function(targetPZH,res) {
+PzhAdaptor.getPZHDetails = function(user, targetPZH,res) {
   pzhTLS.send (user, {type:"getPZHDetails", targetPZH:targetPZH}, responseHandler(res));
 }
 
-PzhAdaptor.getInstalledWidgets = function(targetPZP,res) {
+PzhAdaptor.getInstalledWidgets = function(user, targetPZP,res) {
   pzhTLS.send (user, {type:"getInstalledWidgets", targetPZP:targetPZP}, responseHandler (res));
 }
 
-PzhAdaptor.getPendingFriends = function(targetPZH,res) {
+PzhAdaptor.getPendingFriends = function(user, targetPZH,res) {
   pzhTLS.send (user, {type:"getPendingFriends", targetPZH: targetPZH}, responseHandler(res));
 }
 
-PzhAdaptor.approvePZHFriend = function(targetPZH, email) {
-  pzhTLS.send (user, {type:"approvePZHFriend", targetPZH: targetPZH, email: email}, responseHandler(res));
+PzhAdaptor.approvePZHFriend = function(user, targetPZH, email, res) {
+  pzhTLS.send (user, {type:"approvePZHFriend", targetPZH: targetPZH, externalEmail: email}, responseHandler(res));
+}
+
+PzhAdaptor.rejectPZHFriend = function(user, targetPZH, email, res) {
+  pzhTLS.send (user, {type:"rejectPZHFriend", targetPZH: targetPZH, externalEmail: email}, responseHandler(res));
 }

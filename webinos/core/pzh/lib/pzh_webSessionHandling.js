@@ -47,7 +47,9 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "getPZHPZPs"         :getPZHPZPs,
         "getPZHDetails"      :getPZHDetails,
         "getInstalledWidgets":getInstalledWidgets,
-        "getPendingFriends"  :getPendingFriends
+        "getPendingFriends"  :getPendingFriends,
+        "approvePZHFriend"   :approvePZHFriend,
+        "rejectPZHFriend"    :rejectPZHFriend
     };
 
     function getLock() {
@@ -545,5 +547,54 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
       sendMsg(conn, obj.user, { type:"getPendingFriends", message:list });
     }
 
+    function approvePZHFriend(conn, obj, userObj) {
+      var pzhId = obj.message.targetPZH;
+      if (pzhs.hasOwnProperty(pzhId)) {
+        if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
+            logger.log("Approving friend request for " + obj.message.externalEmail + " by " + pzhs[pzhId].config.userData.emails[0].value);
+            // Store Certificates
+            var details = pzhs[pzhId].config.untrustedCert[obj.message.externalEmail], name = details.host + "_" + obj.message.externalEmail;
+            if (details.port && parseInt(details.port) !== 443) {
+                name = details.host + ":" + details.port + "_" + obj.message.externalEmail;
+            }
+            if (!pzhs[pzhId].config.cert.external.hasOwnProperty(name)) {
+                pzhs[pzhId].config.cert.external[name] = details;
+                pzhs[pzhId].config.storeCertificate(pzhs[pzhId].config.cert.external, "external");
+                pzhs[pzhId].setConnParam(function (status, certificateParam) {
+                    if (status) {
+                        var id = hostname + "_" + pzhs[pzhId].config.userData.email[0].value;
+                        if (port !== 443) {
+                            id = hostname + ":" + port + "_" + pzhs[pzhId].config.userData.email[0].value;
+                        }
+                        refreshPzh(id, certificateParam);
+                        pzhs[pzhId].pzh_pzh.connectOtherPZH(name, certificateParam);
+                    }
+                });
+            }
+            if (!pzhs[pzhId].config.trustedList.pzh.hasOwnProperty(name)) {
+                pzhs[pzhId].config.trustedList.pzh[name] = {};
+                pzhs[pzhId].config.storeTrustedList(pzhs[pzhId].config.trustedList);
+            }
+            delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
+            pzhs[pzhId].config.storeUntrustedCert(pzhs[pzhId].config.untrustedCert);
+        }
+        sendMsg(conn, obj.user, { type:"approvePZHFriend", message:true });
+      } else {
+        sendMsg(conn, obj.user, { type:"approvePZHFriend", message:false });
+      }
+    }
+
+    function rejectPZHFriend(conn, obj, userObj) {
+      var pzhId = obj.message.targetPZH;
+      if (pzhs.hasOwnProperty(pzhId)) {
+        if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
+            //logger.log("Rejecting friend request by " + obj.message.externalEmail + " for " + pzhs[pzhId].config.userData.emails[0].value);
+            delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
+        }
+        sendMsg(conn, obj.user, { type:"rejectPZHFriend", message:true });
+      } else {
+        sendMsg(conn, obj.user, { type:"rejectPZHFriend", message:false });
+      }
+    }
 };
 module.exports = pzhWI

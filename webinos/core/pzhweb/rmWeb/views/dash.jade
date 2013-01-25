@@ -6,8 +6,8 @@ block content
       li(data-role="list-divider",role="heading") Connected PZHs
       - for (var pzh in pzhList) {
           li
-            - if (typeof pzhList[pzh].username === "undefined" || pzhList[pzh].username === "undefined undefined") {
-              a(href='/pzh/#{pzhList[pzh].url}',data-transition="flip") #{pzhList[pzh].url}
+            - if (pzhList[pzh].url === serverName) {
+              a(href='/pzh/#{pzhList[pzh].url}',data-transition="flip",title="#{pzhList[pzh].url}") #{pzhList[pzh].username} (You)
             - } else { 
               a(href='/pzh/#{pzhList[pzh].url}',data-transition="flip",title="#{pzhList[pzh].url}") #{pzhList[pzh].username}
             - }

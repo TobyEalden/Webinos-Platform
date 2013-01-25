@@ -23,9 +23,9 @@ block content
             - counter++;
               li
                 - if (typeof pzhList[p].username === "undefined" || pzhList[p].username === "undefined undefined") {
-                    a(href='/connect-friend/#{pzhList[p].url}')= pzhList[p].url
+                    a(href='/connect-friend/#{pzh}/#{pzhList[p].url}')= pzhList[p].url
                 - } else {
-                    a(href='/connect-friend/#{pzhList[p].url}', title='#{pzhList[p].url}')= pzhList[p].username
+                    a(href='/connect-friend/#{pzh}/#{pzhList[p].url}', title='#{pzhList[p].url}')= pzhList[p].username
                 - }
           - }
         - }

@@ -22,6 +22,7 @@ module.exports = function (app, address, port) {
         logger = dependency.global.require(dependency.global.util.location, "lib/logging.js")(__filename) || console,
         pzhAdaptor = require('../../pzhadaptor.js'),
         helper = require('../../routes/helper.js');
+    var appTitle = "UbiApps";
 
     var attr = new openid.AttributeExchange({
         "http://axschema.org/contact/country/home":"required",

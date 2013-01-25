@@ -9,8 +9,8 @@ block content
           - for (var p in requestList) {
                 li #{requestList[p].name}
                   div(style='text-align:right;')
-                    a(data-mini="true",data-inline="true",data-role="button",href='/approveFriend/#{pzh}/#{encodeURIComponent(requestList[p].url)}',data-icon='check') Approve
-                    a(data-mini="true",data-inline="true",data-role="button",href='/rejectFriend/#{pzh}/#{encodeURIComponent(requestList[p].url)}',data-icon='delete') Reject
+                    a(data-mini="true",data-inline="true",data-role="button",href='/approveFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='check') Approve
+                    a(data-mini="true",data-inline="true",data-role="button",href='/rejectFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='delete') Reject
           - }
         - } else {
           li You have no pending friend requests.

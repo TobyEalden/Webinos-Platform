@@ -27,7 +27,7 @@ module.exports = function (app, address, port, state) {
     var appTitle = "UbiApps";
     
     function getCurrentFarm(user) {
-      return address + "/" + decodeURIComponent(getUserPath(user));
+      return address + "_" + decodeURIComponent(getUserPath(user));
     }
     
     app.get('/', ensureAuthenticated, function (req, res) {
@@ -36,11 +36,6 @@ module.exports = function (app, address, port, state) {
             req.session.isPzp = "";
             req.session.pzpPort = "";
         } else {
-          var dataSend = {          
-            payload: {
-              status: "getFarmPZHs"
-            }
-          };
           pzhadaptor.getFarmPZHs(req.user, function(result) {
             res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps PZH Farm", pzhList: result.message });
           });
@@ -48,13 +43,7 @@ module.exports = function (app, address, port, state) {
     });
     
     app.get('/pzh/:pzhId', ensureAuthenticated, function(req, res) {
-      var dataSend = {          
-        payload:{
-          status: "getPZHPZPs",
-          targetPZH: req.params.pzhId
-        }
-      };
-      pzhadaptor.fromWeb(req.user, dataSend, function(result) {
+      pzhadaptor.getPZHPZPs(req.user, req.params.pzhId, function(result) {
         res.render('pzh', { serverName: getCurrentFarm(req.user), id:"pzh", appTitle: appTitle, title: "PZH Details", pzh: req.params.pzhId, pzpList: result.message });
       });
     });
@@ -64,62 +53,35 @@ module.exports = function (app, address, port, state) {
     });
 
     app.get('/installed/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
-      var dataSend = {          
-        payload:{
-          status: "getInstalledWidgets",
-          targetPZP: req.params.pzhId + "/" + req.params.pzpId
-        }
-      };
-      pzhadaptor.fromWeb(req.user, dataSend, function(result) {
-        console.log("got response! " + require("util").inspect(result));
+      pzhadaptor.getInstalledWidgets(req.user, req.params.pzhId + "/" + req.params.pzpId, function(result) {
         res.render('installed', { serverName: getCurrentFarm(req.user), id:"installed", appTitle: appTitle, title: req.params.pzpId + " widgets", widgetList: result.message.installedList, pzh: req.params.pzhId, pzp: req.params.pzpId });
       });      
     });
     
     app.get('/about-me/:pzhId', ensureAuthenticated, function(req,res) {
-      var dataSend = {
-          payload: {
-            status: "getPZHDetails",
-            targetPZH: req.params.pzhId 
-          }
-        };
-        pzhadaptor.fromWeb(req.user, dataSend, function(result) {
+        pzhadaptor.getPZHDetails(req.user, req.params.pzhId, function(result) {
           res.render('about-me', { serverName: getCurrentFarm(req.user), id:"about-me", appTitle: appTitle, title: "About PZH", about: result.message, pzh: req.params.pzhId });
         });
     });
 
     app.get('/invite/:pzhId', ensureAuthenticated, function(req,res) {
-      var dataSend = {          payload:{
-          status: "getFarmPZHs"
-        }
-      };
-      pzhadaptor.fromWeb(req.user, dataSend, function(lst) {
+      pzhadaptor.getFarmPZHs(req.user, function(lst) {
         res.render('invite', { serverName: getCurrentFarm(req.user), id:"invite", appTitle: appTitle, title: "Invite a Friend", pzh: req.params.pzhId, pzhList: lst.message });
       });
     });
     
     app.get('/approve/:pzhId', ensureAuthenticated, function(req,res) {
-      var dataSend = {          payload:{
-          status: "getPendingFriends",
-          targetPZH: req.params.pzhId
-        }
-      };
-      pzhadaptor.fromWeb(req.user, dataSend, function(lst) {
+      pzhadaptor.getPendingFriends(req.user, req.params.pzhId, function(lst) {
         res.render('approve', { serverName: getCurrentFarm(req.user), id:"approve", appTitle: appTitle, title: "Approve friend", pzh: req.params.pzhId, requestList: lst.message });
       });
     });
-    
-    app.get('/approve/:pzhId/:friendUrl', ensureAuthenticated, function(req,res) {
-      res.render('problem',{ serverName: getCurrentFarm(req.user), id:"problem", appTitle: appTitle, title: "Problem", error: "Not implemented."});
-    });
-    
+        
     app.get('/nyi', function(req,res) {
       res.render('nyi',{ serverName: getCurrentFarm(req.user), id:"nyi", appTitle: appTitle, title: "Not Implemented"});
     });
         
     app.post('/main/:user/enrollPzp/', function (req, res) { // to use ensure authenticated, for some reason req.isAuthenticated retuns false
-        pzhadaptor.fromWeb(req.params.user,
-            {payload:{status:"enrollPzp", csr:req.body.csr, authCode:req.body.authCode, from:req.body.from}}, res);
+        pzhadaptor.fromWeb(req.params.user,{payload:{status:"enrollPzp", csr:req.body.csr, authCode:req.body.authCode, from:req.body.from}}, res);
     });
 
     app.get('/main/:user/', ensureAuthenticated, function (req, res) {
@@ -150,16 +112,16 @@ module.exports = function (app, address, port, state) {
     });
 
     //Certificate exchange...
-    app.get('/connect-friend/:pzhId', ensureAuthenticated, function (req, res) {
+    app.get('/connect-friend/:pzhId/:connectPzhId', ensureAuthenticated, function (req, res) {
         //Args: The external user's email address and PZH provider
         //Auth: User must have logged into their PZH
         //UI: NONE
         //Actions: adds the friend's details to the list of 'waiting for approval', redirects the user to the external PZH
-        var splitIdx = req.params.pzhId.indexOf('_');
-        var externalEmail = req.params.pzhId.substr(splitIdx+1);
-        var externalPZH = req.params.pzhId.substr(0,splitIdx);;
+        var splitIdx = req.params.connectPzhId.indexOf('_');
+        var externalEmail = req.params.connectPzhId.substr(splitIdx+1);
+        var externalPZH = req.params.connectPzhId.substr(0,splitIdx);;
         logger.log("External: " + externalEmail + " - " + externalPZH);
-        if (externalEmail === req.user.emails[0].value) {
+        if (req.params.pzhId === req.params.connectPzhId) {
             logger.log('Cannot register own PZH ' + externalEmail);
             res.render("problem",{ serverName: getCurrentFarm(req.user), id:"problem", appTitle: appTitle, title: "Problem", error: "You cannot make friends with yourself."});
         } else {
@@ -220,13 +182,15 @@ module.exports = function (app, address, port, state) {
     });
 
     app.get('/approveFriend/:pzhId/:email', ensureAuthenticated, function (req, res) {
-      pzhadaptor.approveFriend(req.user, req.params.email, res);
-      res.redirect('/pzh/' + req.params.pzhId);
+      pzhadaptor.approvePZHFriend(req.user, req.params.pzhId, req.params.email, function() {
+        res.redirect('/pzh/' + req.params.pzhId);
+      });
     });
 
     app.get('/rejectFriend/:pzhId/:email', ensureAuthenticated, function (req, res) {
-      pzhadaptor.rejectFriend(req.user, req.params.email, res);
-      res.redirect('/pzh/' + req.params.pzhId);
+      pzhadaptor.rejectPZHFriend(req.user, req.params.pzhId, req.params.email,function() {
+        res.redirect('/pzh/' + req.params.pzhId);
+      });
     });
 
     app.get('/login', function (req, res) {
