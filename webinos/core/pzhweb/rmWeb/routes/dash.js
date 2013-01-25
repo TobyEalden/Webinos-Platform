@@ -36,13 +36,13 @@ module.exports = function (app, address, port, state) {
             req.session.isPzp = "";
             req.session.pzpPort = "";
         } else {
-//          res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps PZH Farm" });
-          var dataSend = {          payload:{
+          var dataSend = {          
+            payload: {
               status: "getFarmPZHs"
             }
           };
-          pzhadaptor.fromWeb(req.user, dataSend, function(lst) {
-            res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps PZH Farm", pzhList: lst.message });
+          pzhadaptor.fromWeb(req.user, dataSend, function(result) {
+            res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", appTitle: appTitle, title: "UbiApps PZH Farm", pzhList: result.message });
           });
         }
     });
@@ -87,6 +87,16 @@ module.exports = function (app, address, port, state) {
           res.render('about-me', { serverName: getCurrentFarm(req.user), id:"about-me", appTitle: appTitle, title: "About PZH", about: result.message, pzh: req.params.pzhId });
         });
     });
+
+    app.get('/invite/:pzhId', function(req,res) {
+      var dataSend = {          payload:{
+          status: "getFarmPZHs"
+        }
+      };
+      pzhadaptor.fromWeb(req.user, dataSend, function(lst) {
+        res.render('invite', { serverName: getCurrentFarm(req.user), id:"invite", appTitle: appTitle, title: "Invite a Friend", pzh: req.params.pzhId, pzhList: lst.message });
+      });
+    });
     
     app.get('/nyi', function(req,res) {
       res.render('nyi',{ serverName: getCurrentFarm(req.user), id:"nyi", appTitle: appTitle, title: "Not Implemented"});
@@ -102,7 +112,7 @@ module.exports = function (app, address, port, state) {
             logger.log(encodeURIComponent(req.params.user) + " does not equal " + getUserPath(req.user));
             res.redirect('/login');
         } else {
-            res.render('main', { user:req.user });
+            res.redirect('/pzh/' + address + "_" + req.params.user);
         }
     });
 
@@ -140,15 +150,17 @@ module.exports = function (app, address, port, state) {
     });
 
     //Certificate exchange...
-    app.get('/main/:user/connect-friend', ensureAuthenticated, function (req, res) {
+    app.get('/connect-friend/:pzhId', ensureAuthenticated, function (req, res) {
         //Args: The external user's email address and PZH provider
         //Auth: User must have logged into their PZH
         //UI: NONE
         //Actions: adds the friend's details to the list of 'waiting for approval', redirects the user to the external PZH
-        var externalEmail = req.query.externalemail;
-        var externalPZH = req.query.externalpzh;
+        var splitIdx = req.params.pzhId.indexOf('_');
+        var externalEmail = req.params.pzhId.substr(splitIdx+1);
+        var externalPZH = req.params.pzhId.substr(0,splitIdx);;
         logger.log("External: " + externalEmail + " - " + externalPZH);
         if (externalEmail === req.user.emails[0].value) {
+            logger.log('Cannot register own PZH ' + externalEmail);
             res.writeHead(200);
             res.end('Cannot register own PZH ' + externalEmail);
         } else {
@@ -157,19 +169,22 @@ module.exports = function (app, address, port, state) {
             helper.getCertsFromHost(externalEmail, externalPZH, function (certs) {
                 pzhadaptor.storeExternalUserCert(req.user, externalEmail, externalPZH, certs.message, function (status) {
                     if (status.message) {//get my details from somewhere
-                        var myCertificateUrl = "https://" + address + ":" + port + "/main/" + req.params.user + "/certificates/";
-                        var myPzhUrl = "https://" + address + ":" + port + "/main/" + req.params.user + "/";
+                        var myCertificateUrl = "https://" + address + ":" + port + "/main/" + req.user.emails[0].value + "/certificates/";
+                        var myPzhUrl = "https://" + address + ":" + port + "/main/" + req.user.emails[0].value + "/";
                         //where are we sending people
                         var redirectUrl = "https://" + externalPZH + "/main/" + encodeURIComponent(externalEmail) +
                             "/request-access-login?certUrl=" + encodeURIComponent(myCertificateUrl) +
-                            "&pzhInfo=" + encodeURIComponent(myPzhUrl) + "&ownEmailId=" + encodeURIComponent(req.params.user);
+                            "&pzhInfo=" + encodeURIComponent(myPzhUrl) + "&ownEmailId=" + getUserPath(req.user);
+                        console.log("_-----------------_ redirecting to: " + redirectUrl);
                         res.redirect(redirectUrl);
                     } else {
+                        logger.log('Certificate already exchanged');
                         res.writeHead(200);
                         res.end('Certificate already exchanged');
                     }
                 });
             }, function (err) {
+                logger.log('Failed to retrieve certificate from remote host');
                 res.writeHead(200);
                 res.end('Failed to retrieve certificate from remote host');
             });

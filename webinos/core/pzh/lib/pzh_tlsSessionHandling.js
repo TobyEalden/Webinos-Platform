@@ -305,6 +305,7 @@ var Pzh_Pzh = function (_parent) {
 
     this.connectOtherPZH = function (_to, _options) {
         try {
+            console.log("connecting to: " + _to);
             var pzhDetails = _parent.config.cert.external[_to];
             var connPzh;
             var tls = require("tls"), host = pzhDetails.host;

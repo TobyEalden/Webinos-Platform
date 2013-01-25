@@ -5,7 +5,7 @@ block content
     ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")
       li(data-role="list-divider",role="heading") #{pzh}
       li
-        a(href='/nyi') Invite a Friend
+        a(href='/invite/#{pzh}',data-transition='slide') Invite a Friend
       li
         a(href='/nyi') Approve a Friend
       li
@@ -33,7 +33,7 @@ block content
         li(data-role="list-divider", role="heading") Disconnected PZPs
         - for (var pzp in pzpList) {
             - if (!pzpList[pzp].isConnected) {
-                li #{pzpList[pzp].url}
+                li #{pzpList[pzp].id}
             - }
         - }
       - }
