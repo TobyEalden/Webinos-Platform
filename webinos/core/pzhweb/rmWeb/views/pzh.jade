@@ -45,14 +45,13 @@ block content
     - counter = 0;
     - var haveConnected = false;
     ul(data-role='listview', data-inset='true', data-theme="a", data-divider-theme="b")      
-      li(data-role="list-divider", role="heading")  Connected PZHs
+      li(data-role="list-divider", role="heading")  Connected Friends
       - for (var p in pzhList) {
           - if (pzhList[p].isConnected) {
             - counter++;
             - if (pzhList[p].url !== pzh) {
               - haveConnected = true;
-              li
-                a(href='/pzp/#{pzhList[p].url}',data-transition="slide") #{pzhList[p].id}
+              li #{pzhList[p].id}
             - }
           - }
       - }
@@ -60,7 +59,7 @@ block content
           li none
       - }
       - if (counter !== pzhList.length) {
-        li(data-role="list-divider", role="heading") Disconnected PZHs
+        li(data-role="list-divider", role="heading") Disconnected Friends
         - for (var p in pzhList) {
             - if (!pzhList[p].isConnected) {
                 li #{pzhList[p].id}
