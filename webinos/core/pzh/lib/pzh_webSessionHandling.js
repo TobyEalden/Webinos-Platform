@@ -551,7 +551,7 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
       var pzhId = obj.message.targetPZH;
       if (pzhs.hasOwnProperty(pzhId)) {
         if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
-            logger.log("Approving friend request for " + obj.message.externalEmail + " by " + pzhs[pzhId].config.userData.emails[0].value);
+            //logger.log("Approving friend request for " + obj.message.externalEmail + " by " + pzhs[pzhId].config.userData.emails[0].value);
             // Store Certificates
             var details = pzhs[pzhId].config.untrustedCert[obj.message.externalEmail], name = details.host + "_" + obj.message.externalEmail;
             if (details.port && parseInt(details.port) !== 443) {
