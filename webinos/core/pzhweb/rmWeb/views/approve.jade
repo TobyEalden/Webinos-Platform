@@ -2,18 +2,18 @@ extends layout
 
 block content    
   div(data-role='content')
-      ul(data-role='listview', data-inset='true',data-theme='a', data-divider-theme='d')
-        li(data-role='list-divider', role='heading')
-          |Pending friend requests
+    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}")
+      h3 Pending friend requests
+      ul(data-role='listview', data-inset='false',data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
         - if (requestList.length > 0) {
           - for (var p in requestList) {
                 li #{requestList[p].name}
                   div(style='text-align:right;')
-                    a(data-mini="true",data-inline="true",data-role="button",href='/approveFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='check') Approve
-                    a(data-mini="true",data-inline="true",data-role="button",href='/rejectFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='delete') Reject
+                    a(data-mini="true",data-inline="true",data-role="button",href='/approveFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='check', data-theme="#{ui.optionTheme}") Approve
+                    a(data-mini="true",data-inline="true",data-role="button",href='/rejectFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='delete', data-theme="#{ui.optionTheme}") Reject
           - }
         - } else {
           li(data-theme="c") You have no pending friend requests.
         - }
         li(data-role="list-divider", role="heading")
-          a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
+          a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh

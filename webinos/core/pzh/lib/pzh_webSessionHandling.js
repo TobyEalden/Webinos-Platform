@@ -91,7 +91,6 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
             if (_instance.pzh_state.connectedPzh.hasOwnProperty(list[i])) {
                 pzhs.push({id:pzhId, url:list[i], isConnected:true});
             } else {
-                console.log("!!!!!!!!!!!!!!not connected pzhId: " + pzhId + " url: " + list[i]);
                 pzhs.push({id:pzhId, url:list[i], isConnected:false});
             }
         }
@@ -478,21 +477,13 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
     };
 
     function getFarmPZHs (conn, obj, userObj) {
-        var list = [];
+        var list = {};
         for (var pzhId in pzhs) {
           if (pzhs.hasOwnProperty(pzhId)) {
-            list.push ({
+            list[pzhId] = {
                 url:pzhId,
                 username   :pzhs[pzhId].config.userData.name,
-                email      :pzhs[pzhId].config.userData.email[0].value });
-            /*
-            for (var connectedPzh in pzhs[pzhId].pzh_state.connectedPzh) {
-              list.push({
-                url:connectedPzh,
-                username   :connectedPzh,
-                email      :connectedPzh});
-            }
-            */
+                email      :pzhs[pzhId].config.userData.email[0].value };
           }
         }
         sendMsg (conn, obj.user, { type: "getFarmPZHs", message:list });

@@ -1,13 +1,13 @@
 extends layout
 
 block content
-  div(id="loginPage", data-role="content", data-theme="c")
+  div(id="loginPage", data-role="content", data-theme="#{ui.mainTheme}")
     img(src='/images/logo.png', style='float:left;padding-right:10px;')
     p 
       strong Welcome 
       | to the UbiApps Zone Farm. Please choose an authentication provider and sign in.
     div(id="login-choice")
-      a(id="googleAuth",href="/auth/google",data-role="button",rel="external")
+      a(id="googleAuth",href="/auth/google",data-role="button",rel="external",data-theme="c")
         img(src='https://ssl.gstatic.com/images/logos/google_logo_41.png', width='100px')
-      a(id="yahooAuth",href="/auth/yahoo",data-role="button",rel="external")
+      a(id="yahooAuth",href="/auth/yahoo",data-role="button",rel="external",data-theme="c")
         img(src='http://l.yimg.com/a/images/ww/met/slimheader/yahoo-logo-sm-png8.png', width='100px')

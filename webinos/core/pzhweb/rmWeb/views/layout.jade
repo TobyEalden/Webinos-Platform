@@ -9,30 +9,30 @@ html
     title #{locals.title || ''}
     block head
   body
-    div(id='#{locals.id || ''}',data-role='page',data-theme="b")
+    div(id='#{locals.id || ''}',data-role='page',data-theme="#{ui.mainTheme}")
       script
         $(document).delegate("##{locals.id || 'random'}", "pageinit", function() {
           $(".dash-refresh").click(function () {
             window.location.reload(true);
           });
         });
-      div(data-role='header',data-theme="b")
+      div(data-role='header',data-position="fixed", data-theme="#{ui.optionTheme}")
         h1 #{locals.title || ''}
         - if (locals.id !== "home" && locals.id !== "login") {
           a(href="/",data-role="button",data-icon="home",data-iconpos="notext",data-transition="slide") home
           a(href="#",data-role="button",data-icon="back",data-iconpos="notext",data-transition="slide", data-rel="back") back
         - }
       block content
-      div(data-role='footer', data-theme="b")
+      div(data-role='footer', data-position="fixed", data-theme="#{ui.optionTheme}")
         div
-          - if (typeof serverName !== "undefined") {
-            p(style="float:right;text-align:right;margin-top:2px;font-size:.8em;") #{serverName}&nbsp;
+          - if (locals.ui !== "undefined") {
+            p(style="float:right;text-align:right;margin-top:2px;font-size:.8em;") #{ui.serverName}&nbsp;
               span(style='font-size:.8em;padding-bottom:2px;')
                 br
                 |&nbsp;powered by 
                 a(href="http://webinos.org",rel="external") webinos
                 |&nbsp;
+            a(href="#{ui.appURL}", target="_blank")
+              img(src="/images/logo-small.png",style="padding-left:2px;padding-top:2px;")
           - }        
-          a(href="http://ubiapps.com", target="_blank")
-            img(src="/images/logo-small.png",style="padding-left:2px;padding-top:2px;")
         

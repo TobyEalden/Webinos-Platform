@@ -3,28 +3,11 @@ extends layout
 block content
   div(data-role='content')
     div(style="text-align:center") #{pzhName}
-    div(data-role='collapsible',data-content-theme="a")
-      h3 Zone Options
-      ul(data-role='listview', data-divider-theme="d")
-        li(data-role="list-divider",role="heading") General
-        - if (pzh === serverName) {
-          li
-            a(href='/invite/#{pzh}',data-transition='slide') Invite a Friend
-        - }
-        li
-          a(href='/approve/#{pzh}',data-transition='slide') Approve a Friend
-        li
-          a(href='/about-me/#{pzh}',data-transition='slide') About this Zone
-        li(data-role="list-divider",role="heading") Administration
-        li
-          a(href='/nyi',data-transition='slide') Service Configuration
-        li
-          a(href='/nyi',data-transition='slide') Diagnostics
 
-    div(data-role='collapsible',data-content-theme="a")
+    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}")
       h3 Devices
       - var counter = 0;
-      ul(data-role='listview', data-inset='false', data-theme="a", data-divider-theme="d")      
+      ul(data-role='listview', data-inset='false', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")      
         li(data-role="list-divider", role="heading")  Devices Online 
         - for (var pzp in pzpList) {
             - if (pzpList[pzp].isConnected) {
@@ -34,25 +17,31 @@ block content
             - }
         - }
         - if (counter === 0) {
-            li(data-theme="c") none
+            li(data-theme="#{ui.infoTheme}") none
         - }
         - if (counter !== pzpList.length) {
           li(data-role="list-divider", role="heading") Devices Offline
           - for (var pzp in pzpList) {
               - if (!pzpList[pzp].isConnected) {
-                  li(title="#{pzpList[pzp].url}",data-theme="c") #{pzpList[pzp].id}
+                  li(title="#{pzpList[pzp].url}",data-theme="#{ui.infoTheme}") #{pzpList[pzp].id}
               - }
           - }
         - }
         li(data-role="list-divider", role="heading")
-          a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
+          a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh
 
-    div(data-role='collapsible',data-content-theme="a")
+    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}")
       h3 Friends
       - counter = 0;
       - var haveConnected = false;
-      ul(data-role='listview', data-inset='false', data-theme="c", data-divider-theme="d")      
-        li(data-role="list-divider", role="heading")  Friends Online
+      ul(data-role='listview', data-inset='false', data-theme="#{ui.infoTheme}", data-divider-theme="#{ui.dividerTheme}")      
+        - if (pzh === serverName) {
+        li(data-theme="#{ui.optionTheme}")
+          a(href='/invite/#{pzh}',data-transition='slide') Invite a Friend
+        - }
+        li(data-theme="#{ui.optionTheme}")
+          a(href='/approve/#{pzh}',data-transition='slide') Approve a Friend
+        li(data-role="list-divider", role="heading") Friends Online
         - for (var p in pzhList) {
             - if (pzhList[p].isConnected) {
               - counter++;
@@ -63,7 +52,7 @@ block content
             - }
         - }
         - if (!haveConnected) {
-            li(data-theme="c") none
+            li(data-theme="#{ui.infoTheme}") none
         - }
         - if (counter !== pzhList.length) {
           li(data-role="list-divider", role="heading") Friends Offline
@@ -73,6 +62,15 @@ block content
               - }
           - }
         - }
-        li(data-role="list-divider", role="heading")
-          a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true") Refresh
+          li(data-role="list-divider", role="heading")
+            a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh
 
+    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}")
+      h3 Zone Options
+      ul(data-role='listview', data-divider-theme="#{ui.dividerTheme}")
+        li(data-theme="#{ui.optionTheme}")
+          a(href='/about-me/#{pzh}',data-transition='slide') About this Zone
+        li(data-theme="#{ui.optionTheme}")
+          a(href='/nyi',data-transition='slide') Service Configuration
+        li(data-theme="#{ui.optionTheme}")
+          a(href='/nyi',data-transition='slide') Diagnostics
