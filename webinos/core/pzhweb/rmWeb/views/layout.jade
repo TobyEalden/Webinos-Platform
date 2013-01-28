@@ -9,15 +9,6 @@ html
     title #{locals.title || ''}
     block head
   body
-    - if (typeof locals.ui === "undefined") {
-      var ui = {
-        mainTheme: "d",
-        optionTheme: "b",
-        infoTheme: "c",
-        dividerTheme: "d",
-        collapsibleTheme: "d"
-      };
-    - }
     div(id='#{locals.id || ''}',data-role='page',data-theme="#{ui.mainTheme}")
       script
         $(document).delegate("##{locals.id || 'random'}", "pageinit", function() {

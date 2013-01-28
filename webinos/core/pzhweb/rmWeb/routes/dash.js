@@ -49,7 +49,7 @@ module.exports = function (app, address, port, state) {
         } else {
           pzhadaptor.getFarmPZHs(req.user, function(result) {
             pzhInfoCache = result.message;
-            res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", ui: ui, title: "UbiApps", pzhList: result.message });
+            res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", title: "UbiApps", pzhList: result.message });
           });
         }
     });
