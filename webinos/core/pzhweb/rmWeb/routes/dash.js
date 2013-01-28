@@ -28,11 +28,11 @@ module.exports = function (app, address, port, state) {
     var ui = {
       appTitle: "UbiApps",
       appURL: "http://ubiapps.com",
-      mainTheme: "a",
+      mainTheme: "d",
       optionTheme: "b",
       infoTheme: "c",
-      dividerTheme: "a",
-      collapsibleTheme: "a",
+      dividerTheme: "d",
+      collapsibleTheme: "d",
       serverName: ""
     };
     
@@ -49,7 +49,7 @@ module.exports = function (app, address, port, state) {
         } else {
           pzhadaptor.getFarmPZHs(req.user, function(result) {
             pzhInfoCache = result.message;
-            res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", ui: ui, title: "UbiApps Zone Farm", pzhList: result.message });
+            res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", ui: ui, title: "UbiApps", pzhList: result.message });
           });
         }
     });
@@ -213,7 +213,7 @@ module.exports = function (app, address, port, state) {
             req.session.isPzp = true;
             req.session.pzpPort = req.query.port;
         }
-        res.render('login', { user:req.user, id:"login", ui: ui, title: "UbiApps Zone Farm" });
+        res.render('login', { user:req.user, id:"login", ui: ui, title: "UbiApps" });
     });
     // GET /auth/google
     //   Use passport.authenticate() as route middleware to authenticate the
