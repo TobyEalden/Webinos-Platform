@@ -207,3 +207,8 @@ PzhAdaptor.approvePZHFriend = function(user, targetPZH, email, res) {
 PzhAdaptor.rejectPZHFriend = function(user, targetPZH, email, res) {
   pzhTLS.send (user, {type:"rejectPZHFriend", targetPZH: targetPZH, externalEmail: email}, responseHandler(res));
 }
+
+PzhAdaptor.removePZHFriend = function(user, targetPZH, email, externalPZH, res) {
+  pzhTLS.send (user, {type:"removePZHFriend", targetPZH: targetPZH, externalEmail: email, externalPZH: externalPZH}, responseHandler(res));
+}
+

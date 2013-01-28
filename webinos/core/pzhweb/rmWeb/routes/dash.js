@@ -90,7 +90,7 @@ module.exports = function (app, address, port, state) {
         res.render('approve', { serverName: getCurrentFarm(req.user), id:"approve", ui: ui, title: "Approve friend", pzh: req.params.pzhId, requestList: lst.message });
       });
     });
-        
+            
     app.get('/nyi', function(req,res) {
       res.render('nyi',{ serverName: getCurrentFarm(req.user), id:"nyi", ui: ui, title: "Not Implemented"});
     });
@@ -143,21 +143,21 @@ module.exports = function (app, address, port, state) {
             //get those certificates
             //"https://" + externalPZH + "/main/" + encodeURIComponent(externalEmail) + "/certificates/"
             helper.getCertsFromHost(externalEmail, externalPZH, function (certs) {
-                pzhadaptor.storeExternalUserCert(req.user, externalEmail, externalPZH, certs.message, function (status) {
-                    if (status.message) {//get my details from somewhere
-                        var myCertificateUrl = "https://" + address + ":" + port + "/main/" + req.user.emails[0].value + "/certificates/";
-                        var myPzhUrl = "https://" + address + ":" + port + "/main/" + req.user.emails[0].value + "/";
-                        //where are we sending people
-                        var redirectUrl = "https://" + externalPZH + "/main/" + encodeURIComponent(externalEmail) +
-                            "/request-access-login?certUrl=" + encodeURIComponent(myCertificateUrl) +
-                            "&pzhInfo=" + encodeURIComponent(myPzhUrl) + "&ownEmailId=" + getUserPath(req.user);
-                        console.log("_-----------------_ redirecting to: " + redirectUrl);
-                        res.redirect(redirectUrl);
-                    } else {
-                        logger.log('Certificate already exchanged');
-                        res.render("problem",{ serverName: getCurrentFarm(req.user), id:"problem", ui: ui, title: "Problem", error: "This person is already your friend, or there is a pending friend request.<br /><br />Certificate already exchanged."});
-                    }
-                });
+              pzhadaptor.storeExternalUserCert(req.user, externalEmail, externalPZH, certs.message, function (status) {
+                if (status.message) {//get my details from somewhere
+                  var myCertificateUrl = "https://" + address + ":" + port + "/main/" + req.user.emails[0].value + "/certificates/";
+                  var myPzhUrl = "https://" + address + ":" + port + "/main/" + req.user.emails[0].value + "/";
+                  //where are we sending people
+                  var redirectUrl = "https://" + externalPZH + "/main/" + encodeURIComponent(externalEmail) +
+                      "/request-access-login?certUrl=" + encodeURIComponent(myCertificateUrl) +
+                      "&pzhInfo=" + encodeURIComponent(myPzhUrl) + "&ownEmailId=" + getUserPath(req.user);
+                  console.log("_-----------------_ redirecting to: " + redirectUrl);
+                  res.redirect(redirectUrl);
+                } else {
+                  logger.log('Certificate already exchanged');
+                  res.render("problem",{ serverName: getCurrentFarm(req.user), id:"problem", ui: ui, title: "Problem", error: "This person is already your friend, or there is a pending friend request.<br /><br />Certificate already exchanged."});
+                }
+              });
             }, function (err) {
                 logger.log('Failed to retrieve certificate from remote host');
                 res.render("problem",{ serverName: getCurrentFarm(req.user), id:"problem", ui: ui, title: "Problem", error: "Failed to retrieve certificate from remote host."});
@@ -206,6 +206,12 @@ module.exports = function (app, address, port, state) {
       pzhadaptor.rejectPZHFriend(req.user, req.params.pzhId, req.params.email,function() {
         res.redirect('/pzh/' + req.params.pzhId);
       });
+    });
+
+    app.get('/removeFriend/:pzhId/:email/:externalPZH', ensureAuthenticated, function (req, res) {
+      pzhadaptor.removePZHFriend(req.user, req.params.pzhId, req.params.email, req.params.externalPZH, function() {
+        res.redirect('/pzh/' + req.params.pzhId);
+      });    
     });
 
     app.get('/login', function (req, res) {

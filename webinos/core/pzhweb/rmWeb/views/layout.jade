@@ -13,6 +13,17 @@ html
     - var optionTheme = (typeof ui === "undefined") ? "d" : ui.optionTheme;
     div(id='#{locals.id || ''}',data-role='page',data-theme="#{mainTheme}")
       script
+        function refreshPage() {
+          $.mobile.changePage(
+            window.location.href,
+            {
+              allowSamePageTransition : true,
+              transition              : 'none',
+              showLoadMsg             : false,
+              reloadPage              : true,
+              changeHash              : false
+            });
+        }        
         $(document).delegate("##{locals.id || 'random'}", "pageinit", function() {
           $(".dash-refresh").click(function () {
             window.location.reload(true);

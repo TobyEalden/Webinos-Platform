@@ -50,7 +50,8 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "getInstalledWidgets":getInstalledWidgets,
         "getPendingFriends"  :getPendingFriends,
         "approvePZHFriend"   :approvePZHFriend,
-        "rejectPZHFriend"    :rejectPZHFriend
+        "rejectPZHFriend"    :rejectPZHFriend,
+        "removePZHFriend"    :removePZHFriend
     };
 
     function getLock() {
@@ -558,7 +559,7 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
       var pzhId = obj.message.targetPZH;
       if (pzhs.hasOwnProperty(pzhId)) {
         if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
-            //logger.log("Approving friend request for " + obj.message.externalEmail + " by " + pzhs[pzhId].config.userData.emails[0].value);
+            logger.log("Approving friend request for " + obj.message.externalEmail + " by " + pzhs[pzhId].pzh_state.sessionId);
             // Store Certificates
             var details = pzhs[pzhId].config.untrustedCert[obj.message.externalEmail], name = details.host + "_" + obj.message.externalEmail;
             if (details.port && parseInt(details.port) !== 443) {
@@ -595,12 +596,37 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
       var pzhId = obj.message.targetPZH;
       if (pzhs.hasOwnProperty(pzhId)) {
         if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
-            //logger.log("Rejecting friend request by " + obj.message.externalEmail + " for " + pzhs[pzhId].config.userData.emails[0].value);
+            logger.log("Rejecting friend request by " + obj.message.externalEmail + " for " + pzhs[pzhId].pzh_state.sessionId);
             delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
+            pzhs[pzhId].config.storeUntrustedCert(pzhs[pzhId].config.untrustedCert);
         }
         sendMsg(conn, obj.user, { type:"rejectPZHFriend", message:true });
       } else {
         sendMsg(conn, obj.user, { type:"rejectPZHFriend", message:false });
+      }
+    }
+    
+    function removePZHFriend(conn, obj, userObj) {
+      var pzhId = obj.message.targetPZH;
+      if (pzhs.hasOwnProperty(pzhId)) {
+        logger.log("Attempting to remove friend " + obj.message.externalEmail + " from " + pzhs[pzhId].pzh_state.sessionId);
+        if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
+            logger.log("Removing outstanding friend request by " + obj.message.externalEmail + " for " + pzhs[pzhId].pzh_state.sessionId);
+            delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
+            pzhs[pzhId].config.storeUntrustedCert(pzhs[pzhId].config.untrustedCert);
+        }
+        if (pzhs[pzhId].config.trustedList.pzh.hasOwnProperty(obj.message.externalPZH)) {
+            logger.log("Removing friend " + obj.message.externalEmail + " from " + pzhs[pzhId].pzh_state.sessionId);
+            delete pzhs[pzhId].config.trustedList.pzh[obj.message.externalPZH];
+            pzhs[pzhId].config.storeTrustedList(pzhs[pzhId].config.trustedList);
+        }
+        if (pzhs[pzhId].config.cert.external.hasOwnProperty(obj.message.externalPZH)) {
+          delete pzhs[pzhId].config.cert.external[obj.message.externalPZH];
+          pzhs[pzhId].config.storeCertificate(pzhs[pzhId].config.cert.external, "external");
+        }
+        sendMsg(conn, obj.user, { type:"removePZHFriend", message:true });
+      } else {
+        sendMsg(conn, obj.user, { type:"removePZHFriend", message:false });
       }
     }
 };

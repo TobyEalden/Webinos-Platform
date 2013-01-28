@@ -330,7 +330,7 @@ var Pzh_Pzh = function (_parent) {
                 _parent.handleData(connPzh, buffer);
             });
             connPzh.on("error", function (err) {
-                _parent.pzh_state.logger.error(err.message);
+                _parent.pzh_state.logger.error(err.message + " while connecting " + _to);
             });
             connPzh.on("end", function () {
                 _parent.removeRoute(connPzh.id);
