@@ -9,14 +9,16 @@ html
     title #{locals.title || ''}
     block head
   body
-    div(id='#{locals.id || ''}',data-role='page',data-theme="#{ui.mainTheme}")
+    - var mainTheme = (typeof ui === "undefined") ? "d" : ui.mainTheme;
+    - var optionTheme = (typeof ui === "undefined") ? "d" : ui.optionTheme;
+    div(id='#{locals.id || ''}',data-role='page',data-theme="#{mainTheme}")
       script
         $(document).delegate("##{locals.id || 'random'}", "pageinit", function() {
           $(".dash-refresh").click(function () {
             window.location.reload(true);
           });
         });
-      div(data-role='header',data-position="fixed", data-theme="#{ui.optionTheme}")
+      div(data-role='header',data-position="fixed", data-theme="#{optionTheme}")
         h1 #{locals.title || ''}
         - if (locals.id !== "home" && locals.id !== "login") {
           a(href="/",data-role="button",data-icon="home",data-iconpos="notext",data-transition="slide") home
@@ -24,7 +26,7 @@ html
         - }
       div(class="content-panel")
         block content
-      div(data-role='footer', data-position="fixed", data-theme="#{ui.optionTheme}")
+      div(data-role='footer', data-position="fixed", data-theme="#{optionTheme}")
         div
           - if (typeof locals.ui !== "undefined") {
             p(style="float:right;text-align:right;margin-top:2px;font-size:.8em;") #{ui.serverName}&nbsp;
