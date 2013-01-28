@@ -38,9 +38,9 @@ block content
         - if (pzh === serverName) {
         li(data-theme="#{ui.optionTheme}")
           a(href='/invite/#{pzh}',data-transition='slide') Invite a Friend
-        - }
         li(data-theme="#{ui.optionTheme}")
           a(href='/approve/#{pzh}',data-transition='slide') Approve a Friend
+        - }
         li(data-role="list-divider", role="heading") Friends Online
         - for (var p in pzhList) {
             - if (pzhList[p].isConnected) {
