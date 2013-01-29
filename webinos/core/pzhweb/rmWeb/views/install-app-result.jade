@@ -4,7 +4,7 @@ block content
   div(data-role='content')
     h3 #{pzp}
 
-    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}")
+    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
       h3 App Installation Results
       - if (result.ok) {
           p Successfully installed app with id #{result.installId}

@@ -1,0 +1,23 @@
+extends layout
+
+block content
+  div(data-role='content')
+    h3 App
+
+    ul(data-role="listview", data-theme="c", data-inset="true")
+      li
+        h3 Name
+        p #{app.name.visual}
+      li
+        h3 Install Id
+        p #{app.installId}
+      li
+        h3 Author
+        p #{app.author.name.visual}
+        
+    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
+      h3 Options
+      ul(data-role='listview', data-inset='false', data-theme='b', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
+        li
+          a(href='/install-app/#{pzh}/#{pzp}', data-transition="slide") Remove App        
+  

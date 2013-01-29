@@ -5,7 +5,7 @@ block content
     h3 #{pzhName}
 
     //- Devices
-    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}")
+    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
       h3 Devices
       - var counter = 0;
       ul(data-role='listview', data-inset='false', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")      
@@ -32,7 +32,7 @@ block content
           a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh
 
     //- Friends
-    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}", data-collapsed="false")
+    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}", data-collapsed="false",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
       h3 Friends
       - counter = 0;
       - var haveConnected = false;
@@ -98,7 +98,7 @@ block content
           a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh
 
     //- Zone options
-    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}")
+    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
       h3 Zone Options
       ul(data-role='listview', data-divider-theme="#{ui.dividerTheme}")
         li(data-theme="#{ui.optionTheme}")

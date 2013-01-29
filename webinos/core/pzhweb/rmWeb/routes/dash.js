@@ -126,6 +126,17 @@ module.exports = function (app, address, port, state) {
         });
     });
 
+    app.get('/app/:pzhId/:pzpId/:appId', ensureAuthenticated, function(req, res) {
+      pzhadaptor.getInstalledWidgets(req.user, req.params.pzhId, req.params.pzpId, function(result) {
+        var installId = req.params.appId;
+        if (result.message.installedList.hasOwnProperty(installId)) {
+          res.render('app', { id:"app", ui: ui, title: "App", app: result.message.installedList[installId], pzh: req.params.pzhId, pzp: req.params.pzpId });
+        } else {
+          res.render('problem',{ id:"problem", ui: ui, title: "Problem", error: "App " + installId + " not found on device."});
+        }
+      });            
+    });
+    
     app.get('/nyi', function(req,res) {
       res.render('nyi',{ id:"nyi", ui: ui, title: "Not Implemented"});
     });

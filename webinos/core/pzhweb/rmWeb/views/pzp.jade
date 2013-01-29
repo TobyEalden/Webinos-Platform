@@ -4,7 +4,7 @@ block content
   div(data-role='content')
     h3 #{pzp}
 
-    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}")
+    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
       h3 Device Options
       ul(data-role='listview', data-inset='false', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
         li
@@ -17,6 +17,7 @@ block content
           a(href='/nyi', data-transition="slide") Services Available
         li
           a(href='/nyi', data-transition="slide") Diagnostics
+        li(data-role="list-divider") &nbsp;
         li
           a(href='/nyi', data-transition="slide") Remove this Device
   

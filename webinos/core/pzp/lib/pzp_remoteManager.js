@@ -16,13 +16,13 @@
 
   function getInstalledWidgets(receivedMsg) {
     console.log("getInstalledWidgets was invoked");
-    var installedList = [];
+    var installedList = {};
     
     if (widgetLibrary) {
       var idList = widgetLibrary.widgetmanager.getInstalledWidgets();
       for (var installId in idList) {
         var cfg = widgetLibrary.widgetmanager.getWidgetConfig(idList[installId]);
-        installedList.push(cfg);
+        installedList[idList[installId]] = cfg;
       }
     }
     

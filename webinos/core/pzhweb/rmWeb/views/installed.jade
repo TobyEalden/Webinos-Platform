@@ -4,18 +4,22 @@ block content
   div(data-role='content')
     h3 #{pzp}
 
-    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}")
+    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
       h3 Installed Apps
       ul(data-role='listview', data-inset='false', data-theme='b', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
-        - if (widgetList.length > 0) {
-          - for (var wgt in widgetList) {
-          -   var name = widgetList[wgt].name ? widgetList[wgt].name.visual : widgetList[wgt].id;
-              li
-                a(href='/nyi',data-transition="slide") #{name}
-          - }
-        - } else {
+        - var count = 0;
+        - for (var wgt in widgetList) {
+          - count++;
+          - var name = widgetList[wgt].name ? widgetList[wgt].name.visual : widgetList[wgt].id;
+            li
+              a(href='/app/#{pzh}/#{pzp}/#{widgetList[wgt].installId}',data-transition="slide") #{name}
+        - }
+        - if (count === 0) {
             li No Apps Installed
         - }
+        li(data-role="list-divider", role="heading") &nbsp;
+        li
+          a(href='/install-app/#{pzh}/#{pzp}', data-transition="slide") Install an App        
         li(data-role="list-divider", role="heading")
           a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh
   
