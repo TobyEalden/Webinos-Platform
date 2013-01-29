@@ -35,10 +35,10 @@ block content
       - counter = 0;
       - var haveConnected = false;
       ul(data-role='listview', data-inset='false', data-theme="#{ui.infoTheme}", data-divider-theme="#{ui.dividerTheme}")      
-        - if (pzh === serverName) {
+        - if (pzh === ui.serverName) {
         li(data-theme="#{ui.optionTheme}")
           a(href='/invite/#{pzh}',data-transition='slide') Invite a Friend
-        li(data-theme="#{ui.optionTheme}")
+        //li(data-theme="#{ui.optionTheme}")
           a(href='/approve/#{pzh}',data-transition='slide') Approve a Friend
         - }
         li(data-role="list-divider", role="heading") Friends Online
@@ -50,7 +50,7 @@ block content
                 li(title="#{pzhList[p].url}") 
                     div(style="float:left;") #{pzhList[p].id}
                     div(style="text-align:right;")
-                      a(href="/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="notext", title="Remove this friend") remove
+                      a(href="/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="left", title="Remove this friend", data-theme="#{ui.optionTheme}") Remove
               - }
             - }
         - }
@@ -64,9 +64,20 @@ block content
                   li(title="#{pzhList[p].url}")
                     div(style="float:left;") #{pzhList[p].id}
                     div(style="text-align:right;")
-                      a(href="/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="notext", title="Remove this friend") remove                      
+                      a(href="/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="left", title="Remove this friend", data-theme="#{ui.optionTheme}") Remove                      
               - }
           - }
+        - }
+          li(data-role="list-divider", role="heading") Pending Friend Requests
+        - if (requestList.length > 0) {
+          - for (var p in requestList) {
+                li #{requestList[p].name}
+                  div(style='text-align:right;')
+                    a(data-mini="true",data-inline="true",data-role="button",href='/approveFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='check', data-theme="#{ui.optionTheme}") Approve
+                    a(data-mini="true",data-inline="true",data-role="button",href='/rejectFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='delete', data-theme="#{ui.optionTheme}") Reject
+          - }
+        - } else {
+          li(data-theme="c") You have no pending friend requests.
         - }
           li(data-role="list-divider", role="heading")
             a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh

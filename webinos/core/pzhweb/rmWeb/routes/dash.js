@@ -41,7 +41,6 @@ module.exports = function (app, address, port, state) {
     }
     
     app.get('/', ensureAuthenticated, function (req, res) {
-      ui.serverName = getCurrentFarm(req.user);
       if (req.session.isPzp) {
             pzhadaptor.fromWeb(req.user, {payload:{status:"enrollPzpAuthCode", address:address, port:port, pzpPort:req.session.pzpPort, user:getUserPath(req.user)}}, res);
             req.session.isPzp = "";
@@ -49,7 +48,7 @@ module.exports = function (app, address, port, state) {
         } else {
           pzhadaptor.getFarmPZHs(req.user, function(result) {
             pzhInfoCache = result.message;
-            res.render('dash', { serverName: getCurrentFarm(req.user), id:"home", ui: ui, title: "UbiApps", pzhList: result.message });
+            res.render('dash', { id:"home", ui: ui, title: "UbiApps", pzhList: result.message });
           });
         }
     });
@@ -57,42 +56,61 @@ module.exports = function (app, address, port, state) {
     app.get('/pzh/:pzhId', ensureAuthenticated, function(req, res) {
       pzhadaptor.getPZHPZPs(req.user, req.params.pzhId, function(pzp_result) {
         pzhadaptor.getPZHPZHs(req.user, req.params.pzhId, function(pzh_result) {
-          var pzhName = (req.params.pzhId in pzhInfoCache) ? pzhInfoCache[req.params.pzhId].username : req.params.pzhId;
-          res.render('pzh', { serverName: getCurrentFarm(req.user), id:"pzh", ui: ui, title: "Zone Details", pzhName: pzhName, pzh: req.params.pzhId, pzpList: pzp_result.message, pzhList: pzh_result.message });
+          pzhadaptor.getPendingFriends(req.user, req.params.pzhId, function(pending_result) {
+            /*
+            // Rationalise the connected pzh list, removing pending removing pending requests
+            for (var p in pending_result.message) {
+              if (pending_result.message.hasOwnProperty(p)) {
+                var pzhId = pending_result.message[p].host + "_" + pending_result.message[p].name;
+                console.log("pending ID: " + pzhId);
+                if (pzh_result.message.hasOwnProperty(pzhId)) {
+                  if (pzh_result[pzhId].isConnected) {
+                    console.log("+++++++++++++++++++ removing pending request from !!ONLINE!! pzh list: " + pzhId);
+                  } else {
+                    console.log("+++++++++++++++++++ removing pending request from offline pzh list: " + pzhId);
+                  }
+                  delete pzh_result[pzhId];
+                }
+              }
+            }
+            */
+            var pzhName = (req.params.pzhId in pzhInfoCache) ? pzhInfoCache[req.params.pzhId].username : req.params.pzhId;
+            res.render('pzh', { id:"pzh", ui: ui, title: "Zone Details", pzhName: pzhName, pzh: req.params.pzhId, pzpList: pzp_result.message, pzhList: pzh_result.message, requestList: pending_result.message });
+          });
         });
       });
     });
 
     app.get('/pzp/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
-      res.render('pzp', { serverName: getCurrentFarm(req.user), id:"pzp", ui: ui, title: "Device", pzh: req.params.pzhId, pzp: req.params.pzpId});
+      res.render('pzp', { id:"pzp", ui: ui, title: "Device", pzh: req.params.pzhId, pzp: req.params.pzpId});
     });
 
     app.get('/installed/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
       pzhadaptor.getInstalledWidgets(req.user, req.params.pzhId + "/" + req.params.pzpId, function(result) {
-        res.render('installed', { serverName: getCurrentFarm(req.user), id:"installed", ui: ui, title: "Apps", widgetList: result.message.installedList, pzh: req.params.pzhId, pzp: req.params.pzpId });
+        res.render('installed', { id:"installed", ui: ui, title: "Apps", widgetList: result.message.installedList, pzh: req.params.pzhId, pzp: req.params.pzpId });
       });      
     });
     
     app.get('/about-me/:pzhId', ensureAuthenticated, function(req,res) {
         pzhadaptor.getPZHDetails(req.user, req.params.pzhId, function(result) {
-          res.render('about-me', { serverName: getCurrentFarm(req.user), id:"about-me", ui: ui, title: "About Zone", about: result.message, pzh: req.params.pzhId });
+          res.render('about-me', { id:"about-me", ui: ui, title: "About Zone", about: result.message, pzh: req.params.pzhId });
         });
     });
 
     app.get('/invite/:pzhId', ensureAuthenticated, function(req,res) {
       pzhadaptor.getFarmPZHs(req.user, function(result) {
-        res.render('invite', { serverName: getCurrentFarm(req.user), id:"invite", ui: ui, title: "Invite a Friend", pzh: req.params.pzhId, pzhList: result.message });
+        res.render('invite', { id:"invite", ui: ui, title: "Invite a Friend", pzh: req.params.pzhId, pzhList: result.message });
       });
     });
     
     app.get('/approve/:pzhId', ensureAuthenticated, function(req,res) {
       pzhadaptor.getPendingFriends(req.user, req.params.pzhId, function(lst) {
-        res.render('approve', { serverName: getCurrentFarm(req.user), id:"approve", ui: ui, title: "Approve friend", pzh: req.params.pzhId, requestList: lst.message });
+        res.render('approve', { id:"approve", ui: ui, title: "Approve friend", pzh: req.params.pzhId, requestList: lst.message });
       });
     });
             
     app.get('/nyi', function(req,res) {
-      res.render('nyi',{ serverName: getCurrentFarm(req.user), id:"nyi", ui: ui, title: "Not Implemented"});
+      res.render('nyi',{ id:"nyi", ui: ui, title: "Not Implemented"});
     });
         
     app.post('/main/:user/enrollPzp/', function (req, res) { // to use ensure authenticated, for some reason req.isAuthenticated retuns false
@@ -138,7 +156,7 @@ module.exports = function (app, address, port, state) {
         logger.log("External: " + externalEmail + " - " + externalPZH);
         if (req.params.pzhId === req.params.connectPzhId) {
             logger.log('Cannot register own PZH ' + externalEmail);
-            res.render("problem",{ serverName: getCurrentFarm(req.user), id:"problem", ui: ui, title: "Problem", error: "You cannot make friends with yourself."});
+            res.render("problem",{ id:"problem", ui: ui, title: "Problem", error: "You cannot make friends with yourself."});
         } else {
             //get those certificates
             //"https://" + externalPZH + "/main/" + encodeURIComponent(externalEmail) + "/certificates/"
@@ -155,12 +173,12 @@ module.exports = function (app, address, port, state) {
                   res.redirect(redirectUrl);
                 } else {
                   logger.log('Certificate already exchanged');
-                  res.render("problem",{ serverName: getCurrentFarm(req.user), id:"problem", ui: ui, title: "Problem", error: "This person is already your friend, or there is a pending friend request.<br /><br />Certificate already exchanged."});
+                  res.render("problem",{ id:"problem", ui: ui, title: "Problem", error: "This person is already your friend, or there is a pending friend request.<br /><br />Certificate already exchanged."});
                 }
               });
             }, function (err) {
                 logger.log('Failed to retrieve certificate from remote host');
-                res.render("problem",{ serverName: getCurrentFarm(req.user), id:"problem", ui: ui, title: "Problem", error: "Failed to retrieve certificate from remote host."});
+                res.render("problem",{ id:"problem", ui: ui, title: "Problem", error: "Failed to retrieve certificate from remote host."});
             });
         }
 
@@ -187,7 +205,7 @@ module.exports = function (app, address, port, state) {
             if (answer.message) {
                 res.render("approve-user", {user:req.user, externalUser:req.params.externalemail});
             } else {
-                res.render("problem",{ serverName: getCurrentFarm(req.user), id:"problem", ui: ui, title: "Problem", error: "Failed to approve user " + req.params.externalemail + "."});
+                res.render("problem",{ id:"problem", ui: ui, title: "Problem", error: "Failed to approve user " + req.params.externalemail + "."});
             }
         });
         //Args: None
@@ -274,6 +292,7 @@ module.exports = function (app, address, port, state) {
     //   login page.
     function ensureAuthenticated(req, res, next) {
         if (req.isAuthenticated()) {
+            ui.serverName = getCurrentFarm(req.user);
             return next();
         }
         res.redirect('/login');

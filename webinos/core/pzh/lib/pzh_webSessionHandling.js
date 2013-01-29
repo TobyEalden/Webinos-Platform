@@ -547,7 +547,7 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
       if (pzhs.hasOwnProperty(pzhId)) {      
         for (var item in pzhs[pzhId].config.untrustedCert) {
             if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(item)) {
-                list.push({name:item, url:pzhs[pzhId].config.untrustedCert[item].url});
+                list.push({name:item, host: pzhs[pzhId].config.untrustedCert[item].host, url:pzhs[pzhId].config.untrustedCert[item].url});
             }
         }
       }

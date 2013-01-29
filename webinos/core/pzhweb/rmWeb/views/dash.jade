@@ -7,7 +7,7 @@ block content
       ul(data-role='listview', data-inset='false', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
         - for (var p in pzhList) {
             li
-              - if (pzhList[p].url === serverName) {
+              - if (pzhList[p].url === ui.serverName) {
                 a(href='/pzh/#{pzhList[p].url}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username} (You)
               - } else { 
                 a(href='/pzh/#{pzhList[p].url}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username}
