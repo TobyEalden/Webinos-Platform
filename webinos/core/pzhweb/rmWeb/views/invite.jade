@@ -1,19 +1,18 @@
 extends layout
 
-block content
-  script
-    $(document).delegate('##{id}','pageinit',function() {
-      $('#inviteBtn').click(function() { 
-        var reqpzh = $('#manualPZH').val();
-        if (!reqpzh || reqpzh.length == 0 || reqpzh.indexOf('_') === -1) {
-          $('#feedback').html("Invalid Zone address.");
-        } else {
-          window.location.href = '/connect-friend/#{pzh}/' + reqpzh;
-        }
-      });
-    });
-    
+block content    
   div(data-role='content')
+    script
+      $(document).delegate('##{id}','pageinit',function() {
+        $('#inviteBtn').click(function() { 
+          var reqpzh = $('#manualPZH').val();
+          if (!reqpzh || reqpzh.length == 0 || reqpzh.indexOf('_') === -1) {
+            $('#feedback').html("Invalid Zone address.");
+          } else {
+            window.location.href = '/connect-friend/#{pzh}/' + reqpzh;
+          }
+        });
+      });
     div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}")
       h3 Invite a friend from this farm
       ul(data-role='listview', data-inset='false',data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")

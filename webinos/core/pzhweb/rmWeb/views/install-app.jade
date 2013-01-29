@@ -1,20 +1,19 @@
 extends layout
 
 block content
-  script
-    $(document).delegate('##{id}','pageinit',function() {
-      $('#installBtn').click(function() { 
-        var appUrl = $('#appUrl').val();
-        if (!appUrl || appUrl.length == 0) {
-          $('#feedback').html("Invalid app url.");
-        } else {
-          window.location.href = '/do-install-url/#{pzh}/#{pzp}/' + encodeURIComponent(appUrl);
-        }
-        return false;
-      });
-    });
-
   div(data-role='content')
+    script
+      $(document).delegate('##{id}','pageinit',function() {
+        $('#installBtn').click(function() { 
+          var appUrl = $('#appUrl').val();
+          if (!appUrl || appUrl.length == 0) {
+            $('#feedback').html("Invalid app url.");
+          } else {
+            window.location.href = '/do-install-url/#{pzh}/#{pzp}/' + encodeURIComponent(appUrl);
+          }
+          return false;
+        });
+      });
     h3 #{pzp}
     div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-expanded-icon="info",data-theme="#{ui.collapsibleTheme}")
       h3 UbiApps
