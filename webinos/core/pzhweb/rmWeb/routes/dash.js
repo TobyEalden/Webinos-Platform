@@ -114,7 +114,7 @@ module.exports = function (app, address, port, state) {
     });
             
     app.get('/do-install/:pzhId/:pzpId/:appId', ensureAuthenticated, function(req,res) {
-        var installUrl = "http://webinos.two268.com/apps/wgl-demo.wgt/wgl-demod.wgt";
+        var installUrl = "http://webinos.two268.com/apps/wgl-demo.wgt/wgl-demo.wgt";
         pzhadaptor.installWidget(req.user, req.params.pzhId, req.params.pzpId, installUrl, function(result) {
           res.render('install-app-result', { id:"installAppResult", ui: ui, title: "Install App Result", pzh: req.params.pzhId, pzp: req.params.pzpId, result: result.message });          
         });
