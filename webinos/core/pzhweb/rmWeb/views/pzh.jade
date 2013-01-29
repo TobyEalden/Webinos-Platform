@@ -4,6 +4,7 @@ block content
   div(data-role='content')
     div(style="text-align:center") #{pzhName}
 
+    //- Devices
     div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}")
       h3 Devices
       - var counter = 0;
@@ -30,17 +31,19 @@ block content
         li(data-role="list-divider", role="heading")
           a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh
 
+    //- Friends
     div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}", data-collapsed="false")
       h3 Friends
       - counter = 0;
       - var haveConnected = false;
-      ul(data-role='listview', data-inset='false', data-theme="#{ui.infoTheme}", data-divider-theme="#{ui.dividerTheme}")      
-        - if (pzh === ui.serverName) {
-        li(data-theme="#{ui.optionTheme}")
-          a(href='/invite/#{pzh}',data-transition='slide') Invite a Friend
-        //li(data-theme="#{ui.optionTheme}")
-          a(href='/approve/#{pzh}',data-transition='slide') Approve a Friend
+      - var showOptions = (pzh === ui.serverName);
+      ul(data-role='listview', data-inset='false', data-theme="#{ui.infoTheme}", data-divider-theme="#{ui.dividerTheme}") 
+        //- Invite a friend
+        - if (showOptions) {
+          li(data-theme="#{ui.optionTheme}")
+            a(href='/invite/#{pzh}',data-transition='slide') Invite a Friend
         - }
+        //- List connected friends 
         li(data-role="list-divider", role="heading") Friends Online
         - for (var p in pzhList) {
             - if (pzhList[p].isConnected) {
@@ -48,40 +51,53 @@ block content
               - if (pzhList[p].url !== pzh) {
                 - haveConnected = true;
                 li(title="#{pzhList[p].url}") 
+                  - if (showOptions) {
                     div(style="float:left;") #{pzhList[p].id}
                     div(style="text-align:right;")
                       a(href="/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="left", title="Remove this friend", data-theme="#{ui.optionTheme}") Remove
+                  - } else {
+                    |#{pzhList[p].id}
+                  - }
               - }
             - }
         - }
         - if (!haveConnected) {
-            li(data-theme="#{ui.infoTheme}") none
+            li(data-theme="#{ui.infoTheme}") None
         - }
+        //- Unconnected friends
         - if (counter !== pzhList.length) {
           li(data-role="list-divider", role="heading") Friends Offline
           - for (var p in pzhList) {
               - if (!pzhList[p].isConnected) {
                   li(title="#{pzhList[p].url}")
-                    div(style="float:left;") #{pzhList[p].id}
-                    div(style="text-align:right;")
-                      a(href="/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="left", title="Remove this friend", data-theme="#{ui.optionTheme}") Remove                      
+                  - if (showOptions) {
+                      div(style="float:left;") #{pzhList[p].id}
+                      div(style="text-align:right;")
+                        a(href="/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="left", title="Remove this friend", data-theme="#{ui.optionTheme}") Remove                      
+                  - } else {
+                    |#{pzhList[p].id}
+                  - }
               - }
           - }
         - }
-          li(data-role="list-divider", role="heading") Pending Friend Requests
+        //- Pending requests
+        li(data-role="list-divider", role="heading") Pending Friend Requests
         - if (requestList.length > 0) {
           - for (var p in requestList) {
                 li #{requestList[p].name}
-                  div(style='text-align:right;')
-                    a(data-mini="true",data-inline="true",data-role="button",href='/approveFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='check', data-theme="#{ui.optionTheme}") Approve
-                    a(data-mini="true",data-inline="true",data-role="button",href='/rejectFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='delete', data-theme="#{ui.optionTheme}") Reject
+                  - if (showOptions) {
+                    div(style='text-align:right;')
+                      a(data-mini="true",data-inline="true",data-role="button",href='/approveFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='check', data-theme="#{ui.optionTheme}") Approve
+                      a(data-mini="true",data-inline="true",data-role="button",href='/rejectFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='delete', data-theme="#{ui.optionTheme}") Reject
+                  - }
           - }
         - } else {
-          li(data-theme="c") You have no pending friend requests.
+          li(data-theme="c") No pending friend requests.
         - }
-          li(data-role="list-divider", role="heading")
-            a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh
+        li(data-role="list-divider", role="heading")
+          a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh
 
+    //- Zone options
     div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}")
       h3 Zone Options
       ul(data-role='listview', data-divider-theme="#{ui.dividerTheme}")
