@@ -18,7 +18,7 @@ block content
             - }
         - }
         - if (counter === 0) {
-            li(data-theme="#{ui.infoTheme}") none
+            li(data-theme="#{ui.infoTheme}") None
         - }
         - if (counter !== pzpList.length) {
           li(data-role="list-divider", role="heading") Devices Offline
@@ -70,13 +70,13 @@ block content
           - for (var p in pzhList) {
               - if (!pzhList[p].isConnected) {
                   li(title="#{pzhList[p].url}")
-                  - if (showOptions) {
-                      div(style="float:left;") #{pzhList[p].id}
-                      div(style="text-align:right;")
-                        a(href="/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="left", title="Remove this friend", data-theme="#{ui.optionTheme}") Remove                      
-                  - } else {
-                    |#{pzhList[p].id}
-                  - }
+                    - if (showOptions) {
+                        div(style="float:left;") #{pzhList[p].id}
+                        div(style="text-align:right;")
+                          a(href="/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="left", title="Remove this friend", data-theme="#{ui.optionTheme}") Remove                      
+                    - } else {
+                        |#{pzhList[p].id}
+                    - }
               - }
           - }
         - }
