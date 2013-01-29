@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  div(data-role='content')
+    h3 #{pzp}
+
+    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}")
+      h3 App Installation Results
+      - if (result.ok) {
+          p Successfully installed app with id #{result.installId}
+      - } else {
+          p Failed to install app.
+        - if (result.err) {
+            h3 #{result.err.title}
+            p App Manager Error Code: #{result.err.status}
+            p #{result.err.text}
+        - } else {
+            p #{result.reason}
+        - }
+      - }
+    a(href="#", data-rel="back",data-role="button", data-icon="arrow-r", data-iconpos="right", data-inline="true", data-theme="#{optionTheme}") continue

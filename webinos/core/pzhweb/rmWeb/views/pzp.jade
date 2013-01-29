@@ -2,7 +2,7 @@ extends layout
 
 block content
   div(data-role='content')
-    div(style="text-align:center") #{pzp}
+    h3 #{pzp}
 
     div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}")
       h3 Device Options
@@ -10,7 +10,7 @@ block content
         li
           a(href='/installed/#{pzh}/#{pzp}', data-transition="slide") Show Installed Apps
         li
-          a(href='/nyi', data-transition="slide") Install an App
+          a(href='/install-app/#{pzh}/#{pzp}', data-transition="slide") Install an App
         li
           a(href='/nyi', data-transition="slide") Wipe this Device
         li

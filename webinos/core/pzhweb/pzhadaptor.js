@@ -192,8 +192,8 @@ PzhAdaptor.getPZHDetails = function(user, targetPZH,res) {
   pzhTLS.send (user, {type:"getPZHDetails", targetPZH:targetPZH}, responseHandler(res));
 }
 
-PzhAdaptor.getInstalledWidgets = function(user, targetPZP,res) {
-  pzhTLS.send (user, {type:"getInstalledWidgets", targetPZP:targetPZP}, responseHandler (res));
+PzhAdaptor.getInstalledWidgets = function(user, targetPZH, targetPZP,res) {
+  pzhTLS.send (user, {type:"getInstalledWidgets", targetPZH: targetPZH, targetPZP:targetPZP}, responseHandler (res));
 }
 
 PzhAdaptor.getPendingFriends = function(user, targetPZH,res) {
@@ -212,3 +212,6 @@ PzhAdaptor.removePZHFriend = function(user, targetPZH, email, externalPZH, res) 
   pzhTLS.send (user, {type:"removePZHFriend", targetPZH: targetPZH, externalEmail: email, externalPZH: externalPZH}, responseHandler(res));
 }
 
+PzhAdaptor.installWidget = function(user, targetPZH, targetPZP, installUrl, res) {
+  pzhTLS.send (user, {type:"installWidget", targetPZH: targetPZH, targetPZP: targetPZP, installUrl: installUrl}, responseHandler(res));
+}

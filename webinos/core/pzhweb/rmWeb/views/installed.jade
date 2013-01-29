@@ -2,8 +2,10 @@ extends layout
 
 block content
   div(data-role='content')
+    h3 #{pzp}
+
     div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}")
-      h3 Apps installed on #{pzp}
+      h3 Installed Apps
       ul(data-role='listview', data-inset='false', data-theme='b', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
         - if (widgetList.length > 0) {
           - for (var wgt in widgetList) {

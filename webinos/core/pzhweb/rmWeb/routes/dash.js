@@ -86,7 +86,7 @@ module.exports = function (app, address, port, state) {
     });
 
     app.get('/installed/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
-      pzhadaptor.getInstalledWidgets(req.user, req.params.pzhId + "/" + req.params.pzpId, function(result) {
+      pzhadaptor.getInstalledWidgets(req.user, req.params.pzhId, req.params.pzpId, function(result) {
         res.render('installed', { id:"installed", ui: ui, title: "Apps", widgetList: result.message.installedList, pzh: req.params.pzhId, pzp: req.params.pzpId });
       });      
     });
@@ -108,7 +108,24 @@ module.exports = function (app, address, port, state) {
         res.render('approve', { id:"approve", ui: ui, title: "Approve friend", pzh: req.params.pzhId, requestList: lst.message });
       });
     });
+    
+    app.get('/install-app/:pzhId/:pzpId', ensureAuthenticated, function(req,res) {
+        res.render('install-app', { id:"installApp", ui: ui, title: "Install App", pzh: req.params.pzhId, pzp: req.params.pzpId });    
+    });
             
+    app.get('/do-install/:pzhId/:pzpId/:appId', ensureAuthenticated, function(req,res) {
+        var installUrl = "http://webinos.two268.com/apps/wgl-demo.wgt/wgl-demod.wgt";
+        pzhadaptor.installWidget(req.user, req.params.pzhId, req.params.pzpId, installUrl, function(result) {
+          res.render('install-app-result', { id:"installAppResult", ui: ui, title: "Install App Result", pzh: req.params.pzhId, pzp: req.params.pzpId, result: result.message });          
+        });
+    });
+    
+    app.get('/do-install-url/:pzhId/:pzpId/:appUrl', ensureAuthenticated, function(req,res) {
+        pzhadaptor.installWidget(req.user, req.params.pzhId, req.params.pzpId, req.params.appUrl, function(result) {
+          res.render('install-app-result', { id:"installAppResult", ui: ui, title: "Install App Result", pzh: req.params.pzhId, pzp: req.params.pzpId, result: result.message });          
+        });
+    });
+
     app.get('/nyi', function(req,res) {
       res.render('nyi',{ id:"nyi", ui: ui, title: "Not Implemented"});
     });

@@ -6,8 +6,7 @@
     _parent = parent;
   }
 
-  function getInstalledWidgets(msg) {
-    _parent.pzh_state.logger.log ("receiving installed widgets from pzp...");
+  function forwardMsg(msg) {
     if (!msg.payload.message.id) {
         _parent.pzh_state.logger.error ("cannot find callback");
         return;
@@ -20,8 +19,13 @@
     var processed = true;
     switch (msg.payload.status) {
       case "getInstalledWidgetsReply":
-          getInstalledWidgets(msg);
-          break;
+        _parent.pzh_state.logger.log ("receiving getInstalledWidgets reply from pzp...");
+        forwardMsg(msg);
+        break;
+      case "installWidgetReply":
+        _parent.pzh_state.logger.log ("receiving installWidget reply from pzp...");
+        forwardMsg(msg);
+        break;
       default:
         processed = false;
         break;

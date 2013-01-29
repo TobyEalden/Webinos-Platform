@@ -51,7 +51,8 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "getPendingFriends"  :getPendingFriends,
         "approvePZHFriend"   :approvePZHFriend,
         "rejectPZHFriend"    :rejectPZHFriend,
-        "removePZHFriend"    :removePZHFriend
+        "removePZHFriend"    :removePZHFriend,
+        "installWidget"      :installWidget
     };
 
     function getLock() {
@@ -520,16 +521,16 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
     }
     
     function getInstalledWidgets (conn, obj, userObj) {
-      var toks = obj.message.targetPZP.split('/');
-      var pzhId = toks[0];
-      var pzpId = toks[1];
+      var pzhId = obj.message.targetPZH;
+      var pzpId = obj.message.targetPZP;
+      var toAddy = pzhId + "/" + pzpId;
       var id = userObj.pzh_remoteManager.addMsgCallback (function (installedList) {
         sendMsg (conn, obj.user, { type:"getInstalledWidgets", message:installedList });          
       });
       var msg = {
                   "type":"prop", 
                   "from":userObj.pzh_state.sessionId, 
-                  "to":obj.message.targetPZP,
+                  "to":toAddy,
                   "payload"    :{
                     "status":"getInstalledWidgets", 
                     "message":{
@@ -537,7 +538,7 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
                     }
                   }
                 };
-      pzhs[pzhId].sendMessage (msg, obj.message.targetPZP);
+      pzhs[pzhId].sendMessage (msg, toAddy);
     }
 
     function getPendingFriends(conn, obj, userObj) {
@@ -628,6 +629,28 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
       } else {
         sendMsg(conn, obj.user, { type:"removePZHFriend", message:false });
       }
+    }
+
+    function installWidget (conn, obj, userObj) {
+      var pzhId = obj.message.targetPZH;
+      var pzpId = obj.message.targetPZP;
+      var toAddy = pzhId + "/" + pzpId;
+      var id = userObj.pzh_remoteManager.addMsgCallback (function (result) {
+        sendMsg (conn, obj.user, { type:"installWidget", message:result });          
+      });
+      var msg = {
+        "type":"prop", 
+        "from":userObj.pzh_state.sessionId, 
+        "to":toAddy,
+        "payload"    :{
+          "status":"installWidget", 
+          "message":{
+            listenerId:id,
+            installUrl:obj.message.installUrl
+          }
+        }
+      };
+      pzhs[pzhId].sendMessage (msg, toAddy);
     }
 };
 module.exports = pzhWI
