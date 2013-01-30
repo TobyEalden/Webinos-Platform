@@ -4,7 +4,7 @@ block content
   div(id="remoteLoginPage", data-role="content", data-theme="c")
     h3 UbiApps Friend Request Authentication
     p(style='clear:both;') To continue with your friend request, please sign-in to zone 
-      strong #{decodeURIComponent(externalEmailId)}.
+      strong #{decodeURIComponent(user)}.
     p Choose an authentication provider and sign in.
     div(id="login-choice")
       a(id="googleAuth",href="/main/#{user}/request-access-authenticate?externalprovider=google&externalCertUrl=#{externalCertUrl}&externalPZHUrl=#{externalPZHUrl}&externalEmailId=#{externalEmailId}",data-role="button",rel="external")

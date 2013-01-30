@@ -87,7 +87,7 @@ block content
                 li #{requestList[p].name}
                   - if (showOptions) {
                     div(style='text-align:right;')
-                      a(data-mini="true",data-inline="true",data-role="button",href='/approveFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='check', data-theme="#{ui.optionTheme}") Approve
+                      a(data-mini="true",data-inline="true",data-role="button",href='/approveFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='check', data-theme="#{ui.optionTheme}") Accept
                       a(data-mini="true",data-inline="true",data-role="button",href='/rejectFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='delete', data-theme="#{ui.optionTheme}") Reject
                   - }
           - }

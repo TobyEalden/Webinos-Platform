@@ -113,7 +113,7 @@ module.exports = function (app, address, port) {
                 }
                 var session = req.session.expectedExternalAuth;
                 if (result.email !== session.externalEmailId) {
-                    res.render("problem",{ id:"problem", appTitle: appTitle, title: "Problem", error: 'User authenticated ' + result.email + ' is different from the one that originated request'});
+                    res.render("problem",{ id:"problem", appTitle: appTitle, title: "Problem", error: 'User authenticated ' + result.email + ' is different from the one that originated request (' + session.externalEmailId + ")"});
                 } else {
                     var externalUrl = require("url").parse(req.session.expectedExternalAuth.externalCertUrl);
                     // Parse out the address and port out of the external URL
