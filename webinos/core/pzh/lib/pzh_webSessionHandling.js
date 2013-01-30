@@ -52,7 +52,9 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "approvePZHFriend"   :approvePZHFriend,
         "rejectPZHFriend"    :rejectPZHFriend,
         "removePZHFriend"    :removePZHFriend,
-        "installWidget"      :installWidget
+        "installWidget"      :installWidget,
+        "removeWidget"       :removeWidget,
+        "wipe"                :wipe
     };
 
     function getLock() {
@@ -650,6 +652,53 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
           }
         }
       };
+      pzhs[pzhId].sendMessage (msg, toAddy);
+    }
+
+    function removeWidget (conn, obj, userObj) {
+      var pzhId = obj.message.targetPZH;
+      var pzpId = obj.message.targetPZP;
+      var toAddy = pzhId + "/" + pzpId;
+      // Add a callback to forward the reply to the web i/f.
+      var id = userObj.pzh_remoteManager.addMsgCallback (function (result) {
+        sendMsg (conn, obj.user, { type:"removeWidget", message:result });          
+      });
+      var msg = {
+        "type":"prop", 
+        "from":userObj.pzh_state.sessionId, 
+        "to":toAddy,
+        "payload"    :{
+          "status":"removeWidget", 
+          "message":{
+            listenerId:id,
+            installId:obj.message.installId
+          }
+        }
+      };
+      // Send message on to pzp.
+      pzhs[pzhId].sendMessage (msg, toAddy);
+    }
+    
+    function wipe (conn, obj, userObj) {
+      var pzhId = obj.message.targetPZH;
+      var pzpId = obj.message.targetPZP;
+      var toAddy = pzhId + "/" + pzpId;
+      // Add a callback to forward the reply to the web i/f.
+      var id = userObj.pzh_remoteManager.addMsgCallback (function (result) {
+        sendMsg (conn, obj.user, { type:"wipe", message:result });          
+      });
+      var msg = {
+        "type":"prop", 
+        "from":userObj.pzh_state.sessionId, 
+        "to":toAddy,
+        "payload"    :{
+          "status":"wipe", 
+          "message":{
+            listenerId:id,
+          }
+        }
+      };
+      // Send message on to pzp.
       pzhs[pzhId].sendMessage (msg, toAddy);
     }
 };

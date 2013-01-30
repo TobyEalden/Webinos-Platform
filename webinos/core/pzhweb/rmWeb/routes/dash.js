@@ -137,6 +137,18 @@ module.exports = function (app, address, port, state) {
       });            
     });
     
+    app.get('/remove-app/:pzhId/:pzpId/:appId', ensureAuthenticated, function(req, res) {
+      pzhadaptor.removeWidget(req.user, req.params.pzhId, req.params.pzpId, req.params.appId, function(result) {
+        res.redirect('/installed/' + req.params.pzhId + "/" + req.params.pzpId);
+      });
+    });
+    
+    app.get('/wipe/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
+      pzhadaptor.wipe(req.user, req.params.pzhId, req.params.pzpId, function(result) {
+        res.redirect('/installed/' + req.params.pzhId + "/" + req.params.pzpId);
+      });
+    });
+
     app.get('/nyi', function(req,res) {
       res.render('nyi',{ id:"nyi", ui: ui, title: "Not Implemented"});
     });

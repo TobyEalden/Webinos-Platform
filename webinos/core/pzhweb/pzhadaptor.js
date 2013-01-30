@@ -215,3 +215,11 @@ PzhAdaptor.removePZHFriend = function(user, targetPZH, email, externalPZH, res) 
 PzhAdaptor.installWidget = function(user, targetPZH, targetPZP, installUrl, res) {
   pzhTLS.send (user, {type:"installWidget", targetPZH: targetPZH, targetPZP: targetPZP, installUrl: installUrl}, responseHandler(res));
 }
+
+PzhAdaptor.removeWidget = function(user, targetPZH, targetPZP, installId, res) {
+  pzhTLS.send (user, {type:"removeWidget", targetPZH: targetPZH, targetPZP: targetPZP, installId: installId}, responseHandler(res));
+}
+
+PzhAdaptor.wipe = function(user, targetPZH, targetPZP, res) {
+  pzhTLS.send (user, {type:"wipe", targetPZH: targetPZH, targetPZP: targetPZP}, responseHandler(res));
+}

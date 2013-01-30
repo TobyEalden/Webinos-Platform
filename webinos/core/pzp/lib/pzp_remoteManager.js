@@ -145,10 +145,52 @@
               "id"      :receivedMsg.listenerId
           });    
       }
-    });
-    
+    });    
   }
   
+  function removeWidget(receivedMsg) {
+    console.log("removeWidget was invoked with " + receivedMsg.installId);
+    if (widgetLibrary.widgetmanager.uninstall(receivedMsg.installId)) {
+      _parent.prepMsg (
+        _parent.pzp_state.sessionId,
+        _parent.config.metaData.pzhId,
+        "removeWidgetReply", {
+            "ok" : true,
+            "id"      :receivedMsg.listenerId
+        });    
+    } else {
+      _parent.prepMsg (
+        _parent.pzp_state.sessionId,
+        _parent.config.metaData.pzhId,
+        "removeWidgetReply", {
+            "ok"      : false,
+            "id"      :receivedMsg.listenerId
+        });    
+    }
+  }
+  
+  function wipe(receivedMsg) {
+    if (widgetLibrary) {
+      var idList = widgetLibrary.widgetmanager.getInstalledWidgets();
+      var totalCount = idList.length;
+      var failedCount = 0;
+      for (var installId in idList) {
+        if (!widgetLibrary.widgetmanager.uninstall(idList[installId])) {
+          failedCount++;
+        } 
+      }
+    }
+
+    _parent.prepMsg (
+      _parent.pzp_state.sessionId,
+      _parent.config.metaData.pzhId,
+      "wipeReply", {
+          "totalCount": totalCount,
+          "failedCount" : failedCount,
+          "id"      :receivedMsg.listenerId
+      });
+  }
+        
   remoteManager.prototype.processMsg = function(msg) {
     var processed = true;
     switch (msg.payload.status) {
@@ -157,6 +199,12 @@
         break;
       case "installWidget":
         installWidget(msg.payload.message);
+        break;
+      case "removeWidget":
+        removeWidget(msg.payload.message);
+        break;
+      case "wipe":
+        wipe(msg.payload.message);
         break;
       default:
         processed = false;
