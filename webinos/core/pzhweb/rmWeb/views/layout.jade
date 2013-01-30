@@ -6,29 +6,21 @@ html
     link(rel='stylesheet', href='/css/style.css')
     script(src='/js/jquery/jquery-1.8.2.min.js')
     script(src='/js/jquery/jquery.mobile-1.2.0.min.js')
+    script
+      $(function() {
+        $(document).on("pageinit", function() {
+          $(".dash-refresh").click(function () {
+            window.location.reload(true);
+            return false;
+          });
+        });
+      });
     title #{locals.title || ''}
     block head
   body
     - var mainTheme = (typeof ui === "undefined") ? "d" : ui.mainTheme;
     - var optionTheme = (typeof ui === "undefined") ? "d" : ui.optionTheme;
     div(id='#{locals.id || ''}',data-role='page',data-theme="#{mainTheme}")
-      script
-        function refreshPage() {
-          $.mobile.changePage(
-            window.location.href,
-            {
-              allowSamePageTransition : true,
-              transition              : 'none',
-              showLoadMsg             : false,
-              reloadPage              : true,
-              changeHash              : false
-            });
-        }        
-        $(document).delegate("##{locals.id || 'random'}", "pageinit", function() {
-          $(".dash-refresh").click(function () {
-            window.location.reload(true);
-          });
-        });
       div(data-role='header',data-position="fixed", data-theme="#{optionTheme}")
         h1 #{locals.title || ''}
         - if (locals.id !== "home" && locals.id !== "login") {
