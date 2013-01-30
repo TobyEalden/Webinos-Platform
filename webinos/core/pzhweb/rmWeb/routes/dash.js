@@ -24,20 +24,52 @@ module.exports = function (app, address, port, state) {
         passport = require('passport'),
         helper = require('../../routes/helper.js');
 
-    var pzhInfoCache = {};
-    var ui = {
-      appTitle: "UbiApps",
-      appURL: "http://ubiapps.com",
-      mainTheme: "d",
-      optionTheme: "b",
-      infoTheme: "c",
-      dividerTheme: "d",
-      collapsibleTheme: "d",
-      serverName: ""
+    var privilegedUsers = {
+      "nick@nquiringminds.com": true,
+      "toby.ealden@gmail.com": true
     };
     
-    function getCurrentFarm(user) {
-      return address + "_" + decodeURIComponent(getUserPath(user));
+    var pzhInfoCache = {};
+    
+    function getUIOptions(user) {
+      return {
+        appTitle: "UbiApps",
+        appURL: "http://ubiapps.com",
+        mainTheme: "d",
+        optionTheme: "b",
+        infoTheme: "c",
+        dividerTheme: "d",
+        collapsibleTheme: "d",
+        privileged: isPrivileged(user),
+        serverName: user ? getCurrentPZH(user) : ""
+      };
+    }
+    
+    function getCurrentPZH(user) {
+      return address + "_" + user.emails[0].value;
+    }
+    
+    function isPrivileged(user) {
+      return user ? user.emails[0].value in privilegedUsers : false;
+    }
+
+    function renderPZHHome(id, pzhId, req, res) {
+      pzhadaptor.getPZHPZPs(req.user, pzhId, function(pzp_result) {
+        pzhadaptor.getPZHPZHs(req.user, pzhId, function(pzh_result) {
+          pzhadaptor.getPendingFriends(req.user, pzhId, function(pending_result) {
+            var pzhName = (pzhId in pzhInfoCache) ? pzhInfoCache[pzhId].username : pzhId;
+            res.render('pzh', { id:id, ui: getUIOptions(req.user), title: "Zone Details", pzhName: pzhName, pzh: pzhId, pzpList: pzp_result.message, pzhList: pzh_result.message, requestList: pending_result.message });
+          });
+        });
+      });
+    }
+
+    function getPZHId(req) {
+      if (isPrivileged(req.user)) {
+        return req.params.pzhId;
+      } else {
+        return getCurrentPZH(req.user);
+      }
     }
     
     app.get('/', ensureAuthenticated, function (req, res) {
@@ -46,111 +78,91 @@ module.exports = function (app, address, port, state) {
             req.session.isPzp = "";
             req.session.pzpPort = "";
         } else {
-          pzhadaptor.getFarmPZHs(req.user, function(result) {
-            pzhInfoCache = result.message;
-            res.render('dash', { id:"home", ui: ui, title: "UbiApps", pzhList: result.message });
-          });
+          if (!isPrivileged(req.user)) {
+            renderPZHHome("home", getCurrentPZH(req.user), req,res);
+          } else {
+            pzhadaptor.getFarmPZHs(req.user, function(result) {
+              pzhInfoCache = result.message;
+              res.render('dash', { id:"home", ui: getUIOptions(req.user), title: "UbiApps", pzhList: result.message });
+            });
+          }
         }
     });
     
     app.get('/pzh/:pzhId', ensureAuthenticated, function(req, res) {
-      pzhadaptor.getPZHPZPs(req.user, req.params.pzhId, function(pzp_result) {
-        pzhadaptor.getPZHPZHs(req.user, req.params.pzhId, function(pzh_result) {
-          pzhadaptor.getPendingFriends(req.user, req.params.pzhId, function(pending_result) {
-            /*
-            // Rationalise the connected pzh list, removing pending removing pending requests
-            for (var p in pending_result.message) {
-              if (pending_result.message.hasOwnProperty(p)) {
-                var pzhId = pending_result.message[p].host + "_" + pending_result.message[p].name;
-                console.log("pending ID: " + pzhId);
-                if (pzh_result.message.hasOwnProperty(pzhId)) {
-                  if (pzh_result[pzhId].isConnected) {
-                    console.log("+++++++++++++++++++ removing pending request from !!ONLINE!! pzh list: " + pzhId);
-                  } else {
-                    console.log("+++++++++++++++++++ removing pending request from offline pzh list: " + pzhId);
-                  }
-                  delete pzh_result[pzhId];
-                }
-              }
-            }
-            */
-            var pzhName = (req.params.pzhId in pzhInfoCache) ? pzhInfoCache[req.params.pzhId].username : req.params.pzhId;
-            res.render('pzh', { id:"pzh", ui: ui, title: "Zone Details", pzhName: pzhName, pzh: req.params.pzhId, pzpList: pzp_result.message, pzhList: pzh_result.message, requestList: pending_result.message });
-          });
-        });
-      });
+      renderPZHHome("pzh",getPZHId(req),req,res);
     });
 
     app.get('/pzp/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
-      res.render('pzp', { id:"pzp", ui: ui, title: "Device", pzh: req.params.pzhId, pzp: req.params.pzpId});
+      res.render('pzp', { id:"pzp", ui: getUIOptions(req.user), title: "Device", pzh: getPZHId(req), pzp: req.params.pzpId});
     });
 
     app.get('/installed/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
-      pzhadaptor.getInstalledWidgets(req.user, req.params.pzhId, req.params.pzpId, function(result) {
-        res.render('installed', { id:"installed", ui: ui, title: "Apps", widgetList: result.message.installedList, pzh: req.params.pzhId, pzp: req.params.pzpId });
+      pzhadaptor.getInstalledWidgets(req.user, getPZHId(req), req.params.pzpId, function(result) {
+        res.render('installed', { id:"installed", ui: getUIOptions(req.user), title: "Apps", widgetList: result.message.installedList, pzh: getPZHId(req), pzp: req.params.pzpId });
       });      
     });
     
     app.get('/about-me/:pzhId', ensureAuthenticated, function(req,res) {
-        pzhadaptor.getPZHDetails(req.user, req.params.pzhId, function(result) {
-          res.render('about-me', { id:"about-me", ui: ui, title: "About Zone", about: result.message, pzh: req.params.pzhId });
+        pzhadaptor.getPZHDetails(req.user, getPZHId(req), function(result) {
+          res.render('about-me', { id:"about-me", ui: getUIOptions(req.user), title: "About Zone", about: result.message, pzh: getPZHId(req) });
         });
     });
 
     app.get('/invite/:pzhId', ensureAuthenticated, function(req,res) {
       pzhadaptor.getFarmPZHs(req.user, function(result) {
-        res.render('invite', { id:"invite", ui: ui, title: "Invite a Friend", pzh: req.params.pzhId, pzhList: result.message });
+        res.render('invite', { id:"invite", ui: getUIOptions(req.user), title: "Invite a Friend", pzh: getPZHId(req), pzhList: result.message });
       });
     });
     
     app.get('/approve/:pzhId', ensureAuthenticated, function(req,res) {
-      pzhadaptor.getPendingFriends(req.user, req.params.pzhId, function(lst) {
-        res.render('approve', { id:"approve", ui: ui, title: "Approve friend", pzh: req.params.pzhId, requestList: lst.message });
+      pzhadaptor.getPendingFriends(req.user, getPZHId(req), function(lst) {
+        res.render('approve', { id:"approve", ui: getUIOptions(req.user), title: "Approve friend", pzh: getPZHId(req), requestList: lst.message });
       });
     });
     
     app.get('/install-app/:pzhId/:pzpId', ensureAuthenticated, function(req,res) {
-        res.render('install-app', { id:"installApp", ui: ui, title: "Install App", pzh: req.params.pzhId, pzp: req.params.pzpId });    
+        res.render('install-app', { id:"installApp", ui: getUIOptions(req.user), title: "Install App", pzh: getPZHId(req), pzp: req.params.pzpId });    
     });
             
     app.get('/do-install/:pzhId/:pzpId/:appId', ensureAuthenticated, function(req,res) {
         var installUrl = "http://webinos.two268.com/apps/wgl-demo.wgt/wgl-demo.wgt";
-        pzhadaptor.installWidget(req.user, req.params.pzhId, req.params.pzpId, installUrl, function(result) {
-          res.render('install-app-result', { id:"installAppResult", ui: ui, title: "Install App Result", pzh: req.params.pzhId, pzp: req.params.pzpId, result: result.message });          
+        pzhadaptor.installWidget(req.user, getPZHId(req), req.params.pzpId, installUrl, function(result) {
+          res.render('install-app-result', { id:"installAppResult", ui: getUIOptions(req.user), title: "Install App Result", pzh: getPZHId(req), pzp: req.params.pzpId, result: result.message });          
         });
     });
     
     app.get('/do-install-url/:pzhId/:pzpId/:appUrl', ensureAuthenticated, function(req,res) {
-        pzhadaptor.installWidget(req.user, req.params.pzhId, req.params.pzpId, req.params.appUrl, function(result) {
-          res.render('install-app-result', { id:"installAppResult", ui: ui, title: "Install App Result", pzh: req.params.pzhId, pzp: req.params.pzpId, result: result.message });          
+        pzhadaptor.installWidget(req.user, getPZHId(req), req.params.pzpId, req.params.appUrl, function(result) {
+          res.render('install-app-result', { id:"installAppResult", ui: getUIOptions(req.user), title: "Install App Result", pzh: getPZHId(req), pzp: req.params.pzpId, result: result.message });          
         });
     });
 
     app.get('/app/:pzhId/:pzpId/:appId', ensureAuthenticated, function(req, res) {
-      pzhadaptor.getInstalledWidgets(req.user, req.params.pzhId, req.params.pzpId, function(result) {
+      pzhadaptor.getInstalledWidgets(req.user, getPZHId(req), req.params.pzpId, function(result) {
         var installId = req.params.appId;
         if (result.message.installedList.hasOwnProperty(installId)) {
-          res.render('app', { id:"app", ui: ui, title: "App", app: result.message.installedList[installId], pzh: req.params.pzhId, pzp: req.params.pzpId });
+          res.render('app', { id:"app", ui: getUIOptions(req.user), title: "App", app: result.message.installedList[installId], pzh: getPZHId(req), pzp: req.params.pzpId });
         } else {
-          res.render('problem',{ id:"problem", ui: ui, title: "Problem", error: "App " + installId + " not found on device."});
+          res.render('problem',{ id:"problem", ui: getUIOptions(req.user), title: "Problem", error: "App " + installId + " not found on device."});
         }
       });            
     });
     
     app.get('/remove-app/:pzhId/:pzpId/:appId', ensureAuthenticated, function(req, res) {
-      pzhadaptor.removeWidget(req.user, req.params.pzhId, req.params.pzpId, req.params.appId, function(result) {
-        res.redirect('/installed/' + req.params.pzhId + "/" + req.params.pzpId);
+      pzhadaptor.removeWidget(req.user, getPZHId(req), req.params.pzpId, req.params.appId, function(result) {
+        res.redirect('/installed/' + getPZHId(req) + "/" + req.params.pzpId);
       });
     });
     
     app.get('/wipe/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
-      pzhadaptor.wipe(req.user, req.params.pzhId, req.params.pzpId, function(result) {
-        res.redirect('/installed/' + req.params.pzhId + "/" + req.params.pzpId);
+      pzhadaptor.wipe(req.user, getPZHId(req), req.params.pzpId, function(result) {
+        res.redirect('/installed/' + getPZHId(req) + "/" + req.params.pzpId);
       });
     });
 
     app.get('/nyi', function(req,res) {
-      res.render('nyi',{ id:"nyi", ui: ui, title: "Not Implemented"});
+      res.render('nyi',{ id:"nyi", ui: getUIOptions(req.user), title: "Not Implemented"});
     });
         
     app.post('/main/:user/enrollPzp/', function (req, res) { // to use ensure authenticated, for some reason req.isAuthenticated retuns false
@@ -158,12 +170,7 @@ module.exports = function (app, address, port, state) {
     });
 
     app.get('/main/:user/', ensureAuthenticated, function (req, res) {
-        if (encodeURIComponent(req.params.user) !== getUserPath(req.user)) {
-            logger.log(encodeURIComponent(req.params.user) + " does not equal " + getUserPath(req.user));
-            res.redirect('/login');
-        } else {
-            res.redirect('/pzh/' + address + "_" + req.params.user);
-        }
+      res.redirect('/pzh/' + address + "_" + req.params.user);
     });
 
     // present certificates to an external party.
@@ -196,29 +203,31 @@ module.exports = function (app, address, port, state) {
         logger.log("External: " + externalEmail + " - " + externalPZH);
         if (req.params.pzhId === req.params.connectPzhId) {
             logger.log('Cannot register own PZH ' + externalEmail);
-            res.render("problem",{ id:"problem", ui: ui, title: "Problem", error: "You cannot make friends with yourself."});
+            res.render("problem",{ id:"problem", ui: getUIOptions(req.user), title: "Problem", error: "You cannot make friends with yourself."});
         } else {
             //get those certificates
             //"https://" + externalPZH + "/main/" + encodeURIComponent(externalEmail) + "/certificates/"
             helper.getCertsFromHost(externalEmail, externalPZH, function (certs) {
-              pzhadaptor.storeExternalUserCert(req.user, externalEmail, externalPZH, certs.message, function (status) {
+              pzhadaptor.addTrustedFriend(req.user, getPZHId(req),externalEmail, externalPZH, certs.message, function (status) {
                 if (status.message) {//get my details from somewhere
-                  var myCertificateUrl = "https://" + address + ":" + port + "/main/" + req.user.emails[0].value + "/certificates/";
-                  var myPzhUrl = "https://" + address + ":" + port + "/main/" + req.user.emails[0].value + "/";
+                  splitIdx = req.params.pzhId.indexOf('_');
+                  var myCertEmail = req.params.pzhId.substr(splitIdx+1);
+                  var myCertificateUrl = "https://" + address + ":" + port + "/main/" + myCertEmail + "/certificates/";
+                  var myPzhUrl = "https://" + address + ":" + port + "/main/" + myCertEmail + "/";
                   //where are we sending people
                   var redirectUrl = "https://" + externalPZH + "/main/" + encodeURIComponent(externalEmail) +
                       "/request-access-login?certUrl=" + encodeURIComponent(myCertificateUrl) +
-                      "&pzhInfo=" + encodeURIComponent(myPzhUrl) + "&ownEmailId=" + getUserPath(req.user);
+                      "&pzhInfo=" + encodeURIComponent(myPzhUrl) + "&ownEmailId=" + myCertEmail;
                   console.log("_-----------------_ redirecting to: " + redirectUrl);
                   res.redirect(redirectUrl);
                 } else {
                   logger.log('Certificate already exchanged');
-                  res.render("problem",{ id:"problem", ui: ui, title: "Problem", error: "This person is already your friend, or there is a pending friend request.<br /><br />Certificate already exchanged."});
+                  res.render("problem",{ id:"problem", ui: getUIOptions(req.user), title: "Problem", error: "This person is already your friend, or there is a pending friend request.<br /><br />Certificate already exchanged."});
                 }
               });
             }, function (err) {
                 logger.log('Failed to retrieve certificate from remote host');
-                res.render("problem",{ id:"problem", ui: ui, title: "Problem", error: "Failed to retrieve certificate from remote host."});
+                res.render("problem",{ id:"problem", ui: getUIOptions(req.user), title: "Problem", error: "Failed to retrieve certificate from remote host."});
             });
         }
 
@@ -245,7 +254,7 @@ module.exports = function (app, address, port, state) {
             if (answer.message) {
                 res.render("approve-user", {user:req.user, externalUser:req.params.externalemail});
             } else {
-                res.render("problem",{ id:"problem", ui: ui, title: "Problem", error: "Failed to approve user " + req.params.externalemail + "."});
+                res.render("problem",{ id:"problem", ui: getUIOptions(req.user), title: "Problem", error: "Failed to approve user " + req.params.externalemail + "."});
             }
         });
         //Args: None
@@ -255,20 +264,20 @@ module.exports = function (app, address, port, state) {
     });
 
     app.get('/approveFriend/:pzhId/:email', ensureAuthenticated, function (req, res) {
-      pzhadaptor.approvePZHFriend(req.user, req.params.pzhId, req.params.email, function() {
-        res.redirect('/pzh/' + req.params.pzhId);
+      pzhadaptor.approvePZHFriend(req.user, getPZHId(req), req.params.email, function() {
+        res.redirect('/pzh/' + getPZHId(req));
       });
     });
 
     app.get('/rejectFriend/:pzhId/:email', ensureAuthenticated, function (req, res) {
-      pzhadaptor.rejectPZHFriend(req.user, req.params.pzhId, req.params.email,function() {
-        res.redirect('/pzh/' + req.params.pzhId);
+      pzhadaptor.rejectPZHFriend(req.user, getPZHId(req), req.params.email,function() {
+        res.redirect('/pzh/' + getPZHId(req));
       });
     });
 
     app.get('/removeFriend/:pzhId/:email/:externalPZH', ensureAuthenticated, function (req, res) {
-      pzhadaptor.removePZHFriend(req.user, req.params.pzhId, req.params.email, req.params.externalPZH, function() {
-        res.redirect('/pzh/' + req.params.pzhId);
+      pzhadaptor.removePZHFriend(req.user, getPZHId(req), req.params.email, req.params.externalPZH, function() {
+        res.redirect('/pzh/' + getPZHId(req));
       });    
     });
 
@@ -277,7 +286,7 @@ module.exports = function (app, address, port, state) {
             req.session.isPzp = true;
             req.session.pzpPort = req.query.port;
         }
-        res.render('login', { user:req.user, id:"login", ui: ui, title: "UbiApps" });
+        res.render('login', { user:req.user, id:"login", ui: getUIOptions(req.user), title: "UbiApps" });
     });
     // GET /auth/google
     //   Use passport.authenticate() as route middleware to authenticate the
@@ -332,10 +341,14 @@ module.exports = function (app, address, port, state) {
     //   login page.
     function ensureAuthenticated(req, res, next) {
         if (req.isAuthenticated()) {
-            ui.serverName = getCurrentFarm(req.user);
+          if ("pzhId" in req.params && req.params.pzhId != getCurrentPZH(req.user) && !isPrivileged(req.user)) {
+            res.redirect("/");
+          } else {
             return next();
+          }          
+        } else {
+          res.redirect('/login');
         }
-        res.redirect('/login');
     }
 
     function getUserPath(user) {

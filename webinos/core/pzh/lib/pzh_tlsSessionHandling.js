@@ -241,6 +241,7 @@ var Pzh = function () {
      * @param _id - sessionId
      */
     this.removeRoute = function (_id) {
+        logger.log ("removing route for " + _id);
         if (self.pzh_state.connectedPzp.hasOwnProperty(_id)) {
             self.pzh_otherManager.messageHandler.removeRoute(_id, self.config.metaData.serverName);
             delete self.pzh_state.connectedPzp[_id];
@@ -248,6 +249,9 @@ var Pzh = function () {
         if (self.pzh_state.connectedPzh.hasOwnProperty(_id)) {
             self.pzh_otherManager.messageHandler.removeRoute(_id, self.config.metaData.serverName);
             delete self.pzh_state.connectedPzh[_id];
+        }
+        if (typeof _id !== "undefined") {
+          self.pzh_otherManager.discovery.removeRemoteServiceObjects (_id);
         }
     };
     /**
@@ -330,7 +334,7 @@ var Pzh_Pzh = function (_parent) {
                 _parent.handleData(connPzh, buffer);
             });
             connPzh.on("error", function (err) {
-                _parent.pzh_state.logger.error(err.message + " while connecting " + _to);
+                _parent.pzh_state.logger.error (err.message);
             });
             connPzh.on("end", function () {
                 _parent.removeRoute(connPzh.id);

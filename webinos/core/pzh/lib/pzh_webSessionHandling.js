@@ -54,7 +54,8 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "removePZHFriend"    :removePZHFriend,
         "installWidget"      :installWidget,
         "removeWidget"       :removeWidget,
-        "wipe"                :wipe
+        "wipe"                :wipe,
+        "addTrustedFriend"  :addTrustedFriend
     };
 
     function getLock() {
@@ -152,60 +153,91 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         });
     }
 
-    function listAllServices(conn, obj, userObj) {
+    function getServices (userObj) {
         var result = { pzEntityList:[] }, connectedPzp = getConnectedPzp(userObj), key;
         result.pzEntityList.push({pzId:userObj.pzh_state.sessionId});
         for (key = 0; key < connectedPzp.length; key = key + 1) {
             result.pzEntityList.push({pzId:connectedPzp[key].url});
         }
         result.services = userObj.pzh_otherManager.discovery.getAllServices();
-        sendMsg(conn, obj.user, { type:"listAllServices", message:result });
+        return result;
     }
 
-    function listUnRegisterServices(conn, obj, userObj) {
-        function runCallback(pzEntityId, modules) {
-            var result = {
-                "pzEntityId":pzEntityId,
-                "modules":modules
-            };
-            sendMsg(conn, obj.user, { type:"listUnRegisterServices", message:result });
+    function listAllServices (conn, obj, userObj) {
+        sendMsg (conn, obj.user, { type:"listAllServices", message:getServices (userObj) });
+    }
+
+    function updateServiceCache (userObj, msg, remove) {
+        var name, url;
+        if (remove) {
+            url = require ("url").parse (msg.svAPI);
+            if (url.slashes) {
+                if (url.host === "webinos.org") {
+                    name = url.pathname.split ("/")[2];
+                } else if (url.host === "www.w3.org") {
+                    name = url.pathname.split ("/")[3];
+                } else {
+                    name = msg.svAPI;
+                }
+            }
+        } else {
+            name = msg.name;
+        }
+        for (var i = 0; i < userObj.config.serviceCache.length; i = i + 1) {
+            if (userObj.config.serviceCache[i].name === name) {
+                userObj.config.serviceCache.splice (i, 1);
+                userObj.config.storeServiceCache (userObj.config.serviceCache);
+                return;
+            }
+        }
+        if (!remove) {
+            userObj.config.serviceCache.splice (i, 0, {"name":name, "params":{} });
+            userObj.config.storeServiceCache (userObj.config.serviceCache);
+        }
         }
 
-        if (userObj.pzh_state.sessionId !== obj.message.at) {
+    function listUnRegisterServices (conn, obj, userObj) {
+        if (userObj.pzh_state.sessionId !== obj.message.at) { // Different PZH
             var id = userObj.pzh_otherManager.addMsgListener(function (modules) {
-                runCallback(obj.message.at, modules.services);
+                sendMsg (conn, obj.user, { type:"listUnregServices",
+                    message                    :{"pzEntityId":obj.message.at, "modules":modules.services} });
             });
-            var msg = {"type":"prop", "from":userObj.pzh_state.sessionId, "to":obj.message.at,
-                "payload":{"status":"listUnregServices", "message":{listenerId:id}}};
+            var msg = userObj.prepMsg (userObj.pzh_state.sessionId, obj.message.at, "listUnregServices", {listenerId:id});
             userObj.sendMessage(msg, obj.message.at);
-        } else {
-            runCallback(userObj.pzh_state.sessionId, userObj.pzh_otherManager.getInitModules());
+        } else { // returns all the current serviceCache
+            var data = require ("fs").readFileSync ("./webinos_config.json");
+            var c = JSON.parse (data.toString ());
+            sendMsg (conn, obj.user, { type:"listUnregServices",
+                message                    :{"pzEntityId":userObj.pzh_state.sessionId, "modules":c.pzhDefaultServices} }); // send default services...
         }
     }
 
     function registerService(conn, obj, userObj) {
         if (userObj.pzh_state.sessionId !== obj.message.at) {
-            var msg = {"type":"prop", "from":userObj.pzh_state.sessionId, "to":obj.message.at,
-                "payload":{"status":"registerService", "message":{name:obj.message.name, params:{}}}};
+            var msg = userObj.prepMsg (userObj.pzh_state.sessionId, obj.message.at, "registerService",
+                {name:obj.message.name, params:{}});
             userObj.sendMessage(msg, obj.message.at);
         } else {
             util.webinosService.loadServiceModule(
                 {"name":obj.message.name, "params":{}},
                 userObj.pzh_otherManager.registry,
                 userObj.pzh_otherManager.rpcHandler);
+            updateServiceCache (userObj, obj.message, false);
         }
-        sendMsg(conn, obj.user, { type:"registerServices", message:true });
+
+        sendMsg (conn, obj.user, { type:"registerService", message:getServices (userObj) });
     }
 
     function unregisterService(conn, obj, userObj) {
         if (userObj.pzh_state.sessionId !== obj.message.at) {
-            var msg = {"type":"prop", "from":userObj.pzh_state.sessionId, "to":obj.message.at,
-                "payload":{"status":"unregisterService", "message":{svId:obj.message.svId, svAPI:obj.message.svAPI}}};
+            var msg = userObj.prepMsg (userObj.pzh_state.sessionId, obj.message.at, "unregisterService",
+                {svId:obj.message.svId, svAPI:obj.message.svAPI})
             userObj.sendMessage(msg, obj.message.at);
         } else {
             userObj.pzh_otherManager.registry.unregisterObject({id:obj.message.svId, api:obj.message.svAPI});
+            updateServiceCache (userObj, obj.message, true);
         }
-        sendMsg(conn, obj.user, { type:"unregisterService", message:true });
+        sendMsg (conn, obj.user, { type:"unregisterService", message:getServices (userObj) });
     }
 
     // First step in connect friend
@@ -700,6 +732,47 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
       };
       // Send message on to pzp.
       pzhs[pzhId].sendMessage (msg, toAddy);
+    }
+
+    function addTrustedFriend(conn, obj, userObj) {
+      var targetPZH = obj.message.targetPZH;
+        logger.log(targetPZH + " is now expecting external connection from " + obj.message.externalEmail);
+        var url = require("url").parse("https://" + obj.message.externalPzh);
+        var name = url.hostname + "_" + obj.message.externalEmail;
+        if (url.port && parseInt(url.port) !== 443) {
+            name = url.hostname + ":" + url.port + "_" + obj.message.externalEmail;
+        }
+
+        if (pzhs[targetPZH].config.cert.external.hasOwnProperty(name) && pzhs[targetPZH].config.trustedList.pzh.hasOwnProperty(name)) {
+            sendMsg(conn, obj.user, { type:"addTrustedFriend", message:false }); // PZH ALREADY ENROLLED
+        } else {
+            if (!pzhs[targetPZH].config.cert.external.hasOwnProperty(name)) {
+                pzhs[targetPZH].config.cert.external[name] = {
+                    url:"https://" + obj.message.externalPzh + "/main/" + obj.message.externalEmail + "/",
+                    host:url.hostname,
+                    port:url.port ? url.port : 443,
+                    externalCerts:obj.message.externalCerts.server,
+                    externalCrl:obj.message.externalCerts.crl,
+                    serverPort:obj.message.externalCerts.serverPort
+                };
+                pzhs[targetPZH].config.storeCertificate(pzhs[targetPZH].config.cert.external, "external");
+                pzhs[targetPZH].setConnParam(function (status, certificateParam) {// refresh your own certs
+                    if (status) {
+                        var id = hostname + "_" + pzhs[targetPZH].config.userData.email[0].value;
+                        if (port !== 443) {
+                            id = hostname + ":" + port + "_" + pzhs[targetPZH].config.userData.email[0].value;
+                        }
+                        refreshPzh(id, certificateParam);
+                    }
+                });
+            }
+            if (!pzhs[targetPZH].config.trustedList.pzh.hasOwnProperty(name)) {
+                pzhs[targetPZH].config.trustedList.pzh[name] = {};
+                pzhs[targetPZH].config.storeTrustedList(pzhs[targetPZH].config.trustedList);
+            }
+            sendMsg(conn, obj.user, { type:"addTrustedFriend", message:true });
+        }
+        // After this step OpenId authentication is triggered
     }
 };
 module.exports = pzhWI

@@ -23,7 +23,7 @@
 
     var fs = require('fs');
 
-    var initialized = false;
+    var driversLoaded = false;
 
     var driversLocation = __dirname+'/drivers/';
     var driversList = new Array;
@@ -42,25 +42,12 @@
      * @param sensorActuator identifies if this is instantiated by the actuator or sensor api
      * @param listener listener of the sensor/actuator api to be called when needed
      */
-    var driverInterface = function(sensorActuator, listener) {
-        console.log('Driver Interface constructor - sa is '+sensorActuator);
-        if(!initialized) {
+    var driverInterface = function() {
+        console.log('Driver Interface constructor');
+        if(!driversLoaded) {
             loadDrivers();
-            initialized = true;
+            driversLoaded = true;
         }
-
-        // The listener function (implmeted in the api) has the signature:
-        // listener(DOMString cmd, int id, DOMString data) where
-        // cmd is the command (register, data, ...)
-        // id is the is of the element(it's assigned at registration time)
-        // data are data (their value depend on the command)
-        apiListener[sensorActuator] = listener;
-
-
-        this.sendCommand = function(cmd, elementId, data) {
-            driversList[elementList[elementId].driverId].execute(cmd, elementId, data);
-        }
-
 
         function loadDrivers() {
             console.log('loadDrivers');
@@ -69,7 +56,6 @@
                 console.log('File found: '+fileList[i]+' - id is '+newDriverId);
                 try {
                     var newDriver = require(driversLocation+fileList[i]);
-                    newDriver.init(newDriverId, register, command);
                     driversList[newDriverId++] = newDriver;
                 }
                 catch(e) {
@@ -77,6 +63,48 @@
                 }
             }
             console.log('loadDrivers: '+driversList.length+' drivers successfully loaded');
+        }
+        
+        this.connect = function (sensorActuator, listener) {
+            console.log('connect sa is '+sensorActuator);
+        // The listener function (implmeted in the api) has the signature:
+        // listener(DOMString cmd, int id, DOMString data) where
+        // cmd is the command (register, data, ...)
+        // id is the is of the element(it's assigned at registration time)
+        // data are data (their value depend on the command)
+        apiListener[sensorActuator] = listener;
+
+            // Since each driver can host sensors or actuators or even both
+            // we have to make sure that listeners for both sensors and actuators 
+            // is set up (module loaded) before we start initializing and receive 
+            // callbacks from drivers.
+            var allListenersLoaded = true;
+            for (var i = 0; i < 2; i++) {
+                if (apiListener[i] == 'undefined' || apiListener[i] == null) {
+                    allListenersLoaded = false;
+                    break;
+                }
+            }
+            if (allListenersLoaded) {
+                initDrivers();
+            }
+        }
+
+        function initDrivers() {
+            console.log('initDrivers');
+            for(var i in driversList) {
+                try {
+                    driversList[i].init(i, register, command);
+                }
+                catch(e) {
+                    console.log('Error: cannot initialize driver '+ driversList[i]);
+                }
+                }
+            }
+ 
+
+        this.sendCommand = function(cmd, elementId, data, errorCB) {
+            driversList[elementList[elementId].driverId].execute(cmd, elementId, data, errorCB);
         }
 
 
@@ -87,16 +115,16 @@
          * @param sensorActuator specify if it's a sensor(0) or an actuator(1)
          * @param type the type of sensor/actuator (eg light, temperature, ...)
          */
-        function register(driverId, sensorActuator, type) {
-            console.log('driverInterface register - did '+driverId+', sa '+sensorActuator+', type '+type);
+        function register(driverId, sensorActuator, info) {
+            console.log('driverInterface register - did '+driverId+', sa '+sensorActuator+', type '+info.type);
             var newElement = {};
             newElement.driverId = driverId;
             newElement.sensorActuator = sensorActuator;
-            newElement.type = type;
+            newElement.type = info.type;
             elementList[newElementId] = newElement;
             //Sending up the register command; in this case data is the type of sensor/actuator
             if(apiListener[sensorActuator] != null) {
-                (apiListener[sensorActuator])('register', newElementId, type);
+                (apiListener[sensorActuator])('register', newElementId, info);
                 return newElementId++;
             }
             else {

@@ -67,30 +67,6 @@ if(argv.policyEditor) {
     __EnablePolicyEditor = true;
 }
 
-var fileParams = { getPath: function() { return pzp.session.getWebinosPath(); } },
-  pzpModules = [
-  {name: "get42", params: {num: "21"}},
-  {name: "zap-and-shake", params: {}},
-  {name: "actuator", params: {}},
-  {name: "webnotification", params: {}},
-  {name: "file", params: fileParams},
-  {name: "geolocation", params: {connector : "geoip"}},
-  {name: "applauncher", params: {}},
-  {name: "sensors", params: {}},
-  {name: "payment", params: {}},
-  {name: "tv", params: {}},
-  {name: "oauth", params: {}},
- // {name: "deviceorientation", params: {connector : "simulator"}},
-  {name: "deviceorientation", params: {}},
-  {name: "vehicle", params: {connector : "simulator"}},
-  {name: "context", params: {}},
-  {name: "authentication", params: {}},
-  {name: "contacts", params: {}},
-  {name: "devicestatus", params: {}},
-  {name: "discovery", params: {}},
-  {name: "mediacontent", params: {}}
-];
-
 require("fs").readFile(require("path").join(__dirname, "config-pzp.json"), function(err, data) {
     var config = {};
     if (!err) {
@@ -105,7 +81,7 @@ require("fs").readFile(require("path").join(__dirname, "config-pzp.json"), funct
     } else {
       config.sessionIdentity = config.pzhHost;
     }
-    initializePzp(config, pzpModules);
+    initializePzp (config);
 });
 
 function initializeWidgetServer() {
@@ -136,8 +112,8 @@ function initializeWidgetServer() {
   }
 }
 
-function initializePzp(config, pzpModules) {
-  pzp.session.initializePzp(config, pzpModules, function(status, result) {
+function initializePzp (config) {
+    pzp.session.initializePzp (config, function (status, result) {
     if (status) {
       if (argv.widgetServer)
         initializeWidgetServer();

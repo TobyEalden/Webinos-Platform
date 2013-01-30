@@ -15,6 +15,7 @@
  *
  * Copyright 2012 - 2013 Samsung Electronics (UK) Ltd
  * Author: Habib Virji (habib.virji@samsung.com)
+ *         Ziran Sun (ziran.sun@samsung.com)
  *******************************************************************************/
 
 var Pzp_OtherManager = function (_parent) {
@@ -30,6 +31,7 @@ var Pzp_OtherManager = function (_parent) {
     var RPCHandler = rpc.RPCHandler;
     var Registry = rpc.Registry;
     var PzpDiscovery = require ("./pzp_peerDiscovery");
+    var PzpSib   = require("./pzp_SIB_auth");
     var path = require ("path");
     var os = require ('os');
     var remoteManager = new (require("./pzp_remoteManager"))(_parent);
@@ -40,6 +42,7 @@ var Pzp_OtherManager = function (_parent) {
     this.discovery;
     this.messageHandler;
     this.peerDiscovery;
+    this.Sib = new PzpSib(_parent);;
     var self = this;
     var sync = new Sync();
     logger.addId(_parent.config.metaData.webinosName);
@@ -54,19 +57,21 @@ var Pzp_OtherManager = function (_parent) {
     }
 
     function setFoundService (validMsgObj) {
-        var msg = { from:_parent.pzp_state.sessionId, to:validMsgObj.from, payload:{"status":"foundServices", message:self.discovery.getAllServices (validMsgObj.from)}};
-        msg.payload.id = validMsgObj.payload.message.id;
+        var services = self.discovery.getAllServices(validMsgObj.from);
+        var msg = {"type" : "prop",
+            "from" : _parent.pzp_state.sessionId,
+            "to"   : validMsgObj.from,
+            "payload":{"status":"foundServices",
+                "message": services,
+                "id" : validMsgObj.payload.message.id }
+        };
         _parent.sendMessage (msg, validMsgObj.from);
     }
-
-  function getInitModules() {
-    return this.loadedModules;
-  };
 
   function syncHash(receivedMsg) {
     var policyPath = path.join(_parent.config.metaData.webinosRoot, "policies","policy.xml");
     sync.parseXMLFile(policyPath, function(value) {
-        var list = {trustedList: _parent.config.trustedList, crl: _parent.config.crl, cert: _parent.config.cert.external, policy: value};
+            var list = {trustedList: _parent.config.trustedList, exCertList: _parent.config.exCertList, crl: _parent.config.crl, cert: _parent.config.cert.external, policy: value};
         var result = sync.compareFileHash(list, receivedMsg);
         if (Object.keys(result).length >= 1) {
           _parent.prepMsg(_parent.pzp_state.sessionId, _parent.config.metaData.pzhId, "sync_compare", result);
@@ -95,17 +100,73 @@ var Pzp_OtherManager = function (_parent) {
         }
         logger.log ("Files Synchronised with the PZH");
     }
+
+    function updateServiceCache (validMsgObj, remove) {
+        var name, url, list;
+        url = require ("url").parse (validMsgObj.payload.message.svAPI);
+        if (url.slashes) {
+            if (url.host === "webinos.org") {
+                name = url.pathname.split ("/")[2];
+            } else if (url.host === "www.w3.org") {
+                name = url.pathname.split ("/")[3];
+            } else {
+                name = validMsgObj.payload.message.svAPI;
+            }
+        }
+        for (var i = 0; i < _parent.config.serviceCache.length; i = i + 1) {
+            if (_parent.config.serviceCache[i].name === name) {
+                if (remove) {
+                    _parent.config.serviceCache.splice (i, 1);
+                }
+                _parent.config.storeServiceCache (_parent.config.serviceCache);
+                return;
+            }
+        }
+
+        if (!remove) {
+            _parent.config.serviceCache.splice (i, 0, {"name":name, "params":{}});
+            _parent.config.storeServiceCache (_parent.config.serviceCache);
+        }
+    }
+
+    function unRegisterService (validMsgObj) {
+        self.registry.unregisterObject ({
+            "id" :validMsgObj.payload.message.svId,
+            "api":validMsgObj.payload.message.svAPI
+        });
+        updateServiceCache (validMsgObj, true);
+    }
+
+    function registerService (validMsgObj) {
+        modLoader.loadServiceModule ({
+            "name"  :validMsgObj.payload.message.name,
+            "params":validMsgObj.payload.message.params
+        }, self.registry, self.rpcHandler);
+        updateServiceCache (validMsgObj, false);
+    }
+
+    function listUnRegServices (validMsgObj) {
+        var data = require ("fs").readFileSync ("./webinos_config.json");
+        var c = JSON.parse (data.toString ());
+        _parent.prepMsg (
+            _parent.pzp_state.sessionId,
+            _parent.config.metaData.pzhId,
+            "unregServicesReply", {
+                "services":c.pzpDefaultServices,
+                "id"      :validMsgObj.payload.message.listenerId
+            });
+    }
+
     /**
      * Initializes Webinos Other Components that interact with the session manager
      * @param modules : webinos modules that should be loaded in the PZP
      */
-    this.initializeRPC_Message = function (modules) {
-        self.loadedModules = modules;
+    this.initializeRPC_Message = function () {
         self.registry = new Registry (this);
         self.rpcHandler = new RPCHandler (_parent, self.registry); // Handler for remote method calls.
         self.discovery = new Discovery (self.rpcHandler, [self.registry]);
         self.registry.registerObject (self.discovery);
-        modLoader.loadServiceModules (modules, self.registry, self.rpcHandler); // load specified modules
+        modLoader.loadServiceModules (_parent.config.serviceCache, self.registry, self.rpcHandler); // load specified modules
         self.messageHandler = new MessageHandler (self.rpcHandler); // handler for all things message
         // Init the rpc interception of policy manager
         dependency.global.require (dependency.global.manager.policy_manager.location, "lib/rpcInterception.js").setRPCHandler (self.rpcHandler);
@@ -185,25 +246,13 @@ var Pzp_OtherManager = function (_parent) {
                         setFoundService (validMsgObj);
                         break;
                     case 'listUnregServices':
-                        _parent.prepMsg (
-                            _parent.pzp_state.sessionId,
-                            _parent.config.metaData.pzhId,
-                            "unregServicesReply", {
-                                "services":getInitModules.call (self),
-                                "id"      :validMsgObj.payload.message.listenerId
-                            });
+                        listUnRegServices (validMsgObj);
                         break;
                     case 'registerService':
-                        modLoader.loadServiceModule ({
-                            "name"  :validMsgObj.payload.message.name,
-                            "params":validMsgObj.payload.message.params
-                        }, self.registry, self.rpcHandler);
+                        registerService (validMsgObj);
                         break;
                     case'unregisterService':
-                        self.registry.unregisterObject ({
-                            "id" :validMsgObj.payload.message.svId,
-                            "api":validMsgObj.payload.message.svAPI
-                        });
+                        unRegisterService (validMsgObj);
                         break;
                     case "sync_hash":
                         syncHash (validMsgObj.payload.message);

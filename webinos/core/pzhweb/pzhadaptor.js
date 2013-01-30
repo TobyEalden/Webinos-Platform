@@ -47,7 +47,7 @@ function responseHandler(res) {
 function pzpResponder(user, port, address, pzpPort, res) {
     return {
         success:function (authCode) {
-            res.render("enroll-pzp", {address:address, port:port, authCode:authCode.message.payload.code, user:user, pzpPort:pzpPort, appTitle: "UbiApps", title: "enrolling pzp", id: "enroll-pzp" });
+            res.render("enroll-pzp", {address:address, port:port, authCode:authCode.message.payload.code, user:user, pzpPort:pzpPort});
         }
     }
 }
@@ -223,3 +223,7 @@ PzhAdaptor.removeWidget = function(user, targetPZH, targetPZP, installId, res) {
 PzhAdaptor.wipe = function(user, targetPZH, targetPZP, res) {
   pzhTLS.send (user, {type:"wipe", targetPZH: targetPZH, targetPZP: targetPZP}, responseHandler(res));
 }
+
+PzhAdaptor.addTrustedFriend = function (user, targetPZH, externalEmail, externalPzh, externalCerts, res) {
+    pzhTLS.send(user, {type:"addTrustedFriend", targetPZH: targetPZH, externalEmail:externalEmail, externalPzh:externalPzh, externalCerts:externalCerts}, responseHandler(res));
+};

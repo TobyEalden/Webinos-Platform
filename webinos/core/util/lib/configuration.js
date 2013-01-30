@@ -15,6 +15,7 @@
  *
  * Copyright 2012 - 2013 Samsung Electronics (UK) Ltd
  * Author: Habib Virji (habib.virji@samsung.com)
+ *         Ziran Sun (ziran.sun@samsung.com)
  *******************************************************************************/
 var path = require ("path");
 var fs = require ("fs");
@@ -36,6 +37,7 @@ function Config () {
     this.metaData = {};
     this.trustedList = {pzh:{}, pzp:{}};
     this.untrustedCert = {};
+    this.exCertList    = {};
     this.crl = "";
     this.policies = {};//todo: integrate policy in the configuration
     this.userData = {name:""};
@@ -176,6 +178,7 @@ Config.prototype.storeAll = function () {
     self.storeCertificate (self.cert.internal, "internal");
     self.storeCrl (self.crl);
     self.storeTrustedList (self.trustedList);
+    self.storeExCertList(self.exCertList);
 };
 /**
  *
@@ -275,6 +278,26 @@ Config.prototype.storeCrl = function (data) {
         }
     });
 };
+
+/**
+ *
+ * @param keys
+ * @param dir
+ */
+Config.prototype.storeKeys = function (keys, name) {
+    var self = this;
+    var filePath = path.join(self.metaData.webinosRoot, "keys", name+".pem");
+    fs.writeFile(path.resolve(filePath), keys, function(err) {
+        if(err) {
+            logger.error("failed saving " + name +".pem");
+        } else {
+            logger.log("saved " + name +".pem");
+            //calling get hash
+            // self.getKeyHash(filePath);
+        }
+    });
+};
+
 /**
  *
  * @param callback
@@ -307,6 +330,25 @@ Config.prototype.storeTrustedList = function (data) {
         }
     });
 };
+
+/**
+ *
+ * @param data
+ */
+Config.prototype.storeExCertList = function (data) {
+    var self = this;
+    var filePath = path.join(self.metaData.webinosRoot,"exCertList.json");
+    fs.writeFile(path.resolve(filePath), JSON.stringify(data, null, " "), function(err) {
+        if(err) {
+            logger.error("failed saving pzh/pzp in the external certificate list");
+        } else {
+            logger.log("saved pzp/pzh in the external list");
+        }
+    });
+};
+
+
+
 /**
  *
  * @param callback
@@ -350,6 +392,23 @@ Config.prototype.fetchUntrustedCert = function (callback) {
             callback (false);
         } else {
             processData (data, callback);
+        }
+    });
+};
+
+/**
+ *
+ * @param callback
+ */
+Config.prototype.fetchExCertList = function (callback) {
+    var self = this;
+    var filePath = path.join(self.metaData.webinosRoot, "exCertList.json");
+    fs.readFile(path.resolve(filePath), function(err, data) {
+        if(err) {
+            logger.error("configuration files for external cert list are corrupted, retrying again to create fresh configuration");
+            callback(false);
+        } else {
+            processData(data,callback);
         }
     });
 };
@@ -512,7 +571,16 @@ Config.prototype.createPolicyFile = function (self) {
 Config.prototype.fetchConfigDetails = function (webinosType, inputConfig, callback) {
     var self = this;
     var filePath = path.resolve (__dirname, "../../../../webinos_config.json");
-
+    wId.fetchDeviceName (webinosType, inputConfig, function (deviceName) {
+        self.metaData.webinosName = deviceName;
+        self.metaData.webinosRoot = wPath.webinosPath () + "/" + self.metaData.webinosName;
+        self.createDirectories (function (status) {
+            if (status) {
+                logger.log ("created default webinos directories at location : " + self.metaData.webinosRoot);
+            } else {
+                callback (false, "failed creating directories");
+            }
+        });
     fs.readFile (filePath, function (err, data) {
         if (!err) {
             var key, userPref = JSON.parse (data.toString ());
@@ -533,8 +601,17 @@ Config.prototype.fetchConfigDetails = function (webinosType, inputConfig, callba
             self.userData.orgUnit = userPref.certConfiguration.orgunit;
             self.userData.cn = userPref.certConfiguration.cn;
 
+                if (webinosType === "Pzh") {
             for (key in userPref.pzhDefaultServices) {
-                self.serviceCache.push ({"name":userPref.pzhDefaultServices[key], "params":{}});
+                        self.serviceCache.push ({"name":userPref.pzhDefaultServices[key].name, "params":userPref.pzpDefaultServices[key].params});
+                    }
+                } else if (webinosType === "Pzp") {
+                    for (key = 0; key < userPref.pzpDefaultServices.length; key = key + 1) {
+                        if (userPref.pzpDefaultServices[key].name === "file") {
+                            userPref.pzpDefaultServices[key].params = { getPath:function () { return self.metaData.webinosRoot; } };
+                        }
+                        self.serviceCache.push ({"name":userPref.pzpDefaultServices[key].name, "params":userPref.pzpDefaultServices[key].params});
+                    }
             }
         } else { // We failed in reading configuration file, assign defaults
             self.userPref.ports = {};
@@ -554,11 +631,6 @@ Config.prototype.fetchConfigDetails = function (webinosType, inputConfig, callba
         self.metaData.friendlyName = inputConfig.friendlyName;
         self.metaData.webinosType = webinosType;
         self.metaData.serverName = inputConfig.sessionIdentity;
-        wId.fetchDeviceName (webinosType, inputConfig, function (deviceName) {
-            self.metaData.webinosName = deviceName;
-            self.metaData.webinosRoot = wPath.webinosPath () + "/" + self.metaData.webinosName;
-            self.createDirectories (function (status) {
-                if (status) {
                     self.createPolicyFile (self);
                     self.storeMetaData (self.metaData);
                     self.storeUserData (self.userData);
@@ -566,10 +638,6 @@ Config.prototype.fetchConfigDetails = function (webinosType, inputConfig, callba
                     self.storeServiceCache (self.serviceCache);
                     self.storeUntrustedCert (self.untrustedCert);
                     callback (true);
-                } else {
-                    callback (false, "failed creating directories");
-                }
-            });
         });
     });
 };

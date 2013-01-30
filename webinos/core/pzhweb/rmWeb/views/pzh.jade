@@ -36,7 +36,7 @@ block content
       h3 Friends
       - counter = 0;
       - var haveConnected = false;
-      - var showOptions = (pzh === ui.serverName);
+      - var showOptions = true; //(pzh === ui.serverName);
       ul(data-role='listview', data-inset='false', data-theme="#{ui.infoTheme}", data-divider-theme="#{ui.dividerTheme}") 
         //- Invite a friend
         - if (showOptions) {
@@ -107,3 +107,8 @@ block content
           a(href='/nyi',data-transition='slide') Service Configuration
         li(data-theme="#{ui.optionTheme}")
           a(href='/nyi',data-transition='slide') Diagnostics
+        - if (!ui.privileged) {
+          li(data-role="list-divider", role="heading") &nbsp;
+          li(data-theme="#{ui.optionTheme}")
+            a(href='/logout',data-transition='slide') Sign Out
+        - }

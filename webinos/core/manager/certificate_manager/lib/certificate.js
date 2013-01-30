@@ -14,6 +14,7 @@
  *
  * Copyright 2012 - 2013 Samsung Electronics (UK) Ltd
  * Author: Habib Virji (habib.virji@samsung.com)
+ *         Ziran Sun (ziran.sun@samsung.com)
  *******************************************************************************/
 var dependency = require ("find-dependencies") (__dirname);
 var keystore = dependency.global.require (dependency.global.manager.keystore.location);
@@ -125,6 +126,24 @@ var Certificate = function () {
             }
         });
     };
+
+    Certificate.prototype.getKeyHash = function(path, callback){
+        var certman, self = this;
+        try {
+            certman = require("certificate_manager");
+        }catch (err) {
+            return callback(false, err);
+        }
+        try{
+            var hash = certman.getHash(path);
+            logger.log("Key Hash is" + hash);
+            return callback(true, hash);
+        } catch (err) {
+            logger.log("get certificate manager error" + err);
+            return callback(false, err);
+        }
+    };
+
     Certificate.prototype.generateSignedCertificate = function (csr, cert_type, callback) {
         var certman, self = this;
         try {

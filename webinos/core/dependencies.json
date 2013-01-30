@@ -44,8 +44,8 @@
       "name": "Geolocation",
       "location": "api/geolocation/"
     },
-    "get42": {
-      "name": "get42",
+    "test"             :{
+      "name"    :"Get42 Test API",
       "location": "api/get42/"
     },
     "sensors": {
