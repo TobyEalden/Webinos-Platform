@@ -29,7 +29,7 @@
     _parent.prepMsg (
       _parent.pzp_state.sessionId,
       _parent.config.metaData.pzhId,
-      "getInstalledWidgetsReply", {
+      "remote_management.getInstalledWidgetsReply", {
           "installedList": installedList,
           "id"      :receivedMsg.listenerId
       });
@@ -128,7 +128,7 @@
           _parent.prepMsg (
             _parent.pzp_state.sessionId,
             _parent.config.metaData.pzhId,
-            "installWidgetReply", {
+            "remote_management.installWidgetReply", {
                 "ok" : err === null,
                 "installId": installId,
                 "err" : err,
@@ -139,7 +139,7 @@
         _parent.prepMsg (
           _parent.pzp_state.sessionId,
           _parent.config.metaData.pzhId,
-          "installWidgetReply", {
+          "remote_management.installWidgetReply", {
               "ok"      : false,
               "reason"  : "Download failed.",
               "id"      :receivedMsg.listenerId
@@ -154,7 +154,7 @@
       _parent.prepMsg (
         _parent.pzp_state.sessionId,
         _parent.config.metaData.pzhId,
-        "removeWidgetReply", {
+        "remote_management.removeWidgetReply", {
             "ok" : true,
             "id"      :receivedMsg.listenerId
         });    
@@ -162,7 +162,7 @@
       _parent.prepMsg (
         _parent.pzp_state.sessionId,
         _parent.config.metaData.pzhId,
-        "removeWidgetReply", {
+        "remote_management.removeWidgetReply", {
             "ok"      : false,
             "id"      :receivedMsg.listenerId
         });    
@@ -170,6 +170,7 @@
   }
   
   function wipe(receivedMsg) {
+    console.log("wipe was invoked");
     if (widgetLibrary) {
       var idList = widgetLibrary.widgetmanager.getInstalledWidgets();
       var totalCount = idList.length;
@@ -184,27 +185,42 @@
     _parent.prepMsg (
       _parent.pzp_state.sessionId,
       _parent.config.metaData.pzhId,
-      "wipeReply", {
+      "remote_management.wipeReply", {
           "totalCount": totalCount,
           "failedCount" : failedCount,
           "id"      :receivedMsg.listenerId
+      });
+  }
+
+  function getDefaultServices(receivedMsg) {
+    var data = fs.readFileSync ("./webinos_config.json");
+    var c = JSON.parse (data.toString ());
+    _parent.prepMsg (
+      _parent.pzp_state.sessionId,
+      _parent.config.metaData.pzhId,
+      "remote_management.getDefaultServicesReply", {
+        "services":c.pzpDefaultServices,
+        "id"      :receivedMsg.listenerId
       });
   }
         
   remoteManager.prototype.processMsg = function(msg) {
     var processed = true;
     switch (msg.payload.status) {
-      case "getInstalledWidgets":
+      case "remote_management.getInstalledWidgets":
         getInstalledWidgets(msg.payload.message);
         break;
-      case "installWidget":
+      case "remote_management.installWidget":
         installWidget(msg.payload.message);
         break;
-      case "removeWidget":
+      case "remote_management.removeWidget":
         removeWidget(msg.payload.message);
         break;
-      case "wipe":
+      case "remote_management.wipe":
         wipe(msg.payload.message);
+        break;
+      case "remote_management.getDefaultServices":
+        getDefaultServices(msg.payload.message);
         break;
       default:
         processed = false;

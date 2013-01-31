@@ -12,7 +12,7 @@ block content
         li
           a(href='/install-app/#{pzh}/#{pzp}', data-transition="slide") Install an App
         li
-          a(href='/wipe/#{pzh}/#{pzp}', data-transition="slide") Wipe this Device
+          a(href='#confirmWipe', data-rel="popup",data-position-to="window",data-transition="pop") Wipe this Device
         li
           a(href='/services/#{pzh}/#{pzp}', data-transition="slide") Services Available
         li
@@ -20,4 +20,13 @@ block content
         li(data-role="list-divider") &nbsp;
         li
           a(href='/nyi', data-transition="slide") Remove this Device
-  
+
+    div(data-role="popup",id="confirmWipe",data-overlay-theme="a",data-theme="c",style="max-width:400px;",class="ui-corner-all")
+      div(data-role="header",data-theme="a",class="ui-corner-top")
+        h1 Confirm Wipe
+      div(data-role="content",data-theme="d",class="ui-corner-bottom ui-content")
+        h3(class="ui-title") Are you sure you want to wipe device #{pzp}?
+        p This action cannot be undone.
+        form(action="/wipe/#{pzh}/#{pzp}", method="post")
+          input(type="submit",data-role="button",data-inline="true",data-theme="#{ui.optionTheme}",value="Wipe")
+          a(href="#",data-role="button",data-inline="true",data-rel="back",data-theme="c") Cancel

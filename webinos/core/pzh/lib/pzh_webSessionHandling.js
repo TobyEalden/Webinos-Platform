@@ -22,6 +22,327 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
     var util = dependency.global.require(dependency.global.util.location);
     var logger = util.webinosLogging(__filename) || logger;
     var lock = true;
+    var remote_management = {
+      getFarmPZHs: function (conn, obj, userObj) {
+        var list = {};
+        for (var pzhId in pzhs) {
+          if (pzhs.hasOwnProperty(pzhId)) {
+            list[pzhId] = {
+              url:pzhId,
+              username   :pzhs[pzhId].config.userData.name,
+              email      :pzhs[pzhId].config.userData.email[0].value };
+          }
+        }
+        sendMsg (conn, obj.user, { type: "remote_management.getFarmPZHs", message:list });
+      },
+
+      getPZHPZHs: function (conn, obj, userObj) {
+        var pzhId = obj.message.targetPZH;
+        var list = [];
+        if (pzhs.hasOwnProperty(pzhId)) {
+          list = getConnectedPzh(pzhs[pzhId]);
+        }
+
+        sendMsg (conn, obj.user, { type: "remote_management.getPZHPZHs", message:list });
+      },
+
+      getPZHPZPs: function (conn, obj, userObj) {
+        var pzhId = obj.message.targetPZH;
+        var list = [];
+        if (pzhs.hasOwnProperty(pzhId)) {
+          list = getConnectedPzp(pzhs[pzhId]);
+        }
+
+        sendMsg (conn, obj.user, { type: "remote_management.getPZHPZPs", message:list });
+      },
+
+      getPZHDetails: function (conn, obj, userObj) {
+        var pzhId = obj.message.targetPZH;
+        var details = {};
+        if (pzhs.hasOwnProperty(pzhId)) {
+          details = pzhs[pzhId].config.userData;
+        }
+        sendMsg(conn, obj.user, { type:"remote_management.getPZHDetails", message: details });
+      },
+
+      getInstalledWidgets: function (conn, obj, userObj) {
+        var pzhId = obj.message.targetPZH;
+        var pzpId = obj.message.targetPZP;
+        var toAddy = pzhId + "/" + pzpId;
+        var id = userObj.pzh_remoteManager.addMsgCallback (function (installedList) {
+          sendMsg (conn, obj.user, { type:"remote_management.getInstalledWidgets", message:installedList });
+        });
+        var msg = {
+          "type":"prop",
+          "from":userObj.pzh_state.sessionId,
+          "to":toAddy,
+          "payload"    :{
+            "status":"remote_management.getInstalledWidgets",
+            "message":{
+              listenerId:id
+            }
+          }
+        };
+        pzhs[pzhId].sendMessage (msg, toAddy);
+      },
+
+      getPendingFriends: function(conn, obj, userObj) {
+        var list = [];
+        var pzhId = obj.message.targetPZH;
+
+        if (pzhs.hasOwnProperty(pzhId)) {
+          for (var item in pzhs[pzhId].config.untrustedCert) {
+            if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(item)) {
+              list.push({name:item, host: pzhs[pzhId].config.untrustedCert[item].host, url:pzhs[pzhId].config.untrustedCert[item].url});
+            }
+          }
+        }
+
+        sendMsg(conn, obj.user, { type:"remote_management.getPendingFriends", message:list });
+      },
+
+      approvePZHFriend: function(conn, obj, userObj) {
+        var pzhId = obj.message.targetPZH;
+        if (pzhs.hasOwnProperty(pzhId)) {
+          if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
+            logger.log("Approving friend request for " + obj.message.externalEmail + " by " + pzhs[pzhId].pzh_state.sessionId);
+            // Store Certificates
+            var details = pzhs[pzhId].config.untrustedCert[obj.message.externalEmail], name = details.host + "_" + obj.message.externalEmail;
+            if (details.port && parseInt(details.port) !== 443) {
+              name = details.host + ":" + details.port + "_" + obj.message.externalEmail;
+            }
+            if (!pzhs[pzhId].config.cert.external.hasOwnProperty(name)) {
+              pzhs[pzhId].config.cert.external[name] = details;
+              pzhs[pzhId].config.storeCertificate(pzhs[pzhId].config.cert.external, "external");
+              pzhs[pzhId].setConnParam(function (status, certificateParam) {
+                if (status) {
+                  var id = hostname + "_" + pzhs[pzhId].config.userData.email[0].value;
+                  if (port !== 443) {
+                    id = hostname + ":" + port + "_" + pzhs[pzhId].config.userData.email[0].value;
+                  }
+                  refreshPzh(id, certificateParam);
+                  pzhs[pzhId].pzh_pzh.connectOtherPZH(name, certificateParam);
+                }
+              });
+            }
+            if (!pzhs[pzhId].config.trustedList.pzh.hasOwnProperty(name)) {
+              pzhs[pzhId].config.trustedList.pzh[name] = {};
+              pzhs[pzhId].config.storeTrustedList(pzhs[pzhId].config.trustedList);
+            }
+            delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
+            pzhs[pzhId].config.storeUntrustedCert(pzhs[pzhId].config.untrustedCert);
+          }
+          sendMsg(conn, obj.user, { type:"remote_management.approvePZHFriend", message:true });
+        } else {
+          sendMsg(conn, obj.user, { type:"remote_management.approvePZHFriend", message:false });
+        }
+      },
+
+      rejectPZHFriend: function (conn, obj, userObj) {
+        var pzhId = obj.message.targetPZH;
+        if (pzhs.hasOwnProperty(pzhId)) {
+          if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
+            logger.log("Rejecting friend request by " + obj.message.externalEmail + " for " + pzhs[pzhId].pzh_state.sessionId);
+            delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
+            pzhs[pzhId].config.storeUntrustedCert(pzhs[pzhId].config.untrustedCert);
+          }
+          sendMsg(conn, obj.user, { type:"remote_management.rejectPZHFriend", message:true });
+        } else {
+          sendMsg(conn, obj.user, { type:"remote_management.rejectPZHFriend", message:false });
+        }
+      },
+
+      removePZHFriend: function(conn, obj, userObj) {
+        var pzhId = obj.message.targetPZH;
+        if (pzhs.hasOwnProperty(pzhId)) {
+          logger.log("Attempting to remove friend " + obj.message.externalEmail + " from " + pzhs[pzhId].pzh_state.sessionId);
+          if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
+            logger.log("Removing outstanding friend request by " + obj.message.externalEmail + " for " + pzhs[pzhId].pzh_state.sessionId);
+            delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
+            pzhs[pzhId].config.storeUntrustedCert(pzhs[pzhId].config.untrustedCert);
+          }
+          if (pzhs[pzhId].config.trustedList.pzh.hasOwnProperty(obj.message.externalPZH)) {
+            logger.log("Removing friend " + obj.message.externalEmail + " from " + pzhs[pzhId].pzh_state.sessionId);
+            delete pzhs[pzhId].config.trustedList.pzh[obj.message.externalPZH];
+            pzhs[pzhId].config.storeTrustedList(pzhs[pzhId].config.trustedList);
+          }
+          if (pzhs[pzhId].config.cert.external.hasOwnProperty(obj.message.externalPZH)) {
+            delete pzhs[pzhId].config.cert.external[obj.message.externalPZH];
+            pzhs[pzhId].config.storeCertificate(pzhs[pzhId].config.cert.external, "external");
+          }
+          sendMsg(conn, obj.user, { type:"remote_management.removePZHFriend", message:true });
+        } else {
+          sendMsg(conn, obj.user, { type:"remote_management.removePZHFriend", message:false });
+        }
+      },
+
+      installWidget: function (conn, obj, userObj) {
+        var pzhId = obj.message.targetPZH;
+        var pzpId = obj.message.targetPZP;
+        var toAddy = pzhId + "/" + pzpId;
+        var id = userObj.pzh_remoteManager.addMsgCallback (function (result) {
+          sendMsg (conn, obj.user, { type:"remote_management.installWidget", message:result });
+        });
+        var msg = {
+          "type":"prop",
+          "from":userObj.pzh_state.sessionId,
+          "to":toAddy,
+          "payload"    :{
+            "status":"remote_management.installWidget",
+            "message":{
+              listenerId:id,
+              installUrl:obj.message.installUrl
+            }
+          }
+        };
+        pzhs[pzhId].sendMessage (msg, toAddy);
+      },
+
+      removeWidget: function (conn, obj, userObj) {
+        var pzhId = obj.message.targetPZH;
+        var pzpId = obj.message.targetPZP;
+        var toAddy = pzhId + "/" + pzpId;
+        // Add a callback to forward the reply to the web i/f.
+        var id = userObj.pzh_remoteManager.addMsgCallback (function (result) {
+          sendMsg (conn, obj.user, { type:"remote_management.removeWidget", message:result });
+        });
+        var msg = {
+          "type":"prop",
+          "from":userObj.pzh_state.sessionId,
+          "to":toAddy,
+          "payload"    :{
+            "status":"remote_management.removeWidget",
+            "message":{
+              listenerId:id,
+              installId:obj.message.installId
+            }
+          }
+        };
+        // Send message on to pzp.
+        pzhs[pzhId].sendMessage (msg, toAddy);
+      },
+
+      wipe: function (conn, obj, userObj) {
+        var pzhId = obj.message.targetPZH;
+        var pzpId = obj.message.targetPZP;
+        var toAddy = pzhId + "/" + pzpId;
+        // Add a callback to forward the reply to the web i/f.
+        var id = userObj.pzh_remoteManager.addMsgCallback (function (result) {
+          sendMsg (conn, obj.user, { type:"remote_management.wipe", message:result });
+        });
+        var msg = {
+          "type":"prop",
+          "from":userObj.pzh_state.sessionId,
+          "to":toAddy,
+          "payload"    :{
+            "status":"remote_management.wipe",
+            "message":{
+              listenerId:id
+            }
+          }
+        };
+        // Send message on to pzp.
+        pzhs[pzhId].sendMessage (msg, toAddy);
+      },
+
+      addTrustedFriend: function(conn, obj, userObj) {
+        var targetPZH = obj.message.targetPZH;
+        logger.log(targetPZH + " is now expecting external connection from " + obj.message.externalEmail);
+        var url = require("url").parse("https://" + obj.message.externalPzh);
+        var name = url.hostname + "_" + obj.message.externalEmail;
+        if (url.port && parseInt(url.port) !== 443) {
+          name = url.hostname + ":" + url.port + "_" + obj.message.externalEmail;
+        }
+
+        if (pzhs[targetPZH].config.cert.external.hasOwnProperty(name) && pzhs[targetPZH].config.trustedList.pzh.hasOwnProperty(name)) {
+          sendMsg(conn, obj.user, { type:"remote_management.addTrustedFriend", message:false }); // PZH ALREADY ENROLLED
+        } else {
+          if (!pzhs[targetPZH].config.cert.external.hasOwnProperty(name)) {
+            pzhs[targetPZH].config.cert.external[name] = {
+              url:"https://" + obj.message.externalPzh + "/main/" + obj.message.externalEmail + "/",
+              host:url.hostname,
+              port:url.port ? url.port : 443,
+              externalCerts:obj.message.externalCerts.server,
+              externalCrl:obj.message.externalCerts.crl,
+              serverPort:obj.message.externalCerts.serverPort
+            };
+            pzhs[targetPZH].config.storeCertificate(pzhs[targetPZH].config.cert.external, "external");
+            pzhs[targetPZH].setConnParam(function (status, certificateParam) {// refresh your own certs
+              if (status) {
+                var id = hostname + "_" + pzhs[targetPZH].config.userData.email[0].value;
+                if (port !== 443) {
+                  id = hostname + ":" + port + "_" + pzhs[targetPZH].config.userData.email[0].value;
+                }
+                refreshPzh(id, certificateParam);
+              }
+            });
+          }
+          if (!pzhs[targetPZH].config.trustedList.pzh.hasOwnProperty(name)) {
+            pzhs[targetPZH].config.trustedList.pzh[name] = {};
+            pzhs[targetPZH].config.storeTrustedList(pzhs[targetPZH].config.trustedList);
+          }
+          sendMsg(conn, obj.user, { type:"remote_management.addTrustedFriend", message:true });
+        }
+        // After this step OpenId authentication is triggered
+      },
+
+      getActiveServices: function (conn, obj, userObj) {
+        var targetPZH = obj.message.targetPZH;
+        if (pzhs.hasOwnProperty(targetPZH)) {
+          sendMsg (conn, obj.user, { type:"remote_management.getActiveServices", message:getServices (pzhs[targetPZH]) });
+        } else {
+          var result = { pzEntityList:[], services: [] };
+          sendMsg (conn, obj.user, { type:"remote_management.getActiveServices", message:result });
+        }
+      },
+
+      getInactiveServices: function (conn, obj, userObj) {
+        var targetPZH = obj.message.targetPZH;
+        if (pzhs[targetPZH].pzh_state.sessionId !== obj.message.at) { // Different PZH
+          var id = pzhs[targetPZH].pzh_otherManager.addMsgListener(function (modules) {
+            sendMsg (conn, obj.user, { type:"remote_management.getInactiveServices", message:{"pzEntityId":obj.message.at, "modules":modules.services} });
+          });
+          var msg = pzhs[targetPZH].prepMsg (pzhs[targetPZH].pzh_state.sessionId, obj.message.at, "remote_management.getInactiveServices", {listenerId:id});
+          pzhs[targetPZH].sendMessage(msg, obj.message.at);
+        } else { // returns all the current serviceCache
+          var data = require ("fs").readFileSync ("./webinos_config.json");
+          var c = JSON.parse (data.toString ());
+          sendMsg (conn, obj.user, { type:"remote_management.getInactiveServices", message:{"pzEntityId":pzhs[targetPZH].pzh_state.sessionId, "modules":c.pzhDefaultServices} }); // send default services...
+        }
+      },
+
+      removeActiveService: function (conn, obj, userObj) {
+        var targetPZH = obj.message.targetPZH;
+        if (pzhs[targetPZH].pzh_state.sessionId !== obj.message.at) {
+          // Pass call on to standard unregisterService handler
+          var msg = pzhs[targetPZH].prepMsg (pzhs[targetPZH].pzh_state.sessionId, obj.message.at, "unregisterService",
+            {svId:obj.message.svId, svAPI:obj.message.svAPI})
+          pzhs[targetPZH].sendMessage(msg, obj.message.at);
+        } else {
+          pzhs[targetPZH].pzh_otherManager.registry.unregisterObject({id:obj.message.svId, api:obj.message.svAPI});
+          updateServiceCache (pzhs[targetPZH], obj.message, true);
+        }
+        sendMsg (conn, obj.user, { type:"remote_management.removeActiveService", message:getServices (pzhs[targetPZH]) });
+      },
+
+      getDefaultServices: function(conn, obj, userObj) {
+        var targetPZH = obj.message.targetPZH;
+        if (pzhs[targetPZH].pzh_state.sessionId !== obj.message.at) {
+          var id = pzhs[targetPZH].pzh_remoteManager.addMsgCallback(function (modules) {
+            sendMsg (conn, obj.user, { type:"remote_management.getDefaultServices",message:{"pzEntityId":obj.message.at, "modules":modules.services} });
+          });
+          var msg = pzhs[targetPZH].prepMsg(pzhs[targetPZH].pzh_state.sessionId, obj.message.at, "remote_management.getDefaultServices", {listenerId:id});
+          pzhs[targetPZH].sendMessage(msg, obj.message.at);
+        } else {
+          // Returns all the current serviceCache
+          var data = require ("fs").readFileSync ("./webinos_config.json");
+          var c = JSON.parse (data.toString ());
+          // Send default services.
+          sendMsg (conn, obj.user, { type:"remote_management.getDefaultServices", message:{"pzEntityId":pzhs[targetPZH].pzh_state.sessionId, "modules":c.pzhDefaultServices} });
+        }
+      }
+    };
+
     var messageType = {
         "getUserDetails":getUserDetails,
         "getZoneStatus":getZoneStatus,
@@ -43,20 +364,22 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "csrAuthCodeByPzp":csrAuthCodeByPzp,
         "getAllPzh":getAllPzhList,
         "approveUser"        :approveUser,
-        "getFarmPZHs"        :getFarmPZHs,
-        "getPZHPZHs"         :getPZHPZHs,
-        "getPZHPZPs"         :getPZHPZPs,
-        "getPZHDetails"      :getPZHDetails,
-        "getInstalledWidgets":getInstalledWidgets,
-        "getPendingFriends"  :getPendingFriends,
-        "approvePZHFriend"   :approvePZHFriend,
-        "rejectPZHFriend"    :rejectPZHFriend,
-        "removePZHFriend"    :removePZHFriend,
-        "installWidget"      :installWidget,
-        "removeWidget"       :removeWidget,
-        "wipe"                :wipe,
-        "addTrustedFriend"  :addTrustedFriend,
-        "getActiveServices" :getActiveServices
+        "remote_management.getFarmPZHs"        :remote_management.getFarmPZHs,
+        "remote_management.getPZHPZHs"         :remote_management.getPZHPZHs,
+        "remote_management.getPZHPZPs"         :remote_management.getPZHPZPs,
+        "remote_management.getPZHDetails"      :remote_management.getPZHDetails,
+        "remote_management.getInstalledWidgets":remote_management.getInstalledWidgets,
+        "remote_management.getPendingFriends"  :remote_management.getPendingFriends,
+        "remote_management.approvePZHFriend"   :remote_management.approvePZHFriend,
+        "remote_management.rejectPZHFriend"    :remote_management.rejectPZHFriend,
+        "remote_management.removePZHFriend"    :remote_management.removePZHFriend,
+        "remote_management.installWidget"      :remote_management.installWidget,
+        "remote_management.removeWidget"       :remote_management.removeWidget,
+        "remote_management.wipe"               :remote_management.wipe,
+        "remote_management.addTrustedFriend"   :remote_management.addTrustedFriend,
+        "remote_management.getActiveServices"  :remote_management.getActiveServices,
+        "remote_management.removeActiveService":remote_management.removeActiveService,
+        "remote_management.getDefaultServices" :remote_management.getDefaultServices
     };
 
     function getLock() {
@@ -512,279 +835,5 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
             conn.resume();
         }
     };
-
-    function getFarmPZHs (conn, obj, userObj) {
-        var list = {};
-        for (var pzhId in pzhs) {
-          if (pzhs.hasOwnProperty(pzhId)) {
-            list[pzhId] = {
-                url:pzhId,
-                username   :pzhs[pzhId].config.userData.name,
-                email      :pzhs[pzhId].config.userData.email[0].value };
-          }
-        }
-        sendMsg (conn, obj.user, { type: "getFarmPZHs", message:list });
-    }
-    
-    function getPZHPZHs (conn, obj, userObj) {
-      var pzhId = obj.message.targetPZH;
-      var list = [];
-      if (pzhs.hasOwnProperty(pzhId)) {
-        list = getConnectedPzh(pzhs[pzhId]);
-      }
-      
-      sendMsg (conn, obj.user, { type: "getPZHPZHs", message:list });
-    }
-    
-    function getPZHPZPs (conn, obj, userObj) {
-      var pzhId = obj.message.targetPZH;
-      var list = [];
-      if (pzhs.hasOwnProperty(pzhId)) {
-        list = getConnectedPzp(pzhs[pzhId]);
-      }
-      
-      sendMsg (conn, obj.user, { type: "getPZHPZPs", message:list });
-    }
-    
-    function getPZHDetails (conn, obj, userObj) {
-      var pzhId = obj.message.targetPZH;
-      var details = {};
-      if (pzhs.hasOwnProperty(pzhId)) {
-        details = pzhs[pzhId].config.userData;
-      }
-      sendMsg(conn, obj.user, { type:"getPZHDetails", message: details });      
-    }
-    
-    function getInstalledWidgets (conn, obj, userObj) {
-      var pzhId = obj.message.targetPZH;
-      var pzpId = obj.message.targetPZP;
-      var toAddy = pzhId + "/" + pzpId;
-      var id = userObj.pzh_remoteManager.addMsgCallback (function (installedList) {
-        sendMsg (conn, obj.user, { type:"getInstalledWidgets", message:installedList });          
-      });
-      var msg = {
-                  "type":"prop", 
-                  "from":userObj.pzh_state.sessionId, 
-                  "to":toAddy,
-                  "payload"    :{
-                    "status":"getInstalledWidgets", 
-                    "message":{
-                      listenerId:id
-                    }
-                  }
-                };
-      pzhs[pzhId].sendMessage (msg, toAddy);
-    }
-
-    function getPendingFriends(conn, obj, userObj) {
-      var list = [];
-      var pzhId = obj.message.targetPZH;
-
-      if (pzhs.hasOwnProperty(pzhId)) {      
-        for (var item in pzhs[pzhId].config.untrustedCert) {
-            if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(item)) {
-                list.push({name:item, host: pzhs[pzhId].config.untrustedCert[item].host, url:pzhs[pzhId].config.untrustedCert[item].url});
-            }
-        }
-      }
-
-      sendMsg(conn, obj.user, { type:"getPendingFriends", message:list });
-    }
-
-    function approvePZHFriend(conn, obj, userObj) {
-      var pzhId = obj.message.targetPZH;
-      if (pzhs.hasOwnProperty(pzhId)) {
-        if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
-            logger.log("Approving friend request for " + obj.message.externalEmail + " by " + pzhs[pzhId].pzh_state.sessionId);
-            // Store Certificates
-            var details = pzhs[pzhId].config.untrustedCert[obj.message.externalEmail], name = details.host + "_" + obj.message.externalEmail;
-            if (details.port && parseInt(details.port) !== 443) {
-                name = details.host + ":" + details.port + "_" + obj.message.externalEmail;
-            }
-            if (!pzhs[pzhId].config.cert.external.hasOwnProperty(name)) {
-                pzhs[pzhId].config.cert.external[name] = details;
-                pzhs[pzhId].config.storeCertificate(pzhs[pzhId].config.cert.external, "external");
-                pzhs[pzhId].setConnParam(function (status, certificateParam) {
-                    if (status) {
-                        var id = hostname + "_" + pzhs[pzhId].config.userData.email[0].value;
-                        if (port !== 443) {
-                            id = hostname + ":" + port + "_" + pzhs[pzhId].config.userData.email[0].value;
-                        }
-                        refreshPzh(id, certificateParam);
-                        pzhs[pzhId].pzh_pzh.connectOtherPZH(name, certificateParam);
-                    }
-                });
-            }
-            if (!pzhs[pzhId].config.trustedList.pzh.hasOwnProperty(name)) {
-                pzhs[pzhId].config.trustedList.pzh[name] = {};
-                pzhs[pzhId].config.storeTrustedList(pzhs[pzhId].config.trustedList);
-            }
-            delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
-            pzhs[pzhId].config.storeUntrustedCert(pzhs[pzhId].config.untrustedCert);
-        }
-        sendMsg(conn, obj.user, { type:"approvePZHFriend", message:true });
-      } else {
-        sendMsg(conn, obj.user, { type:"approvePZHFriend", message:false });
-      }
-    }
-
-    function rejectPZHFriend(conn, obj, userObj) {
-      var pzhId = obj.message.targetPZH;
-      if (pzhs.hasOwnProperty(pzhId)) {
-        if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
-            logger.log("Rejecting friend request by " + obj.message.externalEmail + " for " + pzhs[pzhId].pzh_state.sessionId);
-            delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
-            pzhs[pzhId].config.storeUntrustedCert(pzhs[pzhId].config.untrustedCert);
-        }
-        sendMsg(conn, obj.user, { type:"rejectPZHFriend", message:true });
-      } else {
-        sendMsg(conn, obj.user, { type:"rejectPZHFriend", message:false });
-      }
-    }
-    
-    function removePZHFriend(conn, obj, userObj) {
-      var pzhId = obj.message.targetPZH;
-      if (pzhs.hasOwnProperty(pzhId)) {
-        logger.log("Attempting to remove friend " + obj.message.externalEmail + " from " + pzhs[pzhId].pzh_state.sessionId);
-        if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
-            logger.log("Removing outstanding friend request by " + obj.message.externalEmail + " for " + pzhs[pzhId].pzh_state.sessionId);
-            delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
-            pzhs[pzhId].config.storeUntrustedCert(pzhs[pzhId].config.untrustedCert);
-        }
-        if (pzhs[pzhId].config.trustedList.pzh.hasOwnProperty(obj.message.externalPZH)) {
-            logger.log("Removing friend " + obj.message.externalEmail + " from " + pzhs[pzhId].pzh_state.sessionId);
-            delete pzhs[pzhId].config.trustedList.pzh[obj.message.externalPZH];
-            pzhs[pzhId].config.storeTrustedList(pzhs[pzhId].config.trustedList);
-        }
-        if (pzhs[pzhId].config.cert.external.hasOwnProperty(obj.message.externalPZH)) {
-          delete pzhs[pzhId].config.cert.external[obj.message.externalPZH];
-          pzhs[pzhId].config.storeCertificate(pzhs[pzhId].config.cert.external, "external");
-        }
-        sendMsg(conn, obj.user, { type:"removePZHFriend", message:true });
-      } else {
-        sendMsg(conn, obj.user, { type:"removePZHFriend", message:false });
-      }
-    }
-
-    function installWidget (conn, obj, userObj) {
-      var pzhId = obj.message.targetPZH;
-      var pzpId = obj.message.targetPZP;
-      var toAddy = pzhId + "/" + pzpId;
-      var id = userObj.pzh_remoteManager.addMsgCallback (function (result) {
-        sendMsg (conn, obj.user, { type:"installWidget", message:result });          
-      });
-      var msg = {
-        "type":"prop", 
-        "from":userObj.pzh_state.sessionId, 
-        "to":toAddy,
-        "payload"    :{
-          "status":"installWidget", 
-          "message":{
-            listenerId:id,
-            installUrl:obj.message.installUrl
-          }
-        }
-      };
-      pzhs[pzhId].sendMessage (msg, toAddy);
-    }
-
-    function removeWidget (conn, obj, userObj) {
-      var pzhId = obj.message.targetPZH;
-      var pzpId = obj.message.targetPZP;
-      var toAddy = pzhId + "/" + pzpId;
-      // Add a callback to forward the reply to the web i/f.
-      var id = userObj.pzh_remoteManager.addMsgCallback (function (result) {
-        sendMsg (conn, obj.user, { type:"removeWidget", message:result });          
-      });
-      var msg = {
-        "type":"prop", 
-        "from":userObj.pzh_state.sessionId, 
-        "to":toAddy,
-        "payload"    :{
-          "status":"removeWidget", 
-          "message":{
-            listenerId:id,
-            installId:obj.message.installId
-          }
-        }
-      };
-      // Send message on to pzp.
-      pzhs[pzhId].sendMessage (msg, toAddy);
-    }
-    
-    function wipe (conn, obj, userObj) {
-      var pzhId = obj.message.targetPZH;
-      var pzpId = obj.message.targetPZP;
-      var toAddy = pzhId + "/" + pzpId;
-      // Add a callback to forward the reply to the web i/f.
-      var id = userObj.pzh_remoteManager.addMsgCallback (function (result) {
-        sendMsg (conn, obj.user, { type:"wipe", message:result });          
-      });
-      var msg = {
-        "type":"prop", 
-        "from":userObj.pzh_state.sessionId, 
-        "to":toAddy,
-        "payload"    :{
-          "status":"wipe", 
-          "message":{
-            listenerId:id,
-          }
-        }
-      };
-      // Send message on to pzp.
-      pzhs[pzhId].sendMessage (msg, toAddy);
-    }
-
-    function addTrustedFriend(conn, obj, userObj) {
-      var targetPZH = obj.message.targetPZH;
-        logger.log(targetPZH + " is now expecting external connection from " + obj.message.externalEmail);
-        var url = require("url").parse("https://" + obj.message.externalPzh);
-        var name = url.hostname + "_" + obj.message.externalEmail;
-        if (url.port && parseInt(url.port) !== 443) {
-            name = url.hostname + ":" + url.port + "_" + obj.message.externalEmail;
-        }
-
-        if (pzhs[targetPZH].config.cert.external.hasOwnProperty(name) && pzhs[targetPZH].config.trustedList.pzh.hasOwnProperty(name)) {
-            sendMsg(conn, obj.user, { type:"addTrustedFriend", message:false }); // PZH ALREADY ENROLLED
-        } else {
-            if (!pzhs[targetPZH].config.cert.external.hasOwnProperty(name)) {
-                pzhs[targetPZH].config.cert.external[name] = {
-                    url:"https://" + obj.message.externalPzh + "/main/" + obj.message.externalEmail + "/",
-                    host:url.hostname,
-                    port:url.port ? url.port : 443,
-                    externalCerts:obj.message.externalCerts.server,
-                    externalCrl:obj.message.externalCerts.crl,
-                    serverPort:obj.message.externalCerts.serverPort
-                };
-                pzhs[targetPZH].config.storeCertificate(pzhs[targetPZH].config.cert.external, "external");
-                pzhs[targetPZH].setConnParam(function (status, certificateParam) {// refresh your own certs
-                    if (status) {
-                        var id = hostname + "_" + pzhs[targetPZH].config.userData.email[0].value;
-                        if (port !== 443) {
-                            id = hostname + ":" + port + "_" + pzhs[targetPZH].config.userData.email[0].value;
-                        }
-                        refreshPzh(id, certificateParam);
-                    }
-                });
-            }
-            if (!pzhs[targetPZH].config.trustedList.pzh.hasOwnProperty(name)) {
-                pzhs[targetPZH].config.trustedList.pzh[name] = {};
-                pzhs[targetPZH].config.storeTrustedList(pzhs[targetPZH].config.trustedList);
-            }
-            sendMsg(conn, obj.user, { type:"addTrustedFriend", message:true });
-        }
-        // After this step OpenId authentication is triggered
-    }
-
-    function getActiveServices (conn, obj, userObj) {
-      var targetPZH = obj.message.targetPZH;
-      if (pzhs.hasOwnProperty(targetPZH)) {
-        sendMsg (conn, obj.user, { type:"getActiveServices", message:getServices (pzhs[targetPZH]) });
-      } else {
-        var result = { pzEntityList:[], services: [] };
-        sendMsg (conn, obj.user, { type:"getActiveServices", message:result });
-      }
-    }
-
 };
 module.exports = pzhWI

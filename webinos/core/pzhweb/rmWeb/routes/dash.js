@@ -50,7 +50,7 @@ module.exports = function (app, address, port, state) {
     }
     
     function isPrivileged(user) {
-      return user ? user.emails[0].value in privilegedUsers : false;
+      return user ? (user.emails[0].value in privilegedUsers) && user.from === 'google' : false;
     }
 
     function renderPZHHome(id, pzhId, req, res) {
@@ -215,10 +215,14 @@ module.exports = function (app, address, port, state) {
         res.redirect('/installed/' + getPZHId(req) + "/" + req.params.pzpId);
       });
     });
-    
+
     app.get('/wipe/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
+      res.render('success', { ui: getUIOptions(req.user), title: "Device Wiped", pzh: getPZHId(req), message: "Successfully wiped device " + req.params.pzpId});
+    });
+
+    app.post('/wipe/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
       pzhadaptor.wipe(req.user, getPZHId(req), req.params.pzpId, function(result) {
-        res.redirect('/installed/' + getPZHId(req) + "/" + req.params.pzpId);
+        res.redirect('/wipe/' + req.params.pzhId + '/' + req.params.pzpId);
       });
     });
 
@@ -233,6 +237,22 @@ module.exports = function (app, address, port, state) {
       pzhadaptor.getActiveServices(req.user, getPZHId(req), function(result) {
         var entities = rationaliseServices(result.message, getPZHId(req), req.params.pzpId);
         res.render('services-active', { id:"getActiveServices", ui: getUIOptions(req.user), title: "Active Services", pzh: getPZHId(req), pzp: req.params.pzpId, entities: entities });
+      });
+    });
+
+    app.get('/default-services/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
+      pzhadaptor.getDefaultServices(req.user, getPZHId(req), req.params.pzpId, function(result) {
+        res.render('services-default', { id:"getDefaultServices", ui: getUIOptions(req.user), title: "Default Services", pzh: getPZHId(req), pzp: req.params.pzpId, services: result.message.modules });
+      });
+    });
+
+    app.get('/removeService/:pzhId/:pzpId/:serviceAddress/:serviceId/:serviceAPI', ensureAuthenticated, function(req,res) {
+      res.render('success', { ui: getUIOptions(req.user), title: "Service Removed", pzh: getPZHId(req), message: "Successfully removed service " + req.params.serviceAPI});
+    });
+
+    app.post('/removeService/:pzhId/:pzpId/:serviceAddress/:serviceId/:serviceAPI', ensureAuthenticated, function(req,res){
+      pzhadaptor.removeActiveService(req.user, getPZHId(req), req.params.serviceAddress, req.params.serviceId, req.params.serviceAPI, function(result) {
+        res.redirect('/removeService/' + req.params.pzhId + '/' + req.params.pzpId + '/' + encodeURIComponent(req.params.serviceAddress) + '/' + req.params.serviceId + '/' + encodeURIComponent(req.params.serviceAPI));
       });
     });
 
