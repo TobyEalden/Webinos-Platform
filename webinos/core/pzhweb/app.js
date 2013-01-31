@@ -168,6 +168,7 @@ PzhProviderWeb.startWebServer = function (host, address, port, options, config, 
         // An environment variable will switch between these two, but we don't yet.
         app.configure('development', function () {
             app.use(express.errorHandler({ dumpExceptions:true, showStack:true }));
+            app.locals.pretty = true;
         });
 
         app.configure('production', function () {

@@ -24,7 +24,7 @@ html
         h1 #{locals.title || ''}
         - if (locals.id !== "home" && locals.id !== "login") {
           a(href="/",data-role="button",data-icon="home",data-iconpos="notext",data-transition="slide") home
-          a(href="#",data-role="button",data-icon="back",data-iconpos="notext",data-transition="slide", data-rel="back") back
+          //a(href="#",data-role="button",data-icon="back",data-iconpos="notext",data-transition="slide", data-rel="back") back
         - }
       div(class="content-panel")
         block content

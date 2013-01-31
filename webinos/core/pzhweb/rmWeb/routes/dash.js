@@ -72,6 +72,59 @@ module.exports = function (app, address, port, state) {
       }
     }
     
+    function isMobile(req) {
+      var ua = req.header('user-agent');
+      return true; //(/mobile/i.test(ua)) ? true : false;
+    }
+
+    function splitAddress(addr) {
+      var pzhSep = addr.indexOf('_');
+
+      var pzhHost = '';
+      var pzp;
+      var email = '';
+
+      if (pzhSep >= 0) {
+        pzhHost = addr.substr(0,pzhSep);
+        email = addr.substr(pzhSep+1);
+        var pzpSep = email.indexOf('/');
+        if (pzpSep >= 0) {
+          pzp = email.substr(pzpSep+1);
+          email = email.substr(0,pzpSep);
+        }
+      }
+
+      return { pzhHost: pzhHost, pzh: pzhHost + "_" + email, pzp: pzp, email: email };
+    }
+
+    function displayEndpoint(addr) {
+      var details = splitAddress(addr);
+      return details.pzhHost + "/" + details.email + (details.pzp.length > 0 ? ("/" + details.pzp) : "");
+    }
+
+    function rationaliseServices(payload, pzhId, pzpId) {
+      var entities = {};
+      for (var serv in payload.services){
+        var s = payload.services[serv];
+        var address = splitAddress(s.serviceAddress);
+        if (!pzhId || address.pzh === pzhId) {
+          if (!entities.hasOwnProperty(address.pzh)) {
+            entities[address.pzh] = { services: {}, pzps: {} };
+          }
+          if (address.pzp && (!pzpId || address.pzp === pzpId)) {
+            if (!entities[address.pzh].pzps.hasOwnProperty(address.pzp)) {
+              entities[address.pzh].pzps[address.pzp] = { services: {} };
+            }
+            entities[address.pzh].pzps[address.pzp].services[s.id] = s;
+          } else if (!pzpId) {
+            entities[address.pzh].services[s.id] = s;
+          }
+        }
+      }
+
+      return entities;
+    }
+
     app.get('/', ensureAuthenticated, function (req, res) {
       if (req.session.isPzp) {
             pzhadaptor.fromWeb(req.user, {payload:{status:"enrollPzpAuthCode", address:address, port:port, pzpPort:req.session.pzpPort, user:getUserPath(req.user)}}, res);
@@ -79,16 +132,24 @@ module.exports = function (app, address, port, state) {
             req.session.pzpPort = "";
         } else {
           if (!isPrivileged(req.user)) {
-            renderPZHHome("home", getCurrentPZH(req.user), req,res);
+            if (isMobile(req)) {
+              renderPZHHome("home", getCurrentPZH(req.user), req,res);
+            } else {
+               res.send("<html><body>DESKTOP!</body></html>");
+            }
           } else {
-            pzhadaptor.getFarmPZHs(req.user, function(result) {
-              pzhInfoCache = result.message;
-              res.render('dash', { id:"home", ui: getUIOptions(req.user), title: "UbiApps", pzhList: result.message });
-            });
+            if (isMobile(req)) {
+              pzhadaptor.getFarmPZHs(req.user, function(result) {
+                pzhInfoCache = result.message;
+                res.render('dash', { id:"home", ui: getUIOptions(req.user), title: "UbiApps", pzhList: result.message });
+              });
+            } else {
+               res.send("<html><body>PRIVILEDGED DESKTOP!</body></html>");              
+            }
           }
         }
     });
-    
+
     app.get('/pzh/:pzhId', ensureAuthenticated, function(req, res) {
       renderPZHHome("pzh",getPZHId(req),req,res);
     });
@@ -158,6 +219,20 @@ module.exports = function (app, address, port, state) {
     app.get('/wipe/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
       pzhadaptor.wipe(req.user, getPZHId(req), req.params.pzpId, function(result) {
         res.redirect('/installed/' + getPZHId(req) + "/" + req.params.pzpId);
+      });
+    });
+
+    app.get('/services/:pzhId', ensureAuthenticated, function(req, res) {
+      pzhadaptor.getActiveServices(req.user, getPZHId(req), function(result) {
+        var entities = rationaliseServices(result.message);
+        res.render('services-active', { id:"getActiveServices", ui: getUIOptions(req.user), title: "Active Services", pzh: getPZHId(req), entities: entities });
+      });    
+    });
+
+    app.get('/services/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
+      pzhadaptor.getActiveServices(req.user, getPZHId(req), function(result) {
+        var entities = rationaliseServices(result.message, getPZHId(req), req.params.pzpId);
+        res.render('services-active', { id:"getActiveServices", ui: getUIOptions(req.user), title: "Active Services", pzh: getPZHId(req), pzp: req.params.pzpId, entities: entities });
       });
     });
 

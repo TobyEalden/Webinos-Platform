@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  div(data-role='content')
+    h3 #{pzh}
+
+    - if (typeof pzp !== "undefined") {
+        div(data-role='collapsible', data-inset='true',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
+          h3= pzp
+          ul(data-role='listview', data-inset='false', data-theme='b', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}", data-filter="true")
+            - for (var s in entities[pzh].pzps[pzp].services) {
+              li= entities[pzh].pzps[pzp].services[s].api
+            - }
+    - } else {
+      - for (var ent in entities) {
+          div(data-role='collapsible', data-inset='true',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
+            h3= ent
+            ul(data-role='listview', data-inset='false', data-theme='b', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}", data-filter="true")
+              li(data-role="list-divider") Zone Hub
+              - for (var s in entities[ent].services) {
+                li= entities[ent].services[s].api
+              - }
+              - for (var p in entities[ent].pzps) {
+                li(data-role="list-divider")= p
+                - for (var s in entities[ent].pzps[p].services) {
+                  li= entities[ent].pzps[p].services[s].api
+                - }
+              - }
+      - }
+
+    - }

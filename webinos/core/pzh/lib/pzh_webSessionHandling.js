@@ -55,7 +55,8 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "installWidget"      :installWidget,
         "removeWidget"       :removeWidget,
         "wipe"                :wipe,
-        "addTrustedFriend"  :addTrustedFriend
+        "addTrustedFriend"  :addTrustedFriend,
+        "getActiveServices" :getActiveServices
     };
 
     function getLock() {
@@ -774,5 +775,16 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         }
         // After this step OpenId authentication is triggered
     }
+
+    function getActiveServices (conn, obj, userObj) {
+      var targetPZH = obj.message.targetPZH;
+      if (pzhs.hasOwnProperty(targetPZH)) {
+        sendMsg (conn, obj.user, { type:"getActiveServices", message:getServices (pzhs[targetPZH]) });
+      } else {
+        var result = { pzEntityList:[], services: [] };
+        sendMsg (conn, obj.user, { type:"getActiveServices", message:result });
+      }
+    }
+
 };
 module.exports = pzhWI

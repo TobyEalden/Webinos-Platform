@@ -178,52 +178,56 @@ function manageStatus(payload, user, res) {
 
 PzhAdaptor.getFarmPZHs = function(user, res) {
   pzhTLS.send (user, {type:"getFarmPZHs"}, responseHandler (res));
-}
+};
 
 PzhAdaptor.getPZHPZHs = function(user, targetPZH,res) {
   pzhTLS.send (user, {type:"getPZHPZHs", targetPZH:targetPZH}, responseHandler(res));
-}
+};
 
 PzhAdaptor.getPZHPZPs = function(user, targetPZH,res) {
   pzhTLS.send (user, {type:"getPZHPZPs", targetPZH:targetPZH}, responseHandler(res));
-}
+};
 
 PzhAdaptor.getPZHDetails = function(user, targetPZH,res) {
   pzhTLS.send (user, {type:"getPZHDetails", targetPZH:targetPZH}, responseHandler(res));
-}
+};
 
 PzhAdaptor.getInstalledWidgets = function(user, targetPZH, targetPZP,res) {
   pzhTLS.send (user, {type:"getInstalledWidgets", targetPZH: targetPZH, targetPZP:targetPZP}, responseHandler (res));
-}
+};
 
 PzhAdaptor.getPendingFriends = function(user, targetPZH,res) {
   pzhTLS.send (user, {type:"getPendingFriends", targetPZH: targetPZH}, responseHandler(res));
-}
+};
 
 PzhAdaptor.approvePZHFriend = function(user, targetPZH, email, res) {
   pzhTLS.send (user, {type:"approvePZHFriend", targetPZH: targetPZH, externalEmail: email}, responseHandler(res));
-}
+};
 
 PzhAdaptor.rejectPZHFriend = function(user, targetPZH, email, res) {
   pzhTLS.send (user, {type:"rejectPZHFriend", targetPZH: targetPZH, externalEmail: email}, responseHandler(res));
-}
+};
 
 PzhAdaptor.removePZHFriend = function(user, targetPZH, email, externalPZH, res) {
   pzhTLS.send (user, {type:"removePZHFriend", targetPZH: targetPZH, externalEmail: email, externalPZH: externalPZH}, responseHandler(res));
-}
+};
 
 PzhAdaptor.installWidget = function(user, targetPZH, targetPZP, installUrl, res) {
   pzhTLS.send (user, {type:"installWidget", targetPZH: targetPZH, targetPZP: targetPZP, installUrl: installUrl}, responseHandler(res));
-}
+};
 
 PzhAdaptor.removeWidget = function(user, targetPZH, targetPZP, installId, res) {
   pzhTLS.send (user, {type:"removeWidget", targetPZH: targetPZH, targetPZP: targetPZP, installId: installId}, responseHandler(res));
-}
+};
 
 PzhAdaptor.wipe = function(user, targetPZH, targetPZP, res) {
   pzhTLS.send (user, {type:"wipe", targetPZH: targetPZH, targetPZP: targetPZP}, responseHandler(res));
-}
+};
 
 PzhAdaptor.addTrustedFriend = function (user, targetPZH, externalEmail, externalPzh, externalCerts, res) {
     pzhTLS.send(user, {type:"addTrustedFriend", targetPZH: targetPZH, externalEmail:externalEmail, externalPzh:externalPzh, externalCerts:externalCerts}, responseHandler(res));
+};
+
+PzhAdaptor.getActiveServices = function (user, targetPZH, res) {
+  pzhTLS.send(user, {type:"getActiveServices", targetPZH: targetPZH }, responseHandler(res));
 };
