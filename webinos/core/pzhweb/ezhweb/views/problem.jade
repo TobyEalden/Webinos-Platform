@@ -1,8 +1,11 @@
 extends layout
 
 block content
-  - var optionTheme = (typeof ui === "undefined") ? "d" : ui.optionTheme;
+  - var optionTheme = (typeof ui === "undefined") ? "b" : ui.optionTheme;
   div(data-role='content')
-    p There was a problem...
+    img(src='/images/logo.png', style='float:left;padding-right:10px;')
+    h1(style="margin-top:0px;") UbiApps Enterprise Zone
+    h2(style="clear:both;") There was a problem...
+    p &nbsp;
     p !{error}
     a(href="#", data-rel="back", data-role="button", data-icon="arrow-r", data-iconpos="right", data-inline="true", data-theme="#{optionTheme}") continue

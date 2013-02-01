@@ -150,7 +150,7 @@ PzhProviderWeb.startWebServer = function (host, address, port, options, config, 
         var app = express();
         app.options = options;
         app.configure(function () {
-            app.set('views', __dirname + '/rmWeb/views');
+            app.set('views', __dirname + '/ezhweb/views');
             app.set('view engine', 'jade');
             // Turn on express logging for every page
             app.use(express.logger()); 
@@ -162,7 +162,7 @@ PzhProviderWeb.startWebServer = function (host, address, port, options, config, 
             app.use(passport.initialize());
             app.use(passport.session());
             app.use(app.router);
-            app.use(express.static(__dirname + '/rmWeb/public'));
+            app.use(express.static(__dirname + '/ezhweb/public'));
         });
 
         // An environment variable will switch between these two, but we don't yet.
@@ -180,8 +180,8 @@ PzhProviderWeb.startWebServer = function (host, address, port, options, config, 
 
     function setEnterpriseRoutes(app, address, port) {
         "use strict";
-        require('./rmWeb/routes/dash.js')(app, address, port);
-        require('./rmWeb/routes/peerPzhAuth.js')(app, address, port);
+        require('./ezhweb/routes/dash.js')(app, address, port);
+        require('./ezhweb/routes/peerPzhAuth.js')(app, address, port);
     }
 
     function createPassport(serverUrl) {
