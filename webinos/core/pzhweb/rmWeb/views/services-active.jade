@@ -10,7 +10,7 @@ block content
           ul(data-role='listview', data-inset='false', data-theme='b', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}", data-filter="true")
             - for (var s in entities[pzh].pzps[pzp].services) {
               li= entities[pzh].pzps[pzp].services[s].api
-                form(action="/removeService/#{pzh}/#{pzp}/#{encodeURIComponent(entities[pzh].pzps[pzp].services[s].serviceAddress)}/#{entities[pzh].pzps[pzp].services[s].id}/#{encodeURIComponent(entities[pzh].pzps[pzp].services[s].api)}", method="post")
+                //form(action="/removeService/#{pzh}/#{pzp}/#{encodeURIComponent(entities[pzh].pzps[pzp].services[s].serviceAddress)}/#{entities[pzh].pzps[pzp].services[s].id}/#{encodeURIComponent(entities[pzh].pzps[pzp].services[s].api)}", method="post")
                   input(type="submit",data-role="button",data-inline="true",data-theme="#{ui.optionTheme}",value="Remove")
             - }
     - } else {
@@ -26,7 +26,7 @@ block content
                 li(data-role="list-divider")= p
                 - for (var s in entities[ent].pzps[p].services) {
                   li= entities[ent].pzps[p].services[s].api
-                    a(href="/removeService/#{pzh}/#{pzp}/#{entities[ent].pzps[p].services[s].serviceAddress}/#{entities[ent].pzps[p].services[s].id}/#{entities[ent].pzps[p].services[s].api}") remove
+                    //a(href="/removeService/#{pzh}/#{pzp}/#{entities[ent].pzps[p].services[s].serviceAddress}/#{entities[ent].pzps[p].services[s].id}/#{entities[ent].pzps[p].services[s].api}") remove
                 - }
               - }
       - }

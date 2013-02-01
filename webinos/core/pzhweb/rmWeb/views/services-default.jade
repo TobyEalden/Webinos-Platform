@@ -8,7 +8,7 @@ block content
         div(data-role='collapsible', data-inset='true',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
           h3= pzp
           ul(data-role='listview', data-inset='false', data-theme='b', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}", data-filter="true")
-            - for (var s = 0; s < services.length; s++) {
+            - for (var s in services) {
               li= services[s].name
                 //form(action="/removeService/#{pzh}/#{pzp}/#{encodeURIComponent(services[s].serviceAddress)}/#{services[s].id}/#{encodeURIComponent(services[s].api)}", method="post")
                   input(type="submit",data-role="button",data-inline="true",data-theme="#{ui.optionTheme}",value="Remove")

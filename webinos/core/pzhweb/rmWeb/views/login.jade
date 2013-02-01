@@ -1,12 +1,16 @@
 extends layout
 
 block content
-  div(id="loginPage", data-role="content", data-theme="#{ui.mainTheme}")
+  div(data-role="content")
     img(src='/images/logo.png', style='float:left;padding-right:10px;')
-    h3 UbiApps Zone Farm
-    p(style="clear:both;")
+    h1 UbiApps Enterprise Zone
+    p(style="clear:both;text-align:center;")
+      br
+      br
       strong Welcome 
-      | to the UbiApps Zone Farm. Please choose an authentication provider and sign in.
+      | to the UbiApps Enterprise Zone. Please choose an authentication provider and sign in.
+      br
+      br
     div(id="login-choice")
       a(id="googleAuth",href="/auth/google",data-role="button",rel="external",data-theme="c")
         img(src='https://ssl.gstatic.com/images/logos/google_logo_41.png', width='100px')

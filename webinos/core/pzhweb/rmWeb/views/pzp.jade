@@ -8,18 +8,18 @@ block content
       h3 Device Options
       ul(data-role='listview', data-inset='false', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
         li
-          a(href='/installed/#{pzh}/#{pzp}', data-transition="slide") Show Installed Apps
+          a(href='/installed/#{pzh}/#{pzp}') Show Installed Apps
         li
-          a(href='/install-app/#{pzh}/#{pzp}', data-transition="slide") Install an App
+          a(href='/install-app/#{pzh}/#{pzp}') Install an App
         li
           a(href='#confirmWipe', data-rel="popup",data-position-to="window",data-transition="pop") Wipe this Device
         li
-          a(href='/services/#{pzh}/#{pzp}', data-transition="slide") Services Available
+          a(href='/services/#{pzh}/#{pzp}') Services Available
         li
-          a(href='/nyi', data-transition="slide") Diagnostics
+          a(href='/nyi') Diagnostics
         li(data-role="list-divider") &nbsp;
         li
-          a(href='/nyi', data-transition="slide") Remove this Device
+          a(href='/nyi') Remove this Device
 
     div(data-role="popup",id="confirmWipe",data-overlay-theme="a",data-theme="c",style="max-width:400px;",class="ui-corner-all")
       div(data-role="header",data-theme="a",class="ui-corner-top")

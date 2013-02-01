@@ -14,7 +14,7 @@ block content
             - if (pzpList[pzp].isConnected) {
               - counter++; 
               li
-                a(href='/pzp/#{pzpList[pzp].url}',data-transition="slide",title="#{pzpList[pzp].url}") #{pzpList[pzp].id}
+                a(href='/pzp/#{pzpList[pzp].url}',title="#{pzpList[pzp].url}") #{pzpList[pzp].id}
             - }
         - }
         - if (counter === 0) {
@@ -41,7 +41,7 @@ block content
         //- Invite a friend
         - if (showOptions) {
           li(data-theme="#{ui.optionTheme}")
-            a(href='/invite/#{pzh}',data-transition='slide') Invite a Friend
+            a(href='/invite/#{pzh}') Invite a Friend
         - }
         //- List connected friends 
         li(data-role="list-divider", role="heading") Friends Online
@@ -102,13 +102,13 @@ block content
       h3 Zone Options
       ul(data-role='listview', data-divider-theme="#{ui.dividerTheme}")
         li(data-theme="#{ui.optionTheme}")
-          a(href='/about-me/#{pzh}',data-transition='slide') About this Zone
+          a(href='/about-me/#{pzh}') About this Zone
         li(data-theme="#{ui.optionTheme}")
-          a(href='/services/#{pzh}',data-transition='slide') Services Available
+          a(href='/services/#{pzh}') Services Available
         li(data-theme="#{ui.optionTheme}")
-          a(href='/nyi',data-transition='slide') Diagnostics
+          a(href='/nyi') Diagnostics
         - if (!ui.privileged) {
           li(data-role="list-divider", role="heading") &nbsp;
           li(data-theme="#{ui.optionTheme}")
-            a(href='/logout',data-transition='slide') Sign Out
+            a(href='/logout') Sign Out
         - }

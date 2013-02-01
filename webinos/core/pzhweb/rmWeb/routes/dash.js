@@ -234,11 +234,22 @@ module.exports = function (app, address, port, state) {
     });
 
     app.get('/services/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
-      pzhadaptor.getActiveServices(req.user, getPZHId(req), function(result) {
-        var entities = rationaliseServices(result.message, getPZHId(req), req.params.pzpId);
-        res.render('services-active', { id:"getActiveServices", ui: getUIOptions(req.user), title: "Active Services", pzh: getPZHId(req), pzp: req.params.pzpId, entities: entities });
+      pzhadaptor.getActiveServices(req.user, getPZHId(req), function(activeResult) {
+          var entities = rationaliseServices(activeResult.message, getPZHId(req), req.params.pzpId);
+          res.render('services-active', { id:"getActiveServices", ui: getUIOptions(req.user), title: "Active Services", pzh: getPZHId(req), pzp: req.params.pzpId, entities: entities});
+        });
+    });
+
+  /*
+    app.get('/services/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
+      pzhadaptor.getActiveServices(req.user, getPZHId(req), function(activeResult) {
+        pzhadaptor.getDefaultServices(req.user, getPZHId(req), req.params.pzpId, function(defaultResult) {
+          var entities = rationaliseServices(activeResult.message, getPZHId(req), req.params.pzpId);
+          res.render('services', { id:"getActiveServices", ui: getUIOptions(req.user), title: "Active Services", pzh: getPZHId(req), pzp: req.params.pzpId, entities: entities, defaultServices: defaultResult.message.modules });
+        });
       });
     });
+  */
 
     app.get('/default-services/:pzhId/:pzpId', ensureAuthenticated, function(req, res) {
       pzhadaptor.getDefaultServices(req.user, getPZHId(req), req.params.pzpId, function(result) {
