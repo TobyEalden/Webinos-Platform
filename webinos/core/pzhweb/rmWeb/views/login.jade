@@ -3,14 +3,15 @@ extends layout
 block content
   div(data-role="content")
     img(src='/images/logo.png', style='float:left;padding-right:10px;')
-    h1 UbiApps Enterprise Zone
-    p(style="clear:both;text-align:center;")
-      br
-      br
-      strong Welcome 
-      | to the UbiApps Enterprise Zone. Please choose an authentication provider and sign in.
-      br
-      br
+    h1(style="margin-top:0px;") UbiApps Enterprise Zone
+    h2(style="clear:both;") Welcome
+    - if (typeof isPZP !== "undefined" && isPZP) {
+      h3 Device Enrollment
+      p To enroll this device at your zone please choose an authentication provider and sign in.
+    -} else {
+      h3 Zone Login
+      p To access your zone please choose an authentication provider and sign in.
+    - }
     div(id="login-choice")
       a(id="googleAuth",href="/auth/google",data-role="button",rel="external",data-theme="c")
         img(src='https://ssl.gstatic.com/images/logos/google_logo_41.png', width='100px')

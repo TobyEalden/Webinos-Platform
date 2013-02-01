@@ -8,10 +8,10 @@ block content
     setTimeout(function() {
     window.location.href = "#{externalPzhUrl}";
     }, 10000);
-  div(id="externalRequestSuccess", data-role="content", data-theme="c")
-    h3 Success!
-    p A friend request has been sent to #{user}'s personal zone.
+  div(data-role="content")
+    h3(style="clear:both;") Success!
+    p A friend request has been sent to #{user}'s zone.
     p Once #{user} has approved your request you will be able to access their zone.
-    p You will shortly be redirected back to your Personal Zone or click 
+    p You will shortly be redirected back to your zone, or click
       a(href="#{externalPzhUrl}") here 
       |to go now.

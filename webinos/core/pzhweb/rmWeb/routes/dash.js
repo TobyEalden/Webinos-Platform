@@ -33,7 +33,7 @@ module.exports = function (app, address, port, state) {
     
     function getUIOptions(user) {
       return {
-        appTitle: "UbiApps",
+        appTitle: "UbiApps Enterprise Zone",
         appURL: "http://ubiapps.com",
         mainTheme: "d",
         optionTheme: "b",
@@ -270,10 +270,6 @@ module.exports = function (app, address, port, state) {
     app.get('/nyi', function(req,res) {
       res.render('nyi',{ id:"nyi", ui: getUIOptions(req.user), title: "Not Implemented"});
     });
-        
-    app.post('/main/:user/enrollPzp/', function (req, res) { // to use ensure authenticated, for some reason req.isAuthenticated retuns false
-        pzhadaptor.fromWeb(req.params.user,{payload:{status:"enrollPzp", csr:req.body.csr, authCode:req.body.authCode, from:req.body.from}}, res);
-    });
 
     app.get('/main/:user/', ensureAuthenticated, function (req, res) {
       res.redirect('/pzh/' + address + "_" + req.params.user);
@@ -344,31 +340,6 @@ module.exports = function (app, address, port, state) {
 
     });
 
-    //TODO WARNING: This seems like a dodgy function.  Anyone can invoke it.  Make sure that secret is long...
-    //    app.post('/main/:user/request-access/:external/', function(req, res) {
-    //Args: External user's PZH URL
-    //Args: Secret token
-    //Args: Certificate for external PZH
-
-    //Auth: check that the URL is expected and that the certificate is valid and that the certificate is valid for this URL.
-    //UI: None
-    //Action: add this user to the trusted list
-    //    });
-
-    app.get('/main/:user/approve-user/:externalemail/', ensureAuthenticated, function (req, res) {
-        pzhadaptor.getRequestingExternalUser(req.user, req.params.externalemail, function (answer) {
-            if (answer.message) {
-                res.render("approve-user", {user:req.user, externalUser:req.params.externalemail});
-            } else {
-                res.render("problem",{ id:"problem", ui: getUIOptions(req.user), title: "Problem", error: "Failed to approve user " + req.params.externalemail + "."});
-            }
-        });
-        //Args: None
-        //Auth: PZH login required
-        //UI: Show the external user's details
-        //Actions: have a button that, once approved, add the external user's certificate details to the trusted list.
-    });
-
     app.get('/approveFriend/:pzhId/:email', ensureAuthenticated, function (req, res) {
       pzhadaptor.approvePZHFriend(req.user, getPZHId(req), req.params.email, function() {
         res.redirect('/pzh/' + getPZHId(req));
@@ -392,7 +363,7 @@ module.exports = function (app, address, port, state) {
             req.session.isPzp = true;
             req.session.pzpPort = req.query.port;
         }
-        res.render('login', { user:req.user, id:"login", ui: getUIOptions(req.user), title: "UbiApps" });
+        res.render('login', { user:req.user, id:"login", ui: getUIOptions(req.user), title: "UbiApps", isPZP: req.session.isPzp });
     });
     // GET /auth/google
     //   Use passport.authenticate() as route middleware to authenticate the

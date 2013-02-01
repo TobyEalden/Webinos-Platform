@@ -22,10 +22,10 @@ html
     block head
   body
     - var mainTheme = (typeof ui === "undefined") ? "d" : ui.mainTheme;
-    - var optionTheme = (typeof ui === "undefined") ? "d" : ui.optionTheme;
+    - var optionTheme = (typeof ui === "undefined") ? "b" : ui.optionTheme;
     div(data-role='page',id='#{locals.id || ''}',data-theme="#{mainTheme}")
       div(data-role='header',data-position="fixed", data-theme="#{optionTheme}")
-        h1 #{locals.title || ''}
+        h1 #{locals.title || 'UbiApps'}
         - if (locals.id !== "home" && locals.id !== "login") {
           a(href="/",data-role="button",data-icon="home",data-iconpos="notext") home
           //a(href="#",data-role="button",data-icon="back",data-iconpos="notext", data-rel="back") back

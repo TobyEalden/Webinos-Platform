@@ -1,15 +1,19 @@
 extends layout
 
 block content
-  div(id="remoteLoginPage", data-role="content", data-theme="c")
-    h3 UbiApps Friend Request Authentication
-    p(style='clear:both;') To continue with your friend request, please sign-in to zone 
+  div(data-role="content")
+    img(src='/images/logo.png', style='float:left;padding-right:10px;')
+    h1(style="margin-top:0px;") UbiApps Enterprise Zone
+    h2(style="clear:both;") Welcome
+    h3 Friend Request Authentication
+    p To authorise your friend request, please sign-in to the zone
+    p(style="text-align:center;")
       strong #{decodeURIComponent(user)}.
     p Choose an authentication provider and sign in.
     div(id="login-choice")
-      a(id="googleAuth",href="/main/#{user}/request-access-authenticate?externalprovider=google&externalCertUrl=#{externalCertUrl}&externalPZHUrl=#{externalPZHUrl}&externalEmailId=#{externalEmailId}",data-role="button",rel="external")
+      a(id="googleAuth",href="/main/#{user}/request-access-authenticate?externalprovider=google&externalCertUrl=#{externalCertUrl}&externalPZHUrl=#{externalPZHUrl}&externalEmailId=#{externalEmailId}",data-role="button",rel="external",data-theme="c")
         img(src='https://ssl.gstatic.com/images/logos/google_logo_41.png', width='100px')
-      a(id="yahooAuth",href="/main/#{user}/request-access-authenticate?externalprovider=yahoo&externalCertUrl=#{externalCertUrl}&externalPZHUrl=#{externalPZHUrl}&externalEmailId=#{externalEmailId}",data-role="button",rel="external")
+      a(id="yahooAuth",href="/main/#{user}/request-access-authenticate?externalprovider=yahoo&externalCertUrl=#{externalCertUrl}&externalPZHUrl=#{externalPZHUrl}&externalEmailId=#{externalEmailId}",data-role="button",rel="external",data-theme="c")
         img(src='http://l.yimg.com/a/images/ww/met/slimheader/yahoo-logo-sm-png8.png', width='100px')
 
         
