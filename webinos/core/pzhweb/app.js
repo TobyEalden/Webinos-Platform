@@ -55,8 +55,8 @@ PzhProviderWeb.startWebServer = function (host, address, port, options, config, 
                     // app = createApp(options, passport);
                     // routes = setRoutes(app, address, port);
 
-                   app = createDashboard(options, passport);
-                   routes = setDashboardRoutes(app, address, port);
+                   app = createEnterpriseApp(options, passport);
+                   routes = setEnterpriseRoutes(app, address, port);
 
                     //actually start the server
                     server = https.createServer(options, app).listen(port);
@@ -145,7 +145,7 @@ PzhProviderWeb.startWebServer = function (host, address, port, options, config, 
         return app;
     }
 
-    function createDashboard(options, passport) {
+    function createEnterpriseApp(options, passport) {
         "use strict";
         var app = express();
         app.options = options;
@@ -178,7 +178,7 @@ PzhProviderWeb.startWebServer = function (host, address, port, options, config, 
         return app;
     }
 
-    function setDashboardRoutes(app, address, port) {
+    function setEnterpriseRoutes(app, address, port) {
         "use strict";
         require('./rmWeb/routes/dash.js')(app, address, port);
         require('./rmWeb/routes/peerPzhAuth.js')(app, address, port);
