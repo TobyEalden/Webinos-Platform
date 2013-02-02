@@ -12,7 +12,7 @@ module.exports = function (app, address, port, state) {
 
       var isMobile = function (req) {
         var ua = req.header('user-agent');
-        return true; //(/mobile/i.test(ua)) ? true : false;
+        return (/mobile/i.test(ua)) ? true : false;
       };
 
       var getCurrentPZH = function (user) {
