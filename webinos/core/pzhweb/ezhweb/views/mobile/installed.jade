@@ -12,14 +12,14 @@ block content
           - count++;
           - var name = widgetList[wgt].name ? widgetList[wgt].name.visual : widgetList[wgt].id;
             li
-              a(href='/app/#{pzh}/#{pzp}/#{widgetList[wgt].installId}') #{name}
+              a(href='/m/app/#{pzh}/#{pzp}/#{widgetList[wgt].installId}') #{name}
         - }
         - if (count === 0) {
             li No Apps Installed
         - }
         li(data-role="list-divider", role="heading") &nbsp;
         li
-          a(href='/install-app/#{pzh}/#{pzp}') Install an App
+          a(href='/m/install-app/#{pzh}/#{pzp}') Install an App
         li(data-role="list-divider", role="heading")
           a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh
   

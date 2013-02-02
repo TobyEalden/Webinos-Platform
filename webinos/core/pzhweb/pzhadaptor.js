@@ -44,10 +44,10 @@ function responseHandler(res) {
     }
 }
 
-function pzpResponder(user, port, address, pzpPort, res) {
+function pzpResponder(user, port, address, pzpPort, pzpHost, res) {
     return {
         success:function (authCode) {
-            res.render("enroll-pzp", {address:address, port:port, authCode:authCode.message.payload.code, user:user, pzpPort:pzpPort});
+            res.render("enroll-pzp", {address:address, port:port, authCode:authCode.message.payload.code, user:user, pzpPort:pzpPort, pzpHost: pzpHost});
         }
     }
 }
@@ -167,7 +167,7 @@ function manageStatus(payload, user, res) {
             pzhTLS.send(user, {type:"csrAuthCodeByPzp", from:payload.from, csr:payload.csr, code:payload.code}, responseHandler(res));
             break;
         case 'enrollPzpAuthCode':
-            pzhTLS.send(user, {type:"authCode"}, pzpResponder(payload.user, payload.port, payload.address, payload.pzpPort, res));
+            pzhTLS.send(user, {type:"authCode"}, pzpResponder(payload.user, payload.port, payload.address, payload.pzpPort, payload.pzpHost, res));
             break;
          default:
             responseHandler(res).err({"error":"not valid message type"});

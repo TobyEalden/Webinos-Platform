@@ -1,0 +1,24 @@
+@media screen and (min-width: 800px) {
+  .content-panel {
+    max-width: 800px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+}
+
+#login-choice {
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.dash-refresh {
+}
+
+body {
+    background-image:url(/images/iot-bg.jpg);
+    background-size: cover;
+    background-repeat:no-repeat;
+    color:white;
+    text-shadow:none;
+}

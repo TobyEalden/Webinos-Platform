@@ -21,7 +21,7 @@
         var options = {type:'prop', payload:{status:'setPzhProviderAddress', message:value}};
         webinos.session.message_send (options);
 
-        window.location.href = "https://" + value + "/login?isPzp=true&port=" + webinos.session.getPzpPort ();
+        window.location.href = "https://" + value + "/login?isPzp=true&port=" + webinos.session.getPzpPort () + "&host=" + window.location.hostname;
       });
     });
   </script>

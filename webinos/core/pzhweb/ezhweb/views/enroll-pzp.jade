@@ -4,7 +4,7 @@ block content
   script(type='text/javascript')
     var channel;
     try {
-      channel = new window.WebSocket("ws://localhost:#{pzpPort}");
+      channel = new window.WebSocket("ws://#{pzpHost}:#{pzpPort}");
     } catch (err) {
       throw new Error ("Your browser does not support websockets. Please report your browser on webinos.org.");
     }
@@ -25,7 +25,7 @@ block content
             if (msg !== "") {
               var parse = JSON.parse(msg);
               channel.send(JSON.stringify(parse.message));
-              window.location.href = "http://localhost:#{pzpPort}/testbed/client.html";
+              window.location.href = "http://#{pzpHost}:#{pzpPort}/testbed/client.html";
               channel.close();
             }
           }

@@ -630,7 +630,7 @@ var PzpWSS = function (_parent) {
                         connection.on ("message", function (message) { wsMessage (connection, request.origin, message.utf8Data); });
                         connection.on ("close", function (reason, description) { wsClose (connection, description) });
                     } else {
-                        logger.error ("Failed to accept websocket connection: " + "wrong host or origin");
+                        logger.error ("Failed to accept websocket connection: " + "wrong host or origin: " + request.host);
                     }
                 });
                 return _callback (true);

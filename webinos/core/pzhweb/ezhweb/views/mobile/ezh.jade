@@ -8,11 +8,11 @@ block content
         - for (var p in pzhList) {
             li
               - if (pzhList[p].url === ui.serverName) {
-                a(href='/pzh/#{pzhList[p].url}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username} (You)
+                a(href='/m/pzh/#{pzhList[p].url}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username} (You)
               - } else { 
-                a(href='/pzh/#{pzhList[p].url}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username}
+                a(href='/m/pzh/#{pzhList[p].url}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username}
               - }
         - }
         li(data-role="list-divider", role="heading")
           a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh
-          a(href="logout", data-role="button", data-inline="true", data-mini="true", style="float:right;", data-theme="#{ui.optionTheme}") Sign Out        
+          a(href="/logout", data-role="button", data-inline="true", data-mini="true", style="float:right;", data-theme="#{ui.optionTheme}") Sign Out

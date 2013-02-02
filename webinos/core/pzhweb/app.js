@@ -180,7 +180,7 @@ PzhProviderWeb.startWebServer = function (host, address, port, options, config, 
 
     function setEnterpriseRoutes(app, address, port) {
         "use strict";
-        require('./ezhweb/routes/dash.js')(app, address, port);
+        require('./ezhweb/routes/routes.js')(app, address, port);
         require('./ezhweb/routes/peerPzhAuth.js')(app, address, port);
     }
 

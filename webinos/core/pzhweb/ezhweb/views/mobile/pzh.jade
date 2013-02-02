@@ -14,7 +14,7 @@ block content
             - if (pzpList[pzp].isConnected) {
               - counter++; 
               li
-                a(href='/pzp/#{pzpList[pzp].url}',title="#{pzpList[pzp].url}") #{pzpList[pzp].id}
+                a(href='/m/pzp/#{pzpList[pzp].url}',title="#{pzpList[pzp].url}") #{pzpList[pzp].id}
             - }
         - }
         - if (counter === 0) {
@@ -41,7 +41,7 @@ block content
         //- Invite a friend
         - if (showOptions) {
           li(data-theme="#{ui.optionTheme}")
-            a(href='/invite/#{pzh}') Invite a Friend
+            a(href='/m/invite/#{pzh}') Invite a Friend
         - }
         //- List connected friends 
         li(data-role="list-divider", role="heading") Friends Online
@@ -54,7 +54,7 @@ block content
                   - if (showOptions) {
                     div(style="float:left;") #{pzhList[p].id}
                     div(style="text-align:right;")
-                      a(href="/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="left", title="Remove this friend", data-theme="#{ui.optionTheme}") Remove
+                      a(href="/m/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="left", title="Remove this friend", data-theme="#{ui.optionTheme}") Remove
                   - } else {
                     |#{pzhList[p].id}
                   - }
@@ -73,7 +73,7 @@ block content
                     - if (showOptions) {
                         div(style="float:left;") #{pzhList[p].id}
                         div(style="text-align:right;")
-                          a(href="/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="left", title="Remove this friend", data-theme="#{ui.optionTheme}") Remove                      
+                          a(href="/m/removeFriend/#{pzh}/#{pzhList[p].id}/#{pzhList[p].url}", data-role="button", data-icon="delete", data-mini="true", data-inline="true", data-iconpos="left", title="Remove this friend", data-theme="#{ui.optionTheme}") Remove
                     - } else {
                         |#{pzhList[p].id}
                     - }
@@ -87,8 +87,8 @@ block content
                 li #{requestList[p].name}
                   - if (showOptions) {
                     div(style='text-align:right;')
-                      a(data-mini="true",data-inline="true",data-role="button",href='/approveFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='check', data-theme="#{ui.optionTheme}") Accept
-                      a(data-mini="true",data-inline="true",data-role="button",href='/rejectFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='delete', data-theme="#{ui.optionTheme}") Reject
+                      a(data-mini="true",data-inline="true",data-role="button",href='/m/approveFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='check', data-theme="#{ui.optionTheme}") Accept
+                      a(data-mini="true",data-inline="true",data-role="button",href='/m/rejectFriend/#{pzh}/#{encodeURIComponent(requestList[p].name)}',data-icon='delete', data-theme="#{ui.optionTheme}") Reject
                   - }
           - }
         - } else {
@@ -102,13 +102,13 @@ block content
       h3 Zone Options
       ul(data-role='listview', data-divider-theme="#{ui.dividerTheme}")
         li(data-theme="#{ui.optionTheme}")
-          a(href='/about-me/#{pzh}') About this Zone
+          a(href='/m/about-me/#{pzh}') About this Zone
         li(data-theme="#{ui.optionTheme}")
-          a(href='/services/#{pzh}') Services Available
+          a(href='/m/services/#{pzh}') Services Available
         li(data-theme="#{ui.optionTheme}")
-          a(href='/nyi') Diagnostics
+          a(href='/m/nyi') Diagnostics
         - if (!ui.privileged) {
           li(data-role="list-divider", role="heading") &nbsp;
           li(data-theme="#{ui.optionTheme}")
-            a(href='/logout') Sign Out
+            a(href='/m/logout') Sign Out
         - }

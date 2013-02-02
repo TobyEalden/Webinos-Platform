@@ -8,18 +8,18 @@ block content
       h3 Device Options
       ul(data-role='listview', data-inset='false', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
         li
-          a(href='/installed/#{pzh}/#{pzp}') Show Installed Apps
+          a(href='/m/installed/#{pzh}/#{pzp}') Show Installed Apps
         li
-          a(href='/install-app/#{pzh}/#{pzp}') Install an App
+          a(href='/m/install-app/#{pzh}/#{pzp}') Install an App
         li
           a(href='#confirmWipe', data-rel="popup",data-position-to="window",data-transition="pop") Wipe this Device
         li
-          a(href='/services/#{pzh}/#{pzp}') Services Available
+          a(href='/m/services/#{pzh}/#{pzp}') Services Available
         li
-          a(href='/nyi') Diagnostics
+          a(href='/m/nyi') Diagnostics
         li(data-role="list-divider") &nbsp;
         li
-          a(href='/nyi') Remove this Device
+          a(href='/m/nyi') Remove this Device
 
     div(data-role="popup",id="confirmWipe",data-overlay-theme="a",data-theme="c",style="max-width:400px;",class="ui-corner-all")
       div(data-role="header",data-theme="a",class="ui-corner-top")
@@ -27,6 +27,6 @@ block content
       div(data-role="content",data-theme="d",class="ui-corner-bottom ui-content")
         h3(class="ui-title") Are you sure you want to wipe device #{pzp}?
         p This action cannot be undone.
-        form(action="/wipe/#{pzh}/#{pzp}", method="post")
+        form(action="/m/wipe/#{pzh}/#{pzp}", method="post")
           input(type="submit",data-role="button",data-inline="true",data-theme="#{ui.optionTheme}",value="Wipe")
           a(href="#",data-role="button",data-inline="true",data-rel="back",data-theme="c") Cancel

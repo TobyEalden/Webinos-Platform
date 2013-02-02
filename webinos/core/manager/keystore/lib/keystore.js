@@ -52,7 +52,7 @@ KeyStore.prototype.generateKey = function(type, id, callback) {
 KeyStore.prototype.storeKey = function (id, value, callback) {
   var self = this;
 
-  if(self.metaData.webinosType === "Pzp" &&
+  if(false && self.metaData.webinosType === "Pzp" &&
     (os.type().toLowerCase() ==="linux" &&  os.platform().toLowerCase() !== "android") ||
     os.type().toLowerCase() === "darwin") {
     try {
@@ -75,7 +75,7 @@ KeyStore.prototype.storeKey = function (id, value, callback) {
 
 KeyStore.prototype.fetchKey = function (id, callback) {
   var self = this, key;
-  if(self.metaData.webinosType ==="Pzp" &&
+  if(false && self.metaData.webinosType ==="Pzp" &&
     (os.type().toLowerCase() ==="linux" &&  os.platform().toLowerCase() !== "android") ||
     os.type().toLowerCase() === "darwin") {
     try {
