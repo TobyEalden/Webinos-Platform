@@ -43,7 +43,7 @@ script
       ubi.console.log("Added click listener for " + service.serviceAddress);
     }
 
-    function geoLocationError(err) {
+    function geoLocationError(error) {
       switch(error.code)
       {
         case error.PERMISSION_DENIED:
@@ -70,6 +70,7 @@ script
       PositionOptions.maximumAge = 5000;
       PositionOptions.timeout = 1000;
 
+      ubi.console.log("Calling getCurrentPosition on " + service.serviceAddress);
       service.getCurrentPosition(function(loc) { gotLocation(service,loc); }, geoLocationError, PositionOptions);
     }
 

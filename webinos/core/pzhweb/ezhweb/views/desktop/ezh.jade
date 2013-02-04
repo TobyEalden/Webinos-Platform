@@ -61,7 +61,7 @@ block west
                                 - for (var svc in entities[ent].pzps[pzp].services) {
                                   - serviceCount++;
                                   li.tree-node.tree-leaf
-                                    a.service-tree-item(href="#") #{entities[ent].pzps[pzp].services[svc].api}
+                                    a.service-tree-item(href="#",title="#{entities[ent].pzps[pzp].services[svc].serviceAddress}") #{entities[ent].pzps[pzp].services[svc].displayName}
                                 - }
                                 - if (serviceCount === 0) {
                                   li.tree-node.tree-leaf None
@@ -78,7 +78,7 @@ block west
                       - for (var svc in entities[ent].services) {
                         - serviceCount++;
                         li.tree-node.tree-leaf
-                          a.service-tree-item(href="#")= entities[ent].services[svc].api
+                          a.service-tree-item(href="#",title="#{entities[ent].services[svc].serviceAddress}")= entities[ent].services[svc].displayName
                       - }
                       - if (serviceCount === 0) {
                         li.tree-node.tree-leaf None

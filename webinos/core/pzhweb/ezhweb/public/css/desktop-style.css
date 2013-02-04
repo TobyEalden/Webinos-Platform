@@ -10,6 +10,11 @@ body {
     background-image:url(/images/desktop/iot-bg.jpg);
     background-size: cover;
     background-repeat:no-repeat;
+    padding: 4px;
+}
+
+.ui-layout-north h1 {
+    margin-top: 0px;
 }
 
 #login-choice {
@@ -25,8 +30,10 @@ body {
   Navigator tree
 */
 .navigator {
-    font-family: "Lucida Console","Courier New","sans-serif";
+    font-family: "Verdana","Lucida Console","Courier New","sans-serif";
     font-size: .8em;
+    padding-left: 2px;
+    padding-top: 2px;
 }
 
 .navigator a {
