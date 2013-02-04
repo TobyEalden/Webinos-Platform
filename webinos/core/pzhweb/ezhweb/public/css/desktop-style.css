@@ -1,11 +1,29 @@
+/*
+    Global element styles
+*/
 body {
     color:white;
     text-shadow:none;
     background-color: #2b2b2b;
     font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
-    font-size: 14px;
+    font-size: 10px;
 }
 
+ul {
+    list-style-type: none;
+    padding: 4px;
+    margin: 0px;
+}
+
+h1, h2, h3, h4 {
+   margin: 0px;
+   color: #d3d3d3;
+   text-shadow: 1px 1px #af0000;
+}
+
+/*
+    Layout styling
+*/
 .ui-layout-north {
     background-image:url(/images/desktop/iot-bg.jpg);
     background-size: cover;
@@ -23,15 +41,11 @@ body {
     margin-right: auto;
 }
 
-.dash-refresh {
-}
-
 /*
   Navigator tree
 */
 .navigator {
     font-family: "Verdana","Lucida Console","Courier New","sans-serif";
-    font-size: .8em;
     padding-left: 2px;
     padding-top: 2px;
 }
@@ -46,7 +60,7 @@ body {
 }
 
 .navigator a:hover {
-    color: lightblue;
+    color: #c24c4c;
     text-decoration: underline;
 }
 
@@ -64,9 +78,6 @@ body {
     margin-left: -10px;
 }
 
-.tree-branch{
-}
-
 .tree-node {
     padding-left: 14px;
     padding-top: 2px;
@@ -77,44 +88,39 @@ body {
     padding-left: 30px;
 }
 
-.tree-expander {
-    padding-right: 4px;
-    font-family: "Lucida Console","Courier New","sans-serif";
+.tree-branch{
+}
+
+.tree-branch a:nth-child(2), .tree-leaf a:nth-child(1) {
+    background-repeat: no-repeat;
+    background-size: 16px;
+    background-position: 0px 1px;
+    padding-left: 20px;
 }
 
 .folder-tree-item {
     background-image: url("/images/desktop/folder.png");
-    background-repeat: no-repeat;
-    background-size: 16px;
-    padding-left: 20px;
 }
 
 .zone-tree-item {
     background-image: url("/images/desktop/folder.png");
-    background-repeat: no-repeat;
-    background-size: 16px;
-    padding-left: 20px;
 }
 
 .device-tree-item {
     background-image: url("/images/desktop/device.png");
-    background-repeat: no-repeat;
-    background-size: 16px;
-    padding-left: 20px;
 }
 
 .service-tree-item {
     background-image: url("/images/desktop/service.png");
-    background-repeat: no-repeat;
-    background-size: 16px;
-    padding-left: 20px;
 }
 
 .app-tree-item {
     background-image: url("/images/desktop/app.png");
-    background-repeat: no-repeat;
-    background-size: 16px;
-    padding-left: 20px;
+}
+
+.tree-expander {
+    padding-right: 4px;
+    font-family: "Lucida Console","Courier New","sans-serif";
 }
 
 /*
@@ -151,7 +157,7 @@ body {
 */
 #console {
     font-family: "Lucida Console","Courier New","sans-serif";
-    font-size: .65em;
+    font-size: .8em;
     white-space: nowrap;
     padding-left: 2px;
     padding-top: 2px;

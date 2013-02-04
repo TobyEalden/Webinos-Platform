@@ -176,7 +176,11 @@ module.exports = function (app, address, port, state) {
     );
 
     app.get('/main/:user/', helpers.ensureAuthenticated, function (req, res) {
-      res.redirect('/pzh/' + address + "_" + req.params.user);
+      if (helpers.isMobile(req)) {
+        res.redirect('/m/pzh/' + address + "_" + req.params.user);
+      } else {
+        res.redirect('/d/pzh/' + address + "_" + req.params.user);
+      }
     });
 
     // present certificates to an external party.

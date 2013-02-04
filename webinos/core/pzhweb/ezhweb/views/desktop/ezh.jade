@@ -3,6 +3,7 @@ extends layout
 block head
   script(type="text/javascript", src="/js/webinos.js")
   script(type="text/javascript", src="/js/desktop/console.js")
+  script(type="text/javascript", src="/js/desktop/apps.js")
   script(type="text/javascript", src="/js/desktop/menu.js")
   script(type="text/javascript", src="/js/desktop/navigator.js")
   script(type="text/javascript", src="/js/desktop/services.js")
@@ -50,7 +51,7 @@ block west
                           ul
                             li.tree-node.tree-branch
                               a.tree-expander(href="#") +
-                              a.folder-tree-item(href="#") Apps
+                              a.folder-tree-item.apps-folder-item(href="#",id="apps|#{ent}|#{pzp}") Apps
                               ul
                                 li.tree-node.tree-leaf None
                             li.tree-node.tree-branch
@@ -85,4 +86,4 @@ block west
                       - }
           - }
 
-block center
+block centre

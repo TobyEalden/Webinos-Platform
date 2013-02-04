@@ -1,4 +1,6 @@
 $(function() {
+  ubi.console.log("Initialising menus");
+
   $("#menu-map-devices").click(function() {
     ubi.console.log("Loading device map");
     $.ajax({

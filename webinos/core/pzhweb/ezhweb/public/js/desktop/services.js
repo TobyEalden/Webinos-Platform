@@ -4,6 +4,8 @@ if (typeof ubiapps === "undefined") {
 
 ubi.services = function() {
 
+  ubi.console.log("Initialising services handler");
+
   function _findServices(api, callback) {
 
     function serviceFoundCB(service) {
