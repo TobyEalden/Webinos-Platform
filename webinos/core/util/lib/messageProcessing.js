@@ -49,6 +49,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
     var jsonStr;
     var len;
     var offset = 0;
+    var accumulator = new Buffer();
 
     for (;;) {
         var readByteLen;
@@ -56,30 +57,31 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
             // we already read from a previous buffer, read the rest
             console.log(">>>>>>>>>>>>> reading remainder, offset is " + offset);
             len = instanceMap[instance].restLen;
-            var jsonStrTmp = buffer.toString('utf8', offset, offset + len);
-            readByteLen = Buffer.byteLength(jsonStrTmp, 'utf8');
-            jsonStr = instanceMap[instance].part + jsonStrTmp;
+            readByteLen = (offset + len < buffer.length) ? len : (buffer.length - offset);
+            accumulator = Buffer.concat([buffer.slice(offset,readByteLen), instanceMap[instance].part], readByteLen + instanceMap[instance].part.length);
             offset += readByteLen;
             instanceMap[instance] = undefined;
             console.log(">>>>>>>>>>>>> reading remainder, want " + len + " got " + readByteLen + " offset is " + offset + " buffer length is " + buffer.length);
         } else {
             len = buffer.readUInt32LE(offset);
             offset += 4;
-            jsonStr = buffer.toString('utf8', offset, offset + len);
-            readByteLen = Buffer.byteLength(jsonStr, 'utf8');
+            readByteLen = (offset + len < buffer.length) ? len : (buffer.length - offset);
+            accumulator = new Buffer(readByteLen);
+            buffer.copy(accumulator,0,offset,readByteLen);
             offset += readByteLen;
         }
 
         if (readByteLen < len) {
             instanceMap[instance] = {
                 restLen: len - readByteLen,
-                part: jsonStr
+                part: accumulator
             };
             console.log(">>>>>>>>>>>>>> incomplete buffer, total required " + len + " waiting for: " + instanceMap[instance].restLen + " offset is " + offset + " buffer length is " + buffer.length);
             return;
         }
 
         // call handler with parsed message object
+        jsonStr = accumulator.toString('utf8');
         objectHandler(JSON.parse(jsonStr));
 
         if (offset >= buffer.length) {
