@@ -54,6 +54,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
         var readByteLen;
         if (instanceMap[instance]) {
             // we already read from a previous buffer, read the rest
+            console.log(">>>>>>>>>>>>> reading remainder, offset is " + offset);
             len = instanceMap[instance].restLen;
             var jsonStrTmp = buffer.toString('utf8', offset, offset + len);
             readByteLen = Buffer.byteLength(jsonStrTmp, 'utf8');
