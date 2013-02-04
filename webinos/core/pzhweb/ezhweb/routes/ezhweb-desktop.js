@@ -2,9 +2,6 @@ module.exports = function (app, address, port, ezhHelpers) {
   "use strict";
   var dependency = require("find-dependencies")(__dirname);
   var logger = dependency.global.require(dependency.global.util.location, "lib/logging.js")(__filename) || console;
-  var pzhadaptor = require('../../pzhadaptor.js');
-  var passport = require('passport');
-  var helper = require('../../routes/helper.js');
   var pzhInfoCache = {};
 
   app.get('/d', ezhHelpers.ensureAuthenticated, function (req, res) {
@@ -14,14 +11,24 @@ module.exports = function (app, address, port, ezhHelpers) {
           req.session.pzpPort = "";
     } else {
       if (!ezhHelpers.isPrivileged(req.user)) {
-          renderPZHHome("home", ezHelpers.getCurrentPZH(req.user), req,res);
+          renderPZHHome("home", ezhHelpers.getCurrentPZH(req.user), req,res);
       } else {
-        pzhadaptor.getFarmPZHs(req.user, function(result) {
-          pzhInfoCache = result.message;
-          res.render('desktop/ezh', { id:"home", title: "UbiApps", pzhList: result.message });
+        ezhHelpers.pzhadaptor.getActiveServices(req.user, ezhHelpers.getCurrentPZH(req.user), function(result) {
+          var entities = ezhHelpers.rationaliseServices(result.message);
+          res.render('desktop/ezh', { pzh: ezhHelpers.getPZHId(req), entities: entities });
         });
       }
     }
+  });
+
+  app.get('/d/pzh/about/:pzhId',ezhHelpers.ensureAuthenticated,function(req,res){
+    ezhHelpers.pzhadaptor.getPZHDetails(req.user, ezhHelpers.getPZHId(req), function(result) {
+      res.render('desktop/partials/about-pzh', { id:"about", about: result.message, pzh: ezhHelpers.getPZHId(req) });
+    });
+  });
+
+  app.get('/d/map', ezhHelpers.ensureAuthenticated, function(req,res) {
+    res.render("desktop/partials/device-map");
   });
 
   app.get('/d/login', function (req, res) {

@@ -1,8 +1,88 @@
 extends layout
 
-block content
-  | Center
-  p
-    a(href='http://layout.jquery-dev.net/demos.html') Go to the Demos page
-  p * Pane-resizing is disabled because ui.draggable.js is not linked
-  p * Pane-animation is disabled because ui.effects.js is not linked
+block head
+  script(type="text/javascript", src="/js/webinos.js")
+  script(type="text/javascript", src="/js/desktop/console.js")
+  script(type="text/javascript", src="/js/desktop/menu.js")
+  script(type="text/javascript", src="/js/desktop/navigator.js")
+  script(type="text/javascript", src="/js/desktop/services.js")
+  script
+    log = ubi.console.log;
+    function webinos_connected() {
+      log("Webinos connected");
+      log("Connected to zone " + webinos.session.getPZPId());
+      var connectedPzp = webinos.session.getOtherPZP();
+      var connectedPzh = webinos.session.getOtherPZH();
+      for (var p in connectedPzh) {
+        log("Connected to hub: " + connectedPzh[p]);
+      }
+      for (var p in connectedPzp) {
+        log("Connected to proxy: " + connectedPzp[p]);
+      }
+    }
+
+    $(function() {
+      log("Connecting to webinos");
+      webinos.session.addListener ('registeredBrowser', webinos_connected);
+    });
+block west
+  div.navigator
+    ul.tree-root
+      li.tree-branch
+        a.tree-expander(href="#") +
+        a.folder-tree-item(href="#") Zones
+        ul
+          - for (var ent in entities) {
+              li.tree-node.tree-branch
+                a.tree-expander(href="#") +
+                a.zone-tree-item(href="#",id="z#{ent}")= ent
+                ul
+                  li.tree-node.tree-branch
+                    a.tree-expander(href="#") +
+                    a.folder-tree-item(href="#") Devices
+                    ul
+                      - var deviceCount = 0;
+                      - for (var pzp in entities[ent].pzps) {
+                        - deviceCount++;
+                        li.tree-node.tree-branch
+                          a.tree-expander(href="#") +
+                          a.device-tree-item(href="#")= pzp
+                          ul
+                            li.tree-node.tree-branch
+                              a.tree-expander(href="#") +
+                              a.folder-tree-item(href="#") Apps
+                              ul
+                                li.tree-node.tree-leaf None
+                            li.tree-node.tree-branch
+                              a.tree-expander(href="#") +
+                              a.folder-tree-item(href="#") Services
+                              ul
+                                - var serviceCount = 0;
+                                - for (var svc in entities[ent].pzps[pzp].services) {
+                                  - serviceCount++;
+                                  li.tree-node.tree-leaf
+                                    a.service-tree-item(href="#") #{entities[ent].pzps[pzp].services[svc].api}
+                                - }
+                                - if (serviceCount === 0) {
+                                  li.tree-node.tree-leaf None
+                                - }
+                      - }
+                      - if (deviceCount === 0) {
+                        li.tree-node.tree-leaf None
+                      - }
+                  li.tree-node.tree-branch
+                    a.tree-expander(href="#") +
+                    a.folder-tree-item(href="#") Services
+                    ul
+                      - var serviceCount = 0;
+                      - for (var svc in entities[ent].services) {
+                        - serviceCount++;
+                        li.tree-node.tree-leaf
+                          a.service-tree-item(href="#")= entities[ent].services[svc].api
+                      - }
+                      - if (serviceCount === 0) {
+                        li.tree-node.tree-leaf None
+                      - }
+          - }
+
+block center

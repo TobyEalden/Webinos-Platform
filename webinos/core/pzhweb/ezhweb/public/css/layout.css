@@ -28,9 +28,11 @@ body {
  *	PANES & CONTENT-DIVs
  */
 .ui-layout-pane { /* all 'panes' */
-	background:	#FFF; 
+	background:	#2b2b2b;
 	border:		1px solid #BBB;
-	padding:	10px; 
+	/*
+	padding:	10px;
+	 */
 	overflow:	auto;
 	/* DO NOT add scrolling (or padding) to 'panes' that have a content-div,
 	   otherwise you may get double-scrollbars - on the pane AND on the content-div

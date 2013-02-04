@@ -12,7 +12,7 @@ module.exports = function (app, address, port, state) {
 
       var isMobile = function (req) {
         var ua = req.header('user-agent');
-        return (/mobile/i.test(ua)) ? true : false;
+        return true; (/mobile/i.test(ua)) ? true : false;
       };
 
       var getCurrentPZH = function (user) {
@@ -51,6 +51,49 @@ module.exports = function (app, address, port, state) {
         } else {
           return getCurrentPZH(req.user);
         }
+      };
+
+      var splitAddress = function(addr) {
+        var pzhSep = addr.indexOf('_');
+
+        var pzhHost = '';
+        var pzp;
+        var email = '';
+
+        if (pzhSep >= 0) {
+          pzhHost = addr.substr(0,pzhSep);
+          email = addr.substr(pzhSep+1);
+          var pzpSep = email.indexOf('/');
+          if (pzpSep >= 0) {
+            pzp = email.substr(pzpSep+1);
+            email = email.substr(0,pzpSep);
+          }
+        }
+
+        return { pzhHost: pzhHost, pzh: pzhHost + "_" + email, pzp: pzp, email: email };
+      };
+
+      var rationaliseServices = function(payload, pzhId, pzpId) {
+        var entities = {};
+        for (var serv in payload.services){
+          var s = payload.services[serv];
+          var address = splitAddress(s.serviceAddress);
+          if (!pzhId || address.pzh === pzhId) {
+            if (!entities.hasOwnProperty(address.pzh)) {
+              entities[address.pzh] = { services: {}, pzps: {} };
+            }
+            if (address.pzp && (!pzpId || address.pzp === pzpId)) {
+              if (!entities[address.pzh].pzps.hasOwnProperty(address.pzp)) {
+                entities[address.pzh].pzps[address.pzp] = { services: {} };
+              }
+              entities[address.pzh].pzps[address.pzp].services[s.id] = s;
+            } else if (!pzpId) {
+              entities[address.pzh].services[s.id] = s;
+            }
+          }
+        }
+
+        return entities;
       }
 
       return {
@@ -60,7 +103,9 @@ module.exports = function (app, address, port, state) {
         getCurrentPZH: getCurrentPZH,
         getUserPath: getUserPath,
         getPZHId: getPZHId,
-        pzhadaptor: pzhadaptor
+        pzhadaptor: pzhadaptor,
+        splitAddress: splitAddress,
+        rationaliseServices: rationaliseServices
       }
     }();
 

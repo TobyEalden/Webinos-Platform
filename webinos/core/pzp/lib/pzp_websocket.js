@@ -606,7 +606,9 @@ var PzpWSS = function (_parent) {
 
     function approveRequest (request) {
         var requestor = request.host.split (":")[0]; // don't care about port.
-        return (requestor === "localhost" || requestor === "127.0.0.1");
+        // Allow non-localhost connections if the host is the same.
+        var localIP = _parent.pzp_state.sessionId.indexOf('_')
+        return (requestor === "localhost" || requestor === "127.0.0.1" || requestor === _parent.pzp_state.sessionId.substr(0,localIP));
     }
 
     this.startWebSocketServer = function (_callback) {
