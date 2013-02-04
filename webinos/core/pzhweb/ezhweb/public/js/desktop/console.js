@@ -40,6 +40,6 @@ ubi.console = function(){
     info: _levels.info,
     warn: _levels.warn,
     error: _levels.error,
-    log: _log,
+    log: _log
   }
 }();
