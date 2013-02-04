@@ -49,7 +49,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
     var jsonStr;
     var len;
     var offset = 0;
-    var accumulator = new Buffer();
+    var accumulator;
 
     for (;;) {
         var readByteLen;
@@ -58,7 +58,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
             console.log(">>>>>>>>>>>>> reading remainder, offset is " + offset);
             len = instanceMap[instance].restLen;
             readByteLen = (offset + len < buffer.length) ? len : (buffer.length - offset);
-            accumulator = Buffer.concat([buffer.slice(offset,readByteLen), instanceMap[instance].part], readByteLen + instanceMap[instance].part.length);
+            accumulator = Buffer.concat([buffer.slice(offset,offset + readByteLen), instanceMap[instance].part], readByteLen + instanceMap[instance].part.length);
             offset += readByteLen;
             instanceMap[instance] = undefined;
             console.log(">>>>>>>>>>>>> reading remainder, want " + len + " got " + readByteLen + " offset is " + offset + " buffer length is " + buffer.length);
@@ -67,7 +67,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
             offset += 4;
             readByteLen = (offset + len < buffer.length) ? len : (buffer.length - offset);
             accumulator = new Buffer(readByteLen);
-            buffer.copy(accumulator,0,offset,readByteLen);
+            buffer.copy(accumulator,0,offset,offset + readByteLen);
             offset += readByteLen;
         }
 
