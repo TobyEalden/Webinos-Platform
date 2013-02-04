@@ -35,6 +35,7 @@ module.exports = function (app, address, port, ezhHelpers) {
     if (req.query.isPzp) {
       req.session.isPzp = true;
       req.session.pzpPort = req.query.port;
+      req.session.pzpHost = req.query.host;
     }
     res.render('desktop/login', { user:req.user, id:"login", title: "UbiApps Login", isPZP: req.session.isPzp });
   });
