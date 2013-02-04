@@ -61,7 +61,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
             jsonStr = instanceMap[instance].part + jsonStrTmp;
             offset += readByteLen;
             instanceMap[instance] = undefined;
-            console.log(">>>>>>>>>>>>> reading remainder, want " + len + " got " + readByteLen + " offset is " + offset);
+            console.log(">>>>>>>>>>>>> reading remainder, want " + len + " got " + readByteLen + " offset is " + offset + " buffer length is " + buffer.length);
         } else {
             len = buffer.readUInt32LE(offset);
             offset += 4;
@@ -75,7 +75,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
                 restLen: len - readByteLen,
                 part: jsonStr
             };
-            console.log(">>>>>>>>>>>>>> incomplete buffer, waiting for: " + instanceMap[instance].restLen + " offset is " + offset + " buffer length is " + buffer.length);
+            console.log(">>>>>>>>>>>>>> incomplete buffer, total required " + len + " waiting for: " + instanceMap[instance].restLen + " offset is " + offset + " buffer length is " + buffer.length);
             return;
         }
 
