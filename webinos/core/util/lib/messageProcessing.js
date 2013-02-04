@@ -58,7 +58,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
             var jsonStrTmp = buffer.toString('utf8', offset, offset + len);
             readByteLen = Buffer.byteLength(jsonStrTmp, 'utf8');
             jsonStr = instanceMap[instance].part + jsonStrTmp;
-            offset += len;
+            offset += readByteLen;
             instanceMap[instance] = undefined;
 
         } else {
@@ -66,7 +66,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
             offset += 4;
             jsonStr = buffer.toString('utf8', offset, offset + len);
             readByteLen = Buffer.byteLength(jsonStr, 'utf8');
-            offset += len;
+            offset += readByteLen;
         }
 
         if (readByteLen < len) {

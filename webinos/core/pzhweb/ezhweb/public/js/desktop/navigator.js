@@ -46,13 +46,17 @@ $(function() {
         listItem.empty();
         if (ok) {
           var list = JSON.parse(data);
-          for (var i in list) {
-            ubi.console.log("Got app " + list[i].name.visual);
-            listItem.append("<li class=\"tree-node tree-leaf\"><a class='app-tree-item' href='#'>" + list[i].name.visual + "</a></li>");
+          if ($.isEmptyObject(list)) {
+            $("<li class=\"tree-node tree-leaf\">No apps installed</li>").appendTo(listItem);
+          } else {
+            for (var i in list) {
+              ubi.console.log("Got app " + list[i].name.visual);
+              listItem.append("<li class=\"tree-node tree-leaf\"><a class='app-tree-item' href='#'>" + list[i].name.visual + "</a></li>");
+            }
           }
         } else {
           ubi.console.log("Failed to get apps",ubi.console.error);
-          $("<li>" + data + "</li>").appendTo(listItem);
+          $("<li class=\"tree-node tree-leaf\">" + data + "</li>").appendTo(listItem);
         }
       });
     }
