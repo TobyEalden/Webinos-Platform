@@ -51,7 +51,10 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
     var offset = 0;
     var accumulator;
 
+    console.log(">>>>>>>>>>>>>> new buffer");
+
     for (;;) {
+        console.log(">>>>>>>>>>>>>>> looping");
         var readByteLen;
         if (instanceMap[instance]) {
             // we already read from a previous buffer, read the rest
