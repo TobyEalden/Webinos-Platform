@@ -51,7 +51,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
     var offset = 0;
     var accumulator;
 
-    console.log(">>>>>>>>>>>>>> new buffer");
+    console.log(">>>>>>>>>>>>>> new buffer: " + instance);
 
     for (;;) {
         console.log(">>>>>>>>>>>>>>> looping");
