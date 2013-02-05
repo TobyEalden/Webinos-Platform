@@ -19,9 +19,10 @@ module.exports = function (app, address, port, ezhHelpers) {
     }
 
     if (req.session.isPzp) {
-          ezhHelpers.pzhadaptor.fromWeb(req.user, {payload:{status:"enrollPzpAuthCode", address:address, port:port, pzpPort:req.session.pzpPort, user:ezhHelpers.getUserPath(req.user)}}, res);
+          ezhHelpers.pzhadaptor.fromWeb(req.user, {payload:{status:"enrollPzpAuthCode", address:address, port:port, pzpPort:req.session.pzpPort, user:ezhHelpers.getUserPath(req.user), pzpHost:req.session.pzpHost}}, res);
           req.session.isPzp = "";
           req.session.pzpPort = "";
+          req.session.pzpHost = "";
     } else {
       if (!ezhHelpers.isPrivileged(req.user)) {
         ezhHelpers.pzhadaptor.getActiveServices(req.user, ezhHelpers.getCurrentPZH(req.user), function(services_result) {

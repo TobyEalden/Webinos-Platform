@@ -37,7 +37,7 @@ block content
     }
     channel.onopen = function() {
       console.log("connection successful");
-      var data = {type:"prop", from: window.location.host+"_#{user}>" , to: "",
+      var data = {type:"prop", from: window.location.host+"_#{user}" , to: "",
         payload:{
           status:"authCodeByPzh",
           authCode:"#{authCode}",
