@@ -34,8 +34,9 @@ ProcessWebinosMsg.jsonStr2Buffer = function(jsonString) {
     var strByteLen = Buffer.byteLength(jsonString, 'utf8');
     var buf = new Buffer(4 + strByteLen, 'utf8');
     buf.writeUInt32LE(strByteLen, 0);
-    buf.write(jsonString, 4);
-    console.log(">>>>>>>>>>>>> writing length: " + strByteLen + " + 4 bytes for len");
+    var written = buf.write(jsonString, 4);
+    buf.writeUInt32LE(written,0);
+    console.log(">>>>>>>>>>>>> writing length: " + strByteLen + " + 4 bytes for len, checking: " + written);
     return buf;
 };
 
