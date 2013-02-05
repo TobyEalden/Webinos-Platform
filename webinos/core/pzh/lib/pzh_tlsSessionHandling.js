@@ -227,7 +227,7 @@ var Pzh = function () {
     this.handleData = function (_conn, _buffer) {
         try {
             _conn.pause();
-            util.webinosMsgProcessing.readJson(_conn, _buffer, function (obj) {
+            util.webinosMsgProcessing.readJson(self.pzh_state.sessionId, _buffer, function (obj) {
                 self.pzh_otherManager.processMsg(obj);
             });
         } catch (err) {
