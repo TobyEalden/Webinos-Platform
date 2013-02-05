@@ -7,9 +7,9 @@ block content
     div(data-role='collapsible', data-inset='true',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
       h3 Active
       ul(data-role='listview', data-inset='false', data-theme="#{ui.infoTheme}", data-divider-theme="#{ui.dividerTheme}", data-filter="true")
-        - for (var s in entities[pzh].pzps[pzp].services) {
-          li= entities[pzh].pzps[pzp].services[s].api
-            form(action="/removeService/#{pzh}/#{pzp}/#{encodeURIComponent(entities[pzh].pzps[pzp].services[s].serviceAddress)}/#{entities[pzh].pzps[pzp].services[s].id}/#{encodeURIComponent(entities[pzh].pzps[pzp].services[s].api)}", method="post")
+        - for (var s in zones[pzh].pzps[pzp].services) {
+          li= zones[pzh].pzps[pzp].services[s].api
+            form(action="/removeService/#{pzh}/#{pzp}/#{encodeURIComponent(zones[pzh].pzps[pzp].services[s].serviceAddress)}/#{zones[pzh].pzps[pzp].services[s].id}/#{encodeURIComponent(zones[pzh].pzps[pzp].services[s].api)}", method="post")
               input(type="submit",data-role="button",data-inline="true",data-theme="#{ui.optionTheme}",value="Remove")
         - }
 

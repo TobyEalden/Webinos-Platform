@@ -1,0 +1,25 @@
+div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
+  h3 Devices
+  - var counter = 0;
+  ul(data-role='listview', data-inset='false', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
+    li(data-role="list-divider", role="heading")  Devices Online
+    - for (var pzp in pzpList) {
+        - if (pzpList[pzp].isConnected) {
+          - counter++;
+          li
+            a(href='/#{sitePrefix}/pzp/#{pzpList[pzp].url}',title="#{pzpList[pzp].url}") #{pzpList[pzp].id}
+        - }
+    - }
+    - if (counter === 0) {
+        li(data-theme="#{ui.infoTheme}") None
+    - }
+    - if (counter !== pzpList.length) {
+      li(data-role="list-divider", role="heading") Devices Offline
+      - for (var pzp in pzpList) {
+          - if (!pzpList[pzp].isConnected) {
+              li(title="#{pzpList[pzp].url}",data-theme="#{ui.infoTheme}") #{pzpList[pzp].id}
+          - }
+      - }
+    - }
+    li(data-role="list-divider", role="heading")
+      a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh

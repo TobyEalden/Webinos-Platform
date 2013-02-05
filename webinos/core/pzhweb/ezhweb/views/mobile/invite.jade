@@ -1,45 +1,4 @@
 extends layout
 
 block content    
-  div(data-role='content')
-    script
-      $(document).delegate('##{id}','pageinit',function() {
-        $('#inviteBtn').click(function() { 
-          var reqpzh = $('#manualPZH').val();
-          if (!reqpzh || reqpzh.length == 0 || reqpzh.indexOf('_') === -1) {
-            $('#feedback').html("Invalid Zone address.");
-          } else {
-            window.location.href = '/connect-friend/#{pzh}/' + reqpzh;
-          }
-        });
-      });
-    h3 #{pzh}
-    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")    
-      h3 Invite a friend from #{ui.appTitle}
-      ul(data-role='listview', data-inset='false',data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
-        - var counter = 0;
-        - for (var p in pzhList) {
-          - if (pzhList[p].url !== pzh) {
-            - counter++;
-              li
-                - if (typeof pzhList[p].username === "undefined" || pzhList[p].username === "undefined undefined") {
-                    a(href='/connect-friend/#{pzh}/#{pzhList[p].url}')= pzhList[p].url
-                - } else {
-                    a(href='/connect-friend/#{pzh}/#{pzhList[p].url}', title='#{pzhList[p].url}')= pzhList[p].username
-                - }
-          - }
-        - }
-        - if (counter === 0) {
-          li(data-theme="c") There is no-one else...
-        - }
-        li(data-role="list-divider", role="heading")
-          a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh
-
-    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
-      h3 Invite a friend from a different provider
-      ul(data-role='listview', data-inset='false',data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
-        li(data-theme="c")
-          input(id='manualPZH',type='text', placeholder='pzh.acme.org_bob@example.com', data-theme="#{ui.optionTheme}")
-          span(id='feedback') 
-        li(data-role='list-divider', role='heading')
-          a(id='inviteBtn',href="#",data-role="button",data-icon='arrow-r',data-iconpos='right',data-inline='true', data-theme="#{ui.optionTheme}") Invite
+  include ../includes/friend/friend-invite

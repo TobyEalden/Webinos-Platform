@@ -1,0 +1,15 @@
+div(data-role='content')
+  div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
+    h3 Zones Online
+    ul(data-role='listview', data-inset='false', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}", data-filter="true")
+      - for (var p in pzhList) {
+          li
+            - if (pzhList[p].url === ui.serverName) {
+              a(href='/#{sitePrefix}/pzh/#{pzhList[p].url}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username} (You)
+            - } else { 
+              a(href='/#{sitePrefix}/pzh/#{pzhList[p].url}',data-transition="flip",title="#{pzhList[p].url}") #{pzhList[p].username}
+            - }
+      - }
+      li(data-role="list-divider", role="heading")
+        a(class="dash-refresh",href="#", data-role="button", data-icon="refresh", data-iconpos="left", data-inline="true", data-mini="true", data-theme="#{ui.optionTheme}") Refresh
+        a(href="/logout", data-role="button", data-inline="true", data-mini="true", style="float:right;", data-theme="#{ui.optionTheme}") Sign Out

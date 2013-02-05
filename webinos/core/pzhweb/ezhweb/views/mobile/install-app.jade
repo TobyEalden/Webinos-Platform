@@ -1,32 +1,4 @@
 extends layout
 
 block content
-  div(data-role='content')
-    script
-      $(document).delegate('##{id}','pageinit',function() {
-        $('#installBtn').click(function() { 
-          var appUrl = $('#appUrl').val();
-          if (!appUrl || appUrl.length == 0) {
-            $('#feedback').html("Invalid app url.");
-          } else {
-            window.location.href = '/do-install-url/#{pzh}/#{pzp}/' + encodeURIComponent(appUrl);
-          }
-          return false;
-        });
-      });
-    h3 #{pzp}
-    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-expanded-icon="info",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
-      h3 UbiApps
-      ul(data-role='listview', data-inset='false', data-theme='b', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
-        li
-          a(href="/do-install/#{pzh}/#{pzp}/first") My First Amazing Incredible App
-
-    div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
-      h3 Specify App URL
-      ul(data-role='listview', data-inset='false',data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
-        li(data-theme="c")
-          input(id='appUrl',type='text', placeholder='http://store.ubiapps.com/amazingApp', data-theme="#{ui.optionTheme}")
-          span(id='feedback') 
-        li(data-role='list-divider', role='heading')
-          a(id='installBtn',href="#",data-role="button",data-icon='arrow-r',data-iconpos='right',data-inline='true', data-theme="#{ui.optionTheme}") Install
-          
+  include ../includes/device/device-install-app

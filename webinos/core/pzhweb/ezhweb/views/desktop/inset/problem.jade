@@ -1,0 +1,8 @@
+extends inset-layout
+
+block content
+  - var optionTheme = (typeof ui === "undefined") ? "b" : ui.optionTheme;
+  div(data-role='content')
+    p &nbsp;
+    p !{error}
+    a(href="#", data-rel="back", data-role="button", data-icon="arrow-r", data-iconpos="right", data-inline="true", data-theme="#{optionTheme}") continue

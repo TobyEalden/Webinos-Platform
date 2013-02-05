@@ -1,0 +1,29 @@
+div(data-role='content')
+  h3 #{pzp}
+
+  div(data-role='collapsible',data-content-theme="#{ui.collapsibleTheme}",data-collapsed="false",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
+    h3 Device Options
+    ul(data-role='listview', data-inset='false', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}")
+      li
+        a(href='/#{sitePrefix}/installed/#{pzh}/#{pzp}') Show Installed Apps
+      li
+        a(href='/#{sitePrefix}/install-app/#{pzh}/#{pzp}') Install an App
+      li
+        a(href='#confirmWipe', data-rel="popup",data-position-to="window",data-transition="pop") Wipe this Device
+      li
+        a(href='/#{sitePrefix}/services/#{pzh}/#{pzp}') Services Available
+      li
+        a(href='/#{sitePrefix}/nyi') Diagnostics
+      li(data-role="list-divider") &nbsp;
+      li
+        a(href='/#{sitePrefix}/nyi') Remove this Device
+
+  div(data-role="popup",id="confirmWipe",data-overlay-theme="a",data-theme="c",style="max-width:400px;",class="ui-corner-all")
+    div(data-role="header",data-theme="a",class="ui-corner-top")
+      h1 Confirm Wipe
+    div(data-role="content",data-theme="d",class="ui-corner-bottom ui-content")
+      h3(class="ui-title") Are you sure you want to wipe device #{pzp}?
+      p This action cannot be undone.
+      div
+        a(id="wipe|#{pzh}|#{pzp}",class="wipe-action",href="/ajax/wipe/#{pzh}/#{pzp}",data-role="button",data-inline="true",data-theme="#{ui.optionTheme}") Wipe
+        a(href="#",data-role="button",data-inline="true",data-rel="back",data-theme="c") Cancel

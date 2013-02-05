@@ -1,0 +1,14 @@
+- for (var zone in zones) {
+    div(data-role='collapsible', data-collapsed="false", data-inset='true',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
+      h3= zone
+      ul(data-role='listview', data-inset='false', data-theme='b', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}", data-filter="true")
+        li(data-role="list-divider") Zone Hub
+        - for (var s in zones[zone].services) {
+          li= zones[zone].services[s].api
+        - }
+        //- for (var dev in zones[zone].pzps) {
+          li(data-role="list-divider")= dev
+          device = zones[zone].pzps[dev]
+          include ../device/device-services.jade
+        //- }
+- }

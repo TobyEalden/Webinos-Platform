@@ -17,19 +17,6 @@ $(function() {
     return false;
   });
 
-  $(".zone-tree-item").click(function() {
-    var pzhId = this.id.substr(1);
-    ubi.console.log("Loading details for zone " + pzhId);
-    $.ajax({
-      url: "/d/pzh/about/" + pzhId
-    }).done(function(data){
-        ubi.console.log("Got details for zone " + pzhId);
-        $("#centre").html(data);
-      }).fail(function(xhr,status,err){
-        ubi.console.log("Failed to load details for zone " + pzhId + ": " + status + " " + (err || ""), ubi.console.error);
-      });
-  });
-
   $(".apps-folder-item").click(function() {
     var that = this;
     var toks = this.id.split('|');
@@ -45,7 +32,7 @@ $(function() {
       ubi.apps.loadDeviceApps(pzh,pzp,function(ok,data) {
         listItem.empty();
         if (ok) {
-          var list = JSON.parse(data);
+          var list = data.installedList;
           if ($.isEmptyObject(list)) {
             $("<li class=\"tree-node tree-leaf\">No apps installed</li>").appendTo(listItem);
           } else {
@@ -58,7 +45,33 @@ $(function() {
           ubi.console.log("Failed to get apps",ubi.console.error);
           $("<li class=\"tree-node tree-leaf\">" + data + "</li>").appendTo(listItem);
         }
+        $(".ui-layout-center").html("");
+        $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/d/installed/" + pzh + "/" + pzp + "'></iframe>");
       });
+    }
+  });
+
+  $(document).on("click",".zone-tree-item", function(){
+    var that = this;
+    var toks = this.id.split("|");
+    if (toks.length !== 2 || toks[0] !== "zone") {
+      ubi.console.log("Loading zone details - invalid identifier: " + this.id);
+    } else {
+      var pzh = toks[1];
+      $(".ui-layout-center").html("");
+      $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/d/pzh/about/" + pzh + "'></iframe>");
+    }
+  });
+
+  $(document).on("click",".devices-tree-item", function(){
+    var that = this;
+    var toks = this.id.split("|");
+    if (toks.length !== 2 || toks[0] !== "devices") {
+      ubi.console.log("Loading zone device details - invalid identifier: " + this.id);
+    } else {
+      var pzh = toks[1];
+      $(".ui-layout-center").html("");
+      $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/d/pzh/pzps/" + pzh + "'></iframe>");
     }
   });
 
@@ -71,7 +84,7 @@ $(function() {
       var pzh = toks[1];
       var pzp = toks[2];
       $(".ui-layout-center").html("");
-      $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/m/pzp/" + pzh + "/" + pzp + "?insert=1'></iframe>");
+      $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/d/pzp/" + pzh + "/" + pzp + "'></iframe>");
     }
   });
 
@@ -83,7 +96,20 @@ $(function() {
     } else {
       var pzh = toks[1];
       $(".ui-layout-center").html("");
-      $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/m/services/" + pzh + "?insert=1'></iframe>");
+      $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/d/services/" + pzh + "'></iframe>");
+    }
+  });
+
+  $(document).on("click",".device-services-tree-item", function() {
+    var that = this;
+    var toks = this.id.split("|");
+    if (toks.length !== 3 || toks[0] !== "services") {
+      ubi.console.log("Loading services - invalid identifier: " + this.id);
+    } else {
+      var pzh = toks[1];
+      var pzp = toks[2];
+      $(".ui-layout-center").html("");
+      $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/d/services/" + pzh + "/" + pzp + "'></iframe>");
     }
   });
 
@@ -95,8 +121,13 @@ $(function() {
     } else {
       var pzh = toks[1];
       $(".ui-layout-center").html("");
-      $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/m/friends/" + pzh + "?insert=1'></iframe>");
+      $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/d/friends/" + pzh + "'></iframe>");
     }
+  });
+
+  $(document).on("click",".zones-tree-item", function() {
+    $(".ui-layout-center").html("");
+    $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/d/zones'></iframe>");
   });
 
   $(document).on("click",".app-tree-item", function() {
@@ -109,8 +140,8 @@ $(function() {
       var pzp = toks[2];
       var installId = toks[3];
       ubi.console.log("Loading app details for zone " + pzh + " and device " + pzp + " and app " + installId);
-      ubi.apps.loadDeviceApp(pzh,pzp,installId,function(ok,data) {
-      });
+      $(".ui-layout-center").html("");
+      $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/d/app/" + pzh + "/" + pzp + "/" + installId + "'></iframe>");
     }
   });
 });

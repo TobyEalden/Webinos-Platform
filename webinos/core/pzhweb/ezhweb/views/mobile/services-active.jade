@@ -8,27 +8,8 @@ block content
         div(data-role='collapsible', data-inset='true',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
           h3= pzp
           ul(data-role='listview', data-inset='false', data-theme='b', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}", data-filter="true")
-            - for (var s in entities[pzh].pzps[pzp].services) {
-              li= entities[pzh].pzps[pzp].services[s].api
-                //form(action="/removeService/#{pzh}/#{pzp}/#{encodeURIComponent(entities[pzh].pzps[pzp].services[s].serviceAddress)}/#{entities[pzh].pzps[pzp].services[s].id}/#{encodeURIComponent(entities[pzh].pzps[pzp].services[s].api)}", method="post")
-                  input(type="submit",data-role="button",data-inline="true",data-theme="#{ui.optionTheme}",value="Remove")
-            - }
+            device = zones[pzh].pzps[pzp]
+            include ../includes/device/device-services.jade
     - } else {
-      - for (var ent in entities) {
-          div(data-role='collapsible', data-inset='true',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
-            h3= ent
-            ul(data-role='listview', data-inset='false', data-theme='b', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}", data-filter="true")
-              li(data-role="list-divider") Zone Hub
-              - for (var s in entities[ent].services) {
-                li= entities[ent].services[s].api
-              - }
-              - for (var p in entities[ent].pzps) {
-                li(data-role="list-divider")= p
-                - for (var s in entities[ent].pzps[p].services) {
-                  li= entities[ent].pzps[p].services[s].api
-                    //a(href="/removeService/#{pzh}/#{pzp}/#{entities[ent].pzps[p].services[s].serviceAddress}/#{entities[ent].pzps[p].services[s].id}/#{entities[ent].pzps[p].services[s].api}") remove
-                - }
-              - }
-      - }
-
+        include ../includes/zone/zone-services
     - }

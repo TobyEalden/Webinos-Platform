@@ -1,0 +1,23 @@
+!!! 5
+html
+  head
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='/js/jquery/jquery.mobile-1.2.0.min.css')
+    link(rel='stylesheet', href='/css/mobile-style.css')
+    script(src='/js/jquery/jquery-1.8.2.min.js')
+    script
+      $(document).on("mobileinit", function(){
+        $.mobile.popup.prototype.options.history = false;
+        $.mobile.defaultPageTransition = "none";
+      });
+    script(src='/js/jquery/jquery.mobile-1.2.0.min.js')
+    script(src='/js/post-actions.js')
+    title #{locals.title || ''}
+    block head
+  body
+    - var mainTheme = (typeof ui === "undefined") ? "d" : ui.mainTheme;
+    - var optionTheme = (typeof ui === "undefined") ? "b" : ui.optionTheme;
+    - var sitePrefix = 'd';
+    div(data-role='page',id='#{locals.id || ''}',data-theme="#{mainTheme}")
+      div(class="content-panel")
+        block content

@@ -31,38 +31,38 @@ block west
     ul.tree-root
       li.tree-branch
         a.tree-expander(href="#") +
-        a.folder-tree-item(href="#") Zones
+        a.folder-tree-item.zones-tree-item(href="#") Zones
         ul
-          - for (var ent in entities) {
+          - for (var zone in zones) {
               li.tree-node.tree-branch
                 a.tree-expander(href="#") +
-                a.zone-tree-item(href="#",id="z#{ent}")= ent
+                a.zone-tree-item(id="zone|#{zone}",href="#")= zone
                 ul
                   li.tree-node.tree-branch
                     a.tree-expander(href="#") +
-                    a.folder-tree-item(href="#") Devices
+                    a.folder-tree-item.devices-tree-item(id="devices|#{zone}",href="#") Devices
                     ul
                       - var deviceCount = 0;
-                      - for (var pzp in entities[ent].pzps) {
+                      - for (var pzp in zones[zone].pzps) {
                         - deviceCount++;
                         li.tree-node.tree-branch
                           a.tree-expander(href="#") +
-                          a.device-tree-item(id="device|#{ent}|#{pzp}", href="#")= pzp
+                          a.device-tree-item(id="device|#{zone}|#{pzp}", href="#")= pzp
                           ul
                             li.tree-node.tree-branch
                               a.tree-expander(href="#") +
-                              a.folder-tree-item.apps-folder-item(href="#",id="apps|#{ent}|#{pzp}") Apps
+                              a.folder-tree-item.apps-folder-item(href="#",id="apps|#{zone}|#{pzp}") Apps
                               ul
                                 li.tree-node.tree-leaf None
                             li.tree-node.tree-branch
                               a.tree-expander(href="#") +
-                              a.folder-tree-item(href="#") Services
+                              a.folder-tree-item.device-services-tree-item(id="services|#{zone}|#{pzp}",href="#") Services
                               ul
                                 - var serviceCount = 0;
-                                - for (var svc in entities[ent].pzps[pzp].services) {
+                                - for (var svc in zones[zone].pzps[pzp].services) {
                                   - serviceCount++;
                                   li.tree-node.tree-leaf
-                                    a.service-tree-item(href="#",title="#{entities[ent].pzps[pzp].services[svc].serviceAddress}") #{entities[ent].pzps[pzp].services[svc].displayName}
+                                    a.service-tree-item(href="#",title="#{zones[zone].pzps[pzp].services[svc].serviceAddress}") #{zones[zone].pzps[pzp].services[svc].displayName}
                                 - }
                                 - if (serviceCount === 0) {
                                   li.tree-node.tree-leaf None
@@ -73,20 +73,20 @@ block west
                       - }
                   li.tree-node.tree-branch
                     a.tree-expander(href="#") +
-                    a.folder-tree-item.services-tree-item(id="services|#{ent}",href="#") Services
+                    a.folder-tree-item.services-tree-item(id="services|#{zone}",href="#") Services
                     ul
                       - var serviceCount = 0;
-                      - for (var svc in entities[ent].services) {
+                      - for (var svc in zones[zone].services) {
                         - serviceCount++;
                         li.tree-node.tree-leaf
-                          a.service-tree-item(href="#",title="#{entities[ent].services[svc].serviceAddress}")= entities[ent].services[svc].displayName
+                          a.service-tree-item(href="#",title="#{zones[zone].services[svc].serviceAddress}")= zones[zone].services[svc].displayName
                       - }
                       - if (serviceCount === 0) {
                         li.tree-node.tree-leaf None
                       - }
                   li.tree-node.tree-branch
                     a.tree-expander(href="#") +
-                    a.folder-tree-item.friends-tree-item(id="friends|#{ent}", href="#") Friends
+                    a.folder-tree-item.friends-tree-item(id="friends|#{zone}", href="#") Friends
                     ul
                       li.tree-node.tree-leaf None
           - }

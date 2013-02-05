@@ -1,0 +1,15 @@
+extends inset-layout
+
+block content
+  div(data-role='content')
+    h3 #{pzh}
+
+    - if (typeof pzp !== "undefined") {
+        div(data-role='collapsible', data-collapsed="false",data-inset='true',data-content-theme="#{ui.collapsibleTheme}",data-theme="#{ui.collapsibleTheme}",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
+          h3= pzp
+          ul(data-role='listview', data-inset='false', data-theme='b', data-theme="#{ui.optionTheme}", data-divider-theme="#{ui.dividerTheme}", data-filter="true")
+            device = zones[pzh].pzps[pzp]
+            include ../../includes/device/device-services.jade
+    - } else {
+        include ../../includes/zone/zone-services
+    - }
