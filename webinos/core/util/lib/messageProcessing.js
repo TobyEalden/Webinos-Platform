@@ -64,7 +64,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
             var tmp = new Buffer(readByteLen);
             accumulator = Buffer.concat([instanceMap[instance].part, buffer.slice(offset,offset + readByteLen)], readByteLen + instanceMap[instance].part.length);
             offset += readByteLen;
-            instanceMap[instance] = undefined;
+            delete instanceMap[instance];
             console.log(">>>>>>>>>>>>> reading remainder, want " + len + " got " + readByteLen + " offset is " + offset + " buffer length is " + buffer.length);
         } else {
             len = buffer.readUInt32LE(offset);
@@ -94,6 +94,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
             console.log(">>>>>>>>>> offset === buffer.length");
             return;
         }
+        console.log(">>>>>>>>> continuing loop");
     }
 };
 
