@@ -6,12 +6,7 @@ $(function() {
     $(n).html($(n).html() === "+" ? "-" : "+");
   }
 
-  $(".tree-branch").children("ul").each(function() {
-    // Hide branches
-    $(this).hide();
-    // Then show them again (to align the expanders).
-    toggleNode(this);
-  });
+  //$(".tree-branch").children("ul").each(function() { $(this).hide(); });
 
   $(".tree-expander").click(function() {
     toggleNode(this);

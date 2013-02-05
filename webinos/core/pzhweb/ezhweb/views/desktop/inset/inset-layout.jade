@@ -18,6 +18,6 @@ html
     - var mainTheme = (typeof ui === "undefined") ? "d" : ui.mainTheme;
     - var optionTheme = (typeof ui === "undefined") ? "b" : ui.optionTheme;
     - var sitePrefix = 'd';
-    div(data-role='page',id='#{locals.id || ''}',data-theme="#{mainTheme}")
+    div(data-role='page',id='#{locals.id || ''}',data-theme="#{mainTheme}",style="padding:10px;")
       div(class="content-panel")
         block content
