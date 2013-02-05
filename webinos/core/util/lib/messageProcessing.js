@@ -58,7 +58,8 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
             console.log(">>>>>>>>>>>>> reading remainder, offset is " + offset);
             len = instanceMap[instance].restLen;
             readByteLen = (offset + len < buffer.length) ? len : (buffer.length - offset);
-            accumulator = Buffer.concat([buffer.slice(offset,offset + readByteLen), instanceMap[instance].part], readByteLen + instanceMap[instance].part.length);
+            var tmp = new Buffer(readByteLen);
+            accumulator = Buffer.concat([instanceMap[instance].part, buffer.slice(offset,offset + readByteLen)], readByteLen + instanceMap[instance].part.length);
             offset += readByteLen;
             instanceMap[instance] = undefined;
             console.log(">>>>>>>>>>>>> reading remainder, want " + len + " got " + readByteLen + " offset is " + offset + " buffer length is " + buffer.length);
