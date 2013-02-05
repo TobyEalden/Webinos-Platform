@@ -69,9 +69,11 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
         } else {
             len = buffer.readUInt32LE(offset);
             offset += 4;
+            console.log("read 4 bytes");
             readByteLen = (offset + len < buffer.length) ? len : (buffer.length - offset);
             accumulator = new Buffer(readByteLen);
             buffer.copy(accumulator,0,offset,offset + readByteLen);
+            console.log("read " + readByteLen + " bytes");
             offset += readByteLen;
         }
 
