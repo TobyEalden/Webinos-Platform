@@ -6,7 +6,8 @@ $(function() {
     $(n).html($(n).html() === "+" ? "-" : "+");
   }
 
-  $(".tree-branch").children("ul").each(function() { $(this).hide(); });
+  //$(".tree-branch").children("ul").each(function() { $(this).hide(); });
+
   $(".tree-expander").click(function() {
     toggleNode(this);
     return false;
