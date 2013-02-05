@@ -34,9 +34,7 @@ ProcessWebinosMsg.jsonStr2Buffer = function(jsonString) {
     var strByteLen = Buffer.byteLength(jsonString, 'utf8');
     var buf = new Buffer(4 + strByteLen, 'utf8');
     buf.writeUInt32LE(strByteLen, 0);
-    var written = buf.write(jsonString, 4);
-    buf.writeUInt32LE(written,0);
-    console.log(">>>>>>>>>>>>> writing length: " + strByteLen + " + 4 bytes for len, checking: " + written);
+    buf.write(jsonString, 4);
     return buf;
 };
 
@@ -51,54 +49,41 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
     var jsonStr;
     var len;
     var offset = 0;
-    var accumulator;
-
-    console.log(">>>>>>>>>>>>>> new buffer: " + instance);
 
     for (;;) {
-        console.log(">>>>>>>>>>>>>>> looping");
         var readByteLen;
         if (instanceMap[instance]) {
             // we already read from a previous buffer, read the rest
-            console.log(">>>>>>>>>>>>> reading remainder, offset is " + offset);
             len = instanceMap[instance].restLen;
-            readByteLen = (offset + len < buffer.length) ? len : (buffer.length - offset);
-            var tmp = new Buffer(readByteLen);
-            accumulator = Buffer.concat([instanceMap[instance].part, buffer.slice(offset,offset + readByteLen)], readByteLen + instanceMap[instance].part.length);
-            offset += readByteLen;
-            delete instanceMap[instance];
-            console.log(">>>>>>>>>>>>> reading remainder, want " + len + " got " + readByteLen + " offset is " + offset + " buffer length is " + buffer.length);
+            var jsonStrTmp = buffer.toString('utf8', offset, offset + len);
+            readByteLen = Buffer.byteLength(jsonStrTmp, 'utf8');
+            jsonStr = instanceMap[instance].part + jsonStrTmp;
+            offset += len;
+            instanceMap[instance] = undefined;
+
         } else {
             len = buffer.readUInt32LE(offset);
             offset += 4;
-            console.log("read 4 bytes");
-            readByteLen = (offset + len < buffer.length) ? len : (buffer.length - offset);
-            accumulator = new Buffer(readByteLen);
-            buffer.copy(accumulator,0,offset,offset + readByteLen);
-            console.log("read " + readByteLen + " bytes");
-            offset += readByteLen;
+            jsonStr = buffer.toString('utf8', offset, offset + len);
+            readByteLen = Buffer.byteLength(jsonStr, 'utf8');
+            offset += len;
         }
 
         if (readByteLen < len) {
             instanceMap[instance] = {
                 restLen: len - readByteLen,
-                part: accumulator
+                part: jsonStr
             };
-            console.log(">>>>>>>>>>>>>> incomplete buffer, total required " + len + " waiting for: " + instanceMap[instance].restLen + " offset is " + offset + " buffer length is " + buffer.length);
             return;
         }
 
         // call handler with parsed message object
-        jsonStr = accumulator.toString('utf8');
-        console.log(jsonStr);
         objectHandler(JSON.parse(jsonStr));
 
         if (offset >= buffer.length) {
             // finished reading buffer
-            console.log(">>>>>>>>>> offset === buffer.length");
             return;
         }
-        console.log(">>>>>>>>> continuing loop");
     }
 };
 
