@@ -19,7 +19,7 @@ module.exports = function (app, address, port, ezhHelpers) {
     }
 
     if (req.session.isPzp) {
-          pzhadaptor.fromWeb(req.user, {payload:{status:"enrollPzpAuthCode", address:address, port:port, pzpPort:req.session.pzpPort, user:ezhHelpers.getUserPath(req.user)}}, res);
+          ezhHelpers.pzhadaptor.fromWeb(req.user, {payload:{status:"enrollPzpAuthCode", address:address, port:port, pzpPort:req.session.pzpPort, user:ezhHelpers.getUserPath(req.user)}}, res);
           req.session.isPzp = "";
           req.session.pzpPort = "";
     } else {
