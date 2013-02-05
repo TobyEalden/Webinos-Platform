@@ -83,6 +83,7 @@ ProcessWebinosMsg.readJson = function(instance, buffer, objectHandler) {
 
         // call handler with parsed message object
         jsonStr = accumulator.toString('utf8');
+        console.log(jsonStr);
         objectHandler(JSON.parse(jsonStr));
 
         if (offset >= buffer.length) {
