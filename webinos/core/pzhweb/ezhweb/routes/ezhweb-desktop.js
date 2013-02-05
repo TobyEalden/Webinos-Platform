@@ -21,10 +21,25 @@ module.exports = function (app, address, port, ezhHelpers) {
     }
   });
 
+  /*
+  Apps
+   */
   app.get('/d/installed-apps/:pzhId/:pzpId', ezhHelpers.ensureAuthenticated, function(req,res){
     ezhHelpers.pzhadaptor.getInstalledWidgets(req.user, ezhHelpers.getPZHId(req), req.params.pzpId, function(result) {
       res.json(JSON.stringify(result.message.installedList));
       //res.render('desktop/partials/installed-apps', { widgetList: result.message.installedList, pzh: ezhHelpers.getPZHId(req), pzp: req.params.pzpId });
+    });
+  });
+
+  app.get('/d/installed-app/:pzhId/:pzpId/:installId', ezhHelpers.ensureAuthenticated, function(req,res){
+    ezhHelpers.pzhadaptor.getInstalledWidgets(req.user, ezhHelpers.getPZHId(req), req.params.pzpId, function(result) {
+      var installId = req.params.installId;
+      if (result.message.installedList.hasOwnProperty(installId)) {
+        //res.json(JSON.stringify(result.message.installedList[installId]));
+        res.render('desktop/partials/about-app', { app: result.message.installedList[installId], pzh: ezhHelpers.getPZHId(req), pzp: req.params.pzpId });
+      } else {
+        res.render('problem',{ title: "Problem", error: "App " + installId + " not found on device."});
+      }
     });
   });
 

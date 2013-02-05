@@ -47,7 +47,7 @@ block west
                         - deviceCount++;
                         li.tree-node.tree-branch
                           a.tree-expander(href="#") +
-                          a.device-tree-item(href="#")= pzp
+                          a.device-tree-item(id="device|#{ent}|#{pzp}", href="#")= pzp
                           ul
                             li.tree-node.tree-branch
                               a.tree-expander(href="#") +
@@ -73,7 +73,7 @@ block west
                       - }
                   li.tree-node.tree-branch
                     a.tree-expander(href="#") +
-                    a.folder-tree-item(href="#") Services
+                    a.folder-tree-item.services-tree-item(id="services|#{ent}",href="#") Services
                     ul
                       - var serviceCount = 0;
                       - for (var svc in entities[ent].services) {
@@ -84,6 +84,11 @@ block west
                       - if (serviceCount === 0) {
                         li.tree-node.tree-leaf None
                       - }
+                  li.tree-node.tree-branch
+                    a.tree-expander(href="#") +
+                    a.folder-tree-item.friends-tree-item(id="friends|#{ent}", href="#") Friends
+                    ul
+                      li.tree-node.tree-leaf None
           - }
 
 block centre

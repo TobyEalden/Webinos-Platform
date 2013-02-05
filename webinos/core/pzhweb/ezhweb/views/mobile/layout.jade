@@ -16,6 +16,7 @@ html
           window.location.reload(true);
           return false;
         });
+        $("a").each(function() { this.href = this.href + "?insert=#{ui.contentOnly ? "1" : "0"}"; });
       });
     script(src='/js/jquery/jquery.mobile-1.2.0.min.js')
     title #{locals.title || ''}
@@ -24,24 +25,28 @@ html
     - var mainTheme = (typeof ui === "undefined") ? "d" : ui.mainTheme;
     - var optionTheme = (typeof ui === "undefined") ? "b" : ui.optionTheme;
     div(data-role='page',id='#{locals.id || ''}',data-theme="#{mainTheme}")
-      div(data-role='header',data-position="fixed", data-theme="#{optionTheme}")
-        h1 #{locals.title || 'UbiApps'}
-        - if (locals.id !== "home" && locals.id !== "login") {
-          a(href="/",data-role="button",data-icon="home",data-iconpos="notext") home
-          //a(href="#",data-role="button",data-icon="back",data-iconpos="notext", data-rel="back") back
-        - }
+      if typeof ui.contentOnly === "undefined" || !ui.contentOnly
+        block header
+          div(data-role='header',data-position="fixed", data-theme="#{optionTheme}")
+            h1 #{locals.title || 'UbiApps'}
+            - if (locals.id !== "home" && locals.id !== "login") {
+              a(href="/",data-role="button",data-icon="home",data-iconpos="notext") home
+              //a(href="#",data-role="button",data-icon="back",data-iconpos="notext", data-rel="back") back
+            - }
       div(class="content-panel")
         block content
-      div(data-role='footer', data-position="fixed", data-theme="#{optionTheme}")
-        divs
-          - if (typeof locals.ui !== "undefined") {
-            p(style="float:right;text-align:right;margin-top:2px;font-size:.8em;") #{ui.serverName}&nbsp;
-              span(style='font-size:.8em;padding-bottom:2px;')
-                br
-                |&nbsp;powered by
-                a(href="http://webinos.org",rel="external") webinos
-                |&nbsp;
-            a(href="#{ui.appURL}", target="_blank")
-              img(src="/images/logo-small.png",style="padding-left:2px;padding-top:2px;")
-          - }
+      if typeof ui.contentOnly === "undefined" || !ui.contentOnly
+        block footer
+          div(data-role='footer', data-position="fixed", data-theme="#{optionTheme}")
+            divs
+              - if (typeof locals.ui !== "undefined") {
+                p(style="float:right;text-align:right;margin-top:2px;font-size:.8em;") #{ui.serverName}&nbsp;
+                  span(style='font-size:.8em;padding-bottom:2px;')
+                    br
+                    |&nbsp;powered by
+                    a(href="http://webinos.org",rel="external") webinos
+                    |&nbsp;
+                a(href="#{ui.appURL}", target="_blank")
+                  img(src="/images/logo-small.png",style="padding-left:2px;padding-top:2px;")
+              - }
 
