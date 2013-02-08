@@ -30,7 +30,7 @@ script
       var marker = new google.maps.Marker({position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude), map: map });
       var lookup = position.coords.latitude + "," + position.coords.longitude;
       if (!(lookup in markers)) {
-        markers[lookup].push({marker: marker, service: service});
+        markers[lookup] = [{marker: marker, service: service}];
         var infowindow = new google.maps.InfoWindow();
 
         ubi.console.log("Adding click listener for " + service.serviceAddress);
