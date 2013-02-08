@@ -4,7 +4,7 @@ html, body {
     font-size: 10px;
 }
 
-.ui-btn-text, .ui-li-divider, input.ui-input-text {
+.ui-btn-text, .ui-li-divider, input.ui-input-text, .ui-li-heading {
     font-size: 12px;
 }
 

@@ -22,7 +22,7 @@ html
       div(data-role='header',data-position="fixed", data-theme="#{optionTheme}")
         h1 #{locals.title || 'UbiApps'}
         - if (locals.id !== "home" && locals.id !== "login") {
-          a(href="/",data-role="button",data-icon="home",data-iconpos="notext") home
+          a(href="/m",data-role="button",data-icon="home",data-iconpos="notext") home
           //a(href="#",data-role="button",data-icon="back",data-iconpos="notext", data-rel="back") back
         - }
       div(class="content-panel")
@@ -30,11 +30,13 @@ html
       div(data-role='footer', data-position="fixed", data-theme="#{optionTheme}")
         divs
           - if (typeof locals.ui !== "undefined") {
-            p(style="float:right;text-align:right;margin-top:2px;font-size:.8em;") #{ui.serverName}&nbsp;
-              span(style='font-size:.8em;padding-bottom:2px;')
+            p(style="float:right;text-align:right;margin-top:2px;") #{ui.serverName}&nbsp;
+              span(style='padding-bottom:2px;')
                 br
-                |&nbsp;powered by
+                |&nbsp;powered by&nbsp;
                 a(href="http://webinos.org",rel="external") webinos
+                |&nbsp;|&nbsp;
+                a(href="/d",rel="external") desktop site
                 |&nbsp;
             a(href="#{ui.appURL}", target="_blank")
               img(src="/images/logo-small.png",style="padding-left:2px;padding-top:2px;")
