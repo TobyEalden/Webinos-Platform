@@ -1,6 +1,11 @@
 html, body {
     background-color: black;
     height: 100%;
+    font-size: 10px;
+}
+
+.ui-btn-text, .ui-li-divider, input.ui-input-text {
+    font-size: 12px;
 }
 
 @media screen and (min-width: 800px) {
