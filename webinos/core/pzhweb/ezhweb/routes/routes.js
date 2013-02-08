@@ -6,123 +6,128 @@ module.exports = function (app, address, port, state) {
   var pzhadaptor = require('../../pzhadaptor.js');
 
   var ezhHelpers = function() {
-  var getUserPath = function(user) {
-    return encodeURIComponent(user.emails[0].value);
-  };
-
-  var isMobile = function (req) {
-    var ua = req.header('user-agent');
-    return (/mobile/i.test(ua)) ? true : false;
-  };
-
-  var getCurrentPZH = function (user) {
-    return address + "_" + user.emails[0].value;
-  };
-
-  var isPrivileged = function (user) {
-    var privilegedUsers = {
-      "nick@nquiringminds.com": true,
-      "toby.ealden@gmail.com": true,
-      "ezh.ubiapps@gmail.com": true
+    var getUserPath = function(user) {
+      return encodeURIComponent(user.emails[0].value);
     };
 
-    return user ? (user.emails[0].value in privilegedUsers) && user.from === 'google' : false;
-  };
+    var isMobile = function (req) {
+      var ua = req.header('user-agent');
+      return (/mobile/i.test(ua)) ? true : false;
+    };
 
-  var ensureAuthenticated = function (req, res, next) {
-    if (req.isAuthenticated()) {
-      if ("pzhId" in req.params && req.params.pzhId != getCurrentPZH(req.user) && !isPrivileged(req.user)) {
-        // Request is for a different PZH from currently logged on (non-privileged) user.
-        if (isMobile(req)) {
-          res.redirect("/m");
+    var getCurrentPZH = function (user) {
+      return address + "_" + user.emails[0].value;
+    };
+
+    var isPrivileged = function (user) {
+      var privilegedUsers = {
+        "nick@nquiringminds.com": true,
+        "toby.ealden@gmail.com": true,
+        "ezh.ubiapps@gmail.com": true
+      };
+
+      return user ? (user.emails[0].value in privilegedUsers) && user.from === 'google' : false;
+    };
+
+    var ensureAuthenticated = function (req, res, next) {
+      if (req.isAuthenticated()) {
+        if ("pzhId" in req.params && req.params.pzhId != getCurrentPZH(req.user) && !isPrivileged(req.user)) {
+          // Request is for a different PZH from currently logged on (non-privileged) user.
+          if (isMobile(req)) {
+            res.redirect("/m");
+          } else {
+            res.redirect("/");
+          }
         } else {
-          res.redirect("/");
+          return next();
         }
       } else {
-        return next();
+          res.redirect('/login');
       }
-    } else {
-        res.redirect('/login');
-    }
-  };
-
-  var getPZHId = function(req) {
-    if (isPrivileged(req.user)) {
-      return req.params.pzhId;
-    } else {
-      return getCurrentPZH(req.user);
-    }
-  };
-
-  var splitAddress = function(addr) {
-    var pzhSep = addr.indexOf('_');
-
-    var pzhHost = '';
-    var pzp;
-    var email = '';
-
-    if (pzhSep >= 0) {
-      pzhHost = addr.substr(0,pzhSep);
-      email = addr.substr(pzhSep+1);
-      var pzpSep = email.indexOf('/');
-      if (pzpSep >= 0) {
-        pzp = email.substr(pzpSep+1);
-        email = email.substr(0,pzpSep);
-      }
-    }
-
-    return { pzhHost: pzhHost, pzh: pzhHost + "_" + email, pzp: pzp, email: email };
-  };
-
-  var rationaliseServices = function(zones, payload, pzhId, pzpId) {
-    for (var serv in payload.services){
-      var s = payload.services[serv];
-      var address = splitAddress(s.serviceAddress);
-      if (!pzhId || address.pzh === pzhId) {
-        if (!zones.hasOwnProperty(address.pzh)) {
-          zones[address.pzh] = { services: {}, pzps: {} };
-        }
-        if (address.pzp && (!pzpId || address.pzp === pzpId)) {
-          if (!zones[address.pzh].pzps.hasOwnProperty(address.pzp)) {
-            zones[address.pzh].pzps[address.pzp] = { services: {} };
-          }
-          zones[address.pzh].pzps[address.pzp].services[s.id] = s;
-        } else if (!pzpId) {
-          zones[address.pzh].services[s.id] = s;
-        }
-      }
-    }
-
-    return zones;
-  }
-
-  var getUIOptions = function(req) {
-    return {
-      appTitle: "UbiApps Enterprise Zone",
-      appURL: "http://ubiapps.com",
-      mainTheme: "d",
-      optionTheme: "b",
-      infoTheme: "c",
-      dividerTheme: "d",
-      collapsibleTheme: "d",
-      privileged: isPrivileged(req.user),
-      serverName: req.user ? getCurrentPZH(req.user) : ""
     };
-  }
 
-  return {
-    isMobile: isMobile,
-    ensureAuthenticated: ensureAuthenticated,
-    isPrivileged: isPrivileged,
-    getCurrentPZH: getCurrentPZH,
-    getUserPath: getUserPath,
-    getPZHId: getPZHId,
-    pzhadaptor: pzhadaptor,
-    splitAddress: splitAddress,
-    rationaliseServices: rationaliseServices,
-    getUIOptions: getUIOptions
-  }
-}();
+    var getPZHId = function(req) {
+      if (isPrivileged(req.user)) {
+        return req.params.pzhId;
+      } else {
+        return getCurrentPZH(req.user);
+      }
+    };
+
+    var splitAddress = function(addr) {
+      var pzhSep = addr.indexOf('_');
+
+      var pzhHost = '';
+      var pzp;
+      var email = '';
+
+      if (pzhSep >= 0) {
+        pzhHost = addr.substr(0,pzhSep);
+        email = addr.substr(pzhSep+1);
+        var pzpSep = email.indexOf('/');
+        if (pzpSep >= 0) {
+          pzp = email.substr(pzpSep+1);
+          email = email.substr(0,pzpSep);
+        }
+      }
+
+      return { pzhHost: pzhHost, pzh: pzhHost + "_" + email, pzp: pzp, email: email };
+    };
+
+    var rationaliseServices = function(zones, payload, pzhId, pzpId) {
+      for (var serv in payload.services){
+        var s = payload.services[serv];
+        var address = splitAddress(s.serviceAddress);
+        if (!pzhId || address.pzh === pzhId) {
+          if (!zones.hasOwnProperty(address.pzh)) {
+            zones[address.pzh] = { services: {}, pzps: {} };
+          }
+          if (address.pzp && (!pzpId || address.pzp === pzpId)) {
+            if (!zones[address.pzh].pzps.hasOwnProperty(address.pzp)) {
+              zones[address.pzh].pzps[address.pzp] = { services: {} };
+            }
+            zones[address.pzh].pzps[address.pzp].services[s.id] = s;
+          } else if (!pzpId) {
+            zones[address.pzh].services[s.id] = s;
+          }
+        }
+      }
+
+      return zones;
+    }
+
+    var getUIOptions = function(req) {
+      return {
+        appTitle: "UbiApps Enterprise Zone",
+        appURL: "http://ubiapps.com",
+        mainTheme: "d",
+        optionTheme: "b",
+        infoTheme: "c",
+        dividerTheme: "d",
+        collapsibleTheme: "d",
+        privileged: isPrivileged(req.user),
+        user: req.user ? req.user.emails[0].value : "",
+        serverName: req.user ? getCurrentPZH(req.user) : ""
+      };
+    }
+
+    return {
+      isMobile: isMobile,
+      ensureAuthenticated: ensureAuthenticated,
+      isPrivileged: isPrivileged,
+      getCurrentPZH: getCurrentPZH,
+      getUserPath: getUserPath,
+      getPZHId: getPZHId,
+      pzhadaptor: pzhadaptor,
+      splitAddress: splitAddress,
+      rationaliseServices: rationaliseServices,
+      getUIOptions: getUIOptions
+    }
+  }();
+
+  var WSServer= require('../wsServer.js');
+  var webSocket = new WSServer(3000, ezhHelpers);
+  webSocket.start();
 
   var mobileRoutes = require('./ezhweb-mobile');
   mobileRoutes(app, address, port, ezhHelpers);

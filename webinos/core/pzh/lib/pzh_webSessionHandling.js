@@ -23,7 +23,7 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
     var logger = util.webinosLogging(__filename) || logger;
     var lock = true;
     var remote_management = {
-      getFarmPZHs: function (conn, obj, userObj) {
+      getZones: function (conn, obj, userObj) {
         var list = {};
         for (var pzhId in pzhs) {
           if (pzhs.hasOwnProperty(pzhId)) {
@@ -33,17 +33,17 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
               email      :pzhs[pzhId].config.userData.email[0].value };
           }
         }
-        sendMsg (conn, obj.user, { type: "remote_management.getFarmPZHs", message:list });
+        sendMsg (conn, obj.user, { type: "remote_management.getZones", message:list });
       },
 
-      getPZHPZHs: function (conn, obj, userObj) {
+      getConnectedZones: function (conn, obj, userObj) {
         var pzhId = obj.message.targetPZH;
         var list = [];
         if (pzhs.hasOwnProperty(pzhId)) {
           list = getConnectedPzh(pzhs[pzhId]);
         }
 
-        sendMsg (conn, obj.user, { type: "remote_management.getPZHPZHs", message:list });
+        sendMsg (conn, obj.user, { type: "remote_management.getConnectedZones", message:list }, obj.callbackId);
       },
 
       getPZHPZPs: function (conn, obj, userObj) {
@@ -364,8 +364,8 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "csrAuthCodeByPzp":csrAuthCodeByPzp,
         "getAllPzh":getAllPzhList,
         "approveUser"        :approveUser,
-        "remote_management.getFarmPZHs"        :remote_management.getFarmPZHs,
-        "remote_management.getPZHPZHs"         :remote_management.getPZHPZHs,
+        "remote_management.getZones"           :remote_management.getZones,
+        "remote_management.getConnectedZones"  :remote_management.getConnectedZones,
         "remote_management.getPZHPZPs"         :remote_management.getPZHPZPs,
         "remote_management.getPZHDetails"      :remote_management.getPZHDetails,
         "remote_management.getInstalledWidgets":remote_management.getInstalledWidgets,
@@ -394,8 +394,12 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         lock = true;
     }
 
-    function sendMsg(conn, user, msg) {
-        var jsonString = JSON.stringify({user:user, payload:msg});
+    function sendMsg(conn, user, msg, callbackId) {
+        var sendData = {user:user, payload:msg};
+        if (typeof callbackId !== "undefined") {
+          sendData.callbackId = callbackId;
+        }
+        var jsonString = JSON.stringify(sendData);
         var buf = util.webinosMsgProcessing.jsonStr2Buffer(jsonString);
         conn.write(buf);
     }

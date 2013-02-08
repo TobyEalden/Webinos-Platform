@@ -1,12 +1,15 @@
 extends layout
 
 block head
-  script(type="text/javascript", src="/js/webinos.js")
-  script(type="text/javascript", src="/js/desktop/console.js")
-  script(type="text/javascript", src="/js/desktop/apps.js")
-  script(type="text/javascript", src="/js/desktop/menu.js")
-  script(type="text/javascript", src="/js/desktop/navigator.js")
-  script(type="text/javascript", src="/js/desktop/services.js")
+  script(src="/js/webinos.js")
+  script(src="/js/desktop/console.js")
+  script(src="/js/clientSocket.js")
+  script(src="/js/desktop/apps.js")
+  script(src="/js/desktop/menu.js")
+  script(src="/js/desktop/services.js")
+  script(src="/js/zoneAPI.js")
+  script(src="/js/dataCache.js")
+  script(src="/js/explorer.js")
   script
     log = ubi.console.log;
     function webinos_connected() {
@@ -23,6 +26,11 @@ block head
     }
 
     $(function() {
+      ubi.explorer.initialise($(".tree-root"),ubi.dataCache);
+      ubi.dataCache.initialise("#{user}",function() {
+        ubi.dataCache.loadZones();
+      });
+
       log("Connecting to webinos");
       webinos.session.addListener ('registeredBrowser', webinos_connected);
     });

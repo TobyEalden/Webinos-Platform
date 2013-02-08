@@ -13,7 +13,7 @@ module.exports = function (app, address, port, ezhHelpers) {
         if (index < Object.keys(farms_result).length) {
           process.nextTick(function() {processPZH(farms_result,index+1); });
         } else {
-          res.render('desktop/ezh', { pzh: ezhHelpers.getPZHId(req), zones: zones });
+          res.render('desktop/ezh', { user: req.user.emails[0].value, pzh: ezhHelpers.getPZHId(req), zones: zones });
         }
       });
     }
@@ -30,7 +30,7 @@ module.exports = function (app, address, port, ezhHelpers) {
           res.render('desktop/ezh', { pzh: ezhHelpers.getPZHId(req), zones: zones });
         });
       } else {
-        ezhHelpers.pzhadaptor.getFarmPZHs(req.user, function(farms_result) {
+        ezhHelpers.pzhadaptor.getZones(req.user, function(farms_result) {
           processPZH(farms_result.message,0);
         });
       }
@@ -38,7 +38,7 @@ module.exports = function (app, address, port, ezhHelpers) {
   });
 
   app.get('/d/zones', ezhHelpers.ensureAuthenticated,function(req,res){
-    ezhHelpers.pzhadaptor.getFarmPZHs(req.user, function(result) {
+    ezhHelpers.pzhadaptor.getZones(req.user, function(result) {
       pzhInfoCache = result.message;
       res.render('desktop/inset/zones', { id:"home", ui: ezhHelpers.getUIOptions(req), title: "UbiApps", pzhList: result.message });
     });
@@ -131,7 +131,7 @@ module.exports = function (app, address, port, ezhHelpers) {
    */
   app.get('/d/friends/:pzhId', ezhHelpers.ensureAuthenticated, function(req,res){
     var pzhId = ezhHelpers.getPZHId(req);
-    ezhHelpers.pzhadaptor.getPZHPZHs(req.user, pzhId, function(pzh_result) {
+    ezhHelpers.pzhadaptor.getConnectedZones(req.user, pzhId, function(pzh_result) {
       ezhHelpers.pzhadaptor.getPendingFriends(req.user, pzhId, function(pending_result) {
         var pzhName = (pzhId in pzhInfoCache) ? pzhInfoCache[pzhId].username : pzhId;
         res.render('desktop/inset/zone-friends', { id:"friends", ui: ezhHelpers.getUIOptions(req), title: "Zone Details", pzhName: pzhName, pzh: pzhId, pzhList: pzh_result.message, requestList: pending_result.message });
@@ -140,7 +140,7 @@ module.exports = function (app, address, port, ezhHelpers) {
   });
 
   app.get('/d/invite/:pzhId', ezhHelpers.ensureAuthenticated, function(req,res) {
-    ezhHelpers.pzhadaptor.getFarmPZHs(req.user, function(result) {
+    ezhHelpers.pzhadaptor.getZones(req.user, function(result) {
       res.render('desktop/inset/invite', { id:"invite", ui: ezhHelpers.getUIOptions(req), title: "Invite a Friend", pzh: ezhHelpers.getPZHId(req), pzhList: result.message });
     });
   });

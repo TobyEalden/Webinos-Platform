@@ -45,9 +45,14 @@ PzhWebTLSCommunicator.init = function (config, webOptions, handler, cb) {
     connection.on("data", function (_buffer) {
         util.webinosMsgProcessing.readJson(this, _buffer, function (obj) {
             var userid = obj.user.identifier || obj.user;
-            if (callbackStorage[userid, obj.payload.type]) {
-                callbackStorage[userid, obj.payload.type].success(obj.payload);
-                delete callbackStorage[userid, obj.payload.type];
+            if (userid in callbackStorage && callbackStorage[userid][obj.payload.type]) {
+                if (typeof obj.payload.callbackId !== "undefined") {
+                  callbackStorage[userid][obj.payload.type][obj.payload.callbackId].success(obj.payload);
+                  delete callbackStorage[userid][obj.payload.type][obj.payload.callbackId];
+                } else {
+                  callbackStorage[userid][obj.payload.type][0].success(obj.payload);
+                  delete callbackStorage[userid][obj.payload.type];
+                }
             }
         });
     });
@@ -69,13 +74,21 @@ PzhWebTLSCommunicator.send = function (user, message, callback) {
             user:user,
             message:message
         };
+        var userid = user.identifier || user;
+        if (callback && userid && realMsg.message.type) {
+          if (!(userid in callbackStorage)) {
+            callbackStorage[userid] = {};
+          }
+          if (!(realMsg.message.type in callbackStorage[userid])) {
+            callbackStorage[userid][realMsg.message.type] = [];
+          }
+          realMsg.callbackId = callbackStorage[userid][realMsg.message.type].push(callback) - 1;
+        }
         jsonString = JSON.stringify(realMsg);
         buf = util.webinosMsgProcessing.jsonStr2Buffer(jsonString);
         connection.pause();
         connection.write(buf);
         connection.resume();
-        var userid = user.identifier || user;
-        if (callback && userid && realMsg.message.type) callbackStorage[userid, realMsg.message.type] = callback;
     } catch (err) {
         logger.error("Failed to send a message to the PZH TLS Server: " + err);
         callback.err("Failed to send a message to the PZH TLS Server");

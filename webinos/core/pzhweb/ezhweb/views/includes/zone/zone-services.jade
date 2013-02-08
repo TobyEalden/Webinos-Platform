@@ -6,9 +6,9 @@
         - for (var s in zones[zone].services) {
           li= zones[zone].services[s].api
         - }
-        //- for (var dev in zones[zone].pzps) {
+        - for (var dev in zones[zone].pzps) {
           li(data-role="list-divider")= dev
           device = zones[zone].pzps[dev]
           include ../device/device-services.jade
-        //- }
+        - }
 - }

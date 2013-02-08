@@ -176,12 +176,12 @@ function manageStatus(payload, user, res) {
     }
 }
 
-PzhAdaptor.getFarmPZHs = function(user, res) {
-  pzhTLS.send (user, {type:"remote_management.getFarmPZHs"}, responseHandler (res));
+PzhAdaptor.getZones = function(user, res) {
+  pzhTLS.send (user, {type:"remote_management.getZones"}, responseHandler (res));
 };
 
-PzhAdaptor.getPZHPZHs = function(user, targetPZH,res) {
-  pzhTLS.send (user, {type:"remote_management.getPZHPZHs", targetPZH:targetPZH}, responseHandler(res));
+PzhAdaptor.getConnectedZones = function(user, targetPZH,res) {
+  pzhTLS.send (user, {type:"remote_management.getConnectedZones", targetPZH:targetPZH}, responseHandler(res));
 };
 
 PzhAdaptor.getPZHPZPs = function(user, targetPZH,res) {

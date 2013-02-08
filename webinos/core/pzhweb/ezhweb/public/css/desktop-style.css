@@ -121,6 +121,10 @@ h1, h2, h3, h4 {
     background-image: url("/images/desktop/app.png");
 }
 
+.friend-tree-item {
+    background-image: url("/images/desktop/friend.png");
+}
+
 .tree-expander {
     padding-right: 4px;
     font-family: "Lucida Console","Courier New","sans-serif";

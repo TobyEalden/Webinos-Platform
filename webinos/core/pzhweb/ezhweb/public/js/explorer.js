@@ -1,56 +1,29 @@
-$(function() {
-  ubi.console.log("Initialising navigator");
+if (typeof ubi === "undefined") {
+  ubi = {};
+}
+
+ubi.explorer = function() {
+  var treeRoot;
+  var dataCache;
+
+  /*
+  $(".tree-expander").next("a").dblclick(function() {
+    toggleNode($(this).prev("a"));
+    return false;
+  });
+  */
+
+  function sanitiseId(id) {
+    return id.replace(/\./g,'!');
+  }
+  function isExpanded(n) {
+    return $(n).html() === "-";
+  }
 
   function toggleNode(n) {
     $(n).siblings("ul").each(function() { $(this).toggle(); });
     $(n).html($(n).html() === "+" ? "-" : "+");
   }
-
-  //$(".tree-branch").children("ul").each(function() { $(this).hide(); });
-
-  $(".tree-expander").click(function() {
-    toggleNode(this);
-    return false;
-  });
-
-  $(".tree-expander").next("a").dblclick(function() {
-    toggleNode($(this).prev("a"));
-    return false;
-  });
-
-  $(".apps-folder-item").click(function() {
-    var that = this;
-    var toks = this.id.split('|');
-    if (toks.length !== 3 || toks[0] !== "apps") {
-      ubi.console.log("Loading apps - invalid identifier: " + this.id);
-    } else {
-      var listItem = $(that).next("ul");
-      listItem.empty();
-      listItem.append("<li class=\"tree-node tree-leaf\">Loading...</li>")
-      var pzh = toks[1];
-      var pzp = toks[2];
-      ubi.console.log("Loading apps for zone " + pzh + " and device " + pzp);
-      ubi.apps.loadDeviceApps(pzh,pzp,function(ok,data) {
-        listItem.empty();
-        if (ok) {
-          var list = data.installedList;
-          if ($.isEmptyObject(list)) {
-            $("<li class=\"tree-node tree-leaf\">No apps installed</li>").appendTo(listItem);
-          } else {
-            for (var i in list) {
-              ubi.console.log("Got app " + list[i].name.visual);
-              listItem.append("<li class=\"tree-node tree-leaf\"><a id='app|" + pzh + "|" + pzp + "|" + list[i].installId + "' class='app-tree-item' href='#'>" + list[i].name.visual + "</a></li>");
-            }
-          }
-        } else {
-          ubi.console.log("Failed to get apps",ubi.console.error);
-          $("<li class=\"tree-node tree-leaf\">" + data + "</li>").appendTo(listItem);
-        }
-        $(".ui-layout-center").html("");
-        $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/d/installed/" + pzh + "/" + pzp + "'></iframe>");
-      });
-    }
-  });
 
   function parseId(id) {
     var result = {};
@@ -101,7 +74,7 @@ $(function() {
     if (params.paramCount !== 2 || params.actionType !== "device") {
       ubi.console.log("Loading device details - invalid identifier: " + this.id);
     } else {
-      setInset("/d/pzp/" + paramss.pzh + "/" + params.pzp);
+      setInset("/d/pzp/" + params.pzh + "/" + params.pzp);
     }
   });
 
@@ -161,4 +134,85 @@ $(function() {
       $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='/d/app/" + pzh + "/" + pzp + "/" + installId + "'></iframe>");
     }
   });
-});
+
+  $(document).on("click",".tree-expander", function() {
+    toggleNode(this);
+    return false;
+  });
+
+  $(document).on("click",".zone-tree-item-expander",function() {
+    if ($(this).siblings("ul").children().length === 0) {
+      addLeaf($(this).parent(),"none-tree-leaf","","Loading...");
+      dataCache.loadZone($(this).next().get(0).id.split("|")[1]);
+    }
+  });
+
+  function deleteBranch(parent) {
+    parent.children("ul").empty();
+  }
+
+  function addBranch(parent,branchClass,branchId,branchName) {
+    var branchTempl = "<li class='tree-node tree-branch'>" +
+        "<a class='tree-expander " + branchClass + "-expander' href='#'>+</a>" +
+        "<a class='folder-tree-item " + branchClass + "' id='" + branchId + "' href='#'>" + branchName +"</a>" +
+        "<ul></ul>" +
+        "</li>";
+
+    parent.children("ul").append(branchTempl).show();
+  }
+
+  function addLeaf(parent,leafClass,leafId,leafName) {
+    var leafTempl = "<li class='tree-node tree-leaf'>" +
+                      "<a id='" + leafId + "' class='" + leafClass + "' href='#'>" + leafName + "</a>" +
+                    "</li>";
+
+    parent.children("ul").append(leafTempl).show();
+  }
+
+  var _initialise = function(root,dCache) {
+    treeRoot = root;
+    dataCache = dCache;
+
+    var rootTempl = "<li class='tree-branch'>" +
+      "<a class='tree-expander' href='#'>-</a>" +
+      "<a class='folder-tree-item zones-tree-item' href='#'>Zones</a>" +
+      "<ul></ul>";
+
+    treeRoot.empty();
+    treeRoot.append(rootTempl);
+
+    dataCache.on("zone", function(zone) {
+      addBranch(treeRoot.children("li"),"zone-tree-item","zone|" + zone,zone);
+    });
+
+    dataCache.on("zoneDetails", function(zoneDetails) {
+      var zoneLink = treeRoot.find("a[id='zone|" + zoneDetails.zoneId + "']");
+      deleteBranch(zoneLink.parent());
+      addBranch(zoneLink.parent(),"services-tree-item","services|" + zoneDetails.zoneId, "Services");
+      var servicesLink = treeRoot.find("a[id='services|" + zoneDetails.zoneId + "']");
+      addBranch(zoneLink.parent(),"devices-tree-item","devices|" + zoneDetails.zoneId, "Devices");
+      var devicesLink = treeRoot.find("a[id='devices|" + zoneDetails.zoneId + "']");
+      addBranch(zoneLink.parent(),"friends-tree-item","friends|" + zoneDetails.zoneId, "Friends");
+      var friendsLink = treeRoot.find("a[id='friends|" + zoneDetails.zoneId + "']");
+      for (var pzhId in zoneDetails.zoneData) {
+        var pzh = zoneDetails.zoneData[pzhId];
+        if (pzhId === zoneDetails.zoneId) {
+          for (var pzpId in pzh.pzps) {
+            addLeaf(devicesLink.parent(),"device-tree-item","device|" + pzpId, pzpId);
+          }
+          for (var s in pzh.services) {
+            var svc = pzh.services[s];
+            addLeaf(servicesLink.parent(),"service-tree-item","service|" + svc.id,svc.displayName);
+          }
+        } else {
+          // This is a connected PZH
+          addLeaf(friendsLink.parent(),"friend-tree-item","friend|" + pzhId, pzhId);
+        }
+      }
+    });
+  };
+
+  return {
+    initialise: _initialise
+  };
+}();

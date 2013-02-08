@@ -3,7 +3,7 @@ module.exports = function (app, address, port, ezhHelpers) {    "use strict";
 
   function renderPZHHome(id, pzhId, req, res) {
     ezhHelpers.pzhadaptor.getPZHPZPs(req.user, pzhId, function(pzp_result) {
-      ezhHelpers.pzhadaptor.getPZHPZHs(req.user, pzhId, function(pzh_result) {
+      ezhHelpers.pzhadaptor.getConnectedZones(req.user, pzhId, function(pzh_result) {
         ezhHelpers.pzhadaptor.getPendingFriends(req.user, pzhId, function(pending_result) {
           var pzhName = (pzhId in pzhInfoCache) ? pzhInfoCache[pzhId].username : pzhId;
           res.render('mobile/pzh', { id:id, ui: ezhHelpers.getUIOptions(req), title: "Zone Details", pzhName: pzhName, pzh: pzhId, pzpList: pzp_result.message, pzhList: pzh_result.message, requestList: pending_result.message });
@@ -27,7 +27,7 @@ module.exports = function (app, address, port, ezhHelpers) {    "use strict";
         if (!ezhHelpers.isPrivileged(req.user)) {
             renderPZHHome("home", ezhHelpers.getCurrentPZH(req.user), req,res);
         } else {
-          ezhHelpers.pzhadaptor.getFarmPZHs(req.user, function(result) {
+          ezhHelpers.pzhadaptor.getZones(req.user, function(result) {
             pzhInfoCache = result.message;
             res.render('mobile/ezh', { id:"home", ui: ezhHelpers.getUIOptions(req), title: "UbiApps", pzhList: result.message });
           });
@@ -59,7 +59,7 @@ module.exports = function (app, address, port, ezhHelpers) {    "use strict";
   });
 
   app.get('/m/invite/:pzhId', ezhHelpers.ensureAuthenticated, function(req,res) {
-    ezhHelpers.pzhadaptor.getFarmPZHs(req.user, function(result) {
+    ezhHelpers.pzhadaptor.getZones(req.user, function(result) {
       res.render('mobile/invite', { id:"invite", ui: ezhHelpers.getUIOptions(req), title: "Invite a Friend", pzh: ezhHelpers.getPZHId(req), pzhList: result.message });
     });
   });
