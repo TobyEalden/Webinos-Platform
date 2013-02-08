@@ -143,6 +143,7 @@ ubi.explorer = function() {
           for (var s in pzh.services) {
             var svc = pzh.services[s];
             addLeaf(servicesLink.parent(),"service-tree-item","service|" + svc.id,svc.displayName);
+            serviceCount++;
           }
           if (nodeCount === 0) {
             addLeaf(servicesLink.parent(),"","","No services available","#");
