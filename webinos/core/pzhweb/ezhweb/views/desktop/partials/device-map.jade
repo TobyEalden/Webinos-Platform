@@ -30,8 +30,7 @@ script
       var marker = new google.maps.Marker({position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude), map: map });
       var lookup = position.coords.latitude + "," + position.coords.longitude;
       if (!(lookup in markers)) {
-        markers[lookup] = [];
-      } else {
+        markers[lookup].push({marker: marker, service: service});
         var infowindow = new google.maps.InfoWindow();
 
         ubi.console.log("Adding click listener for " + service.serviceAddress);
@@ -47,8 +46,9 @@ script
           }
         })(marker));
         ubi.console.log("Added click listener for " + service.serviceAddress);
+      } else {
+        markers[lookup].push({marker: marker, service: service});
       }
-      markers[lookup].push({marker: marker, service: service});
     }
 
     function geoLocationError(error) {
