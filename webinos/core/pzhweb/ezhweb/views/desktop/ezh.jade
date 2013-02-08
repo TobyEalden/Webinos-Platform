@@ -11,6 +11,8 @@ block head
   script(src="/js/desktop/explorer.js")
   script
     log = ubi.console.log;
+    log("Connecting to webinos");
+    webinos.session.addListener ('registeredBrowser', webinos_connected);
     function webinos_connected() {
       log("Webinos connected");
       log("Connected to zone " + webinos.session.getPZPId());
@@ -29,9 +31,6 @@ block head
       ubi.dataCache.initialise("#{user}",function() {
         ubi.dataCache.loadZones();
       });
-
-      log("Connecting to webinos");
-      webinos.session.addListener ('registeredBrowser', webinos_connected);
     });
 block west
   div.navigator
