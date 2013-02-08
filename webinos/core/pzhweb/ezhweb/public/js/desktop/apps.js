@@ -19,7 +19,7 @@ ubi.apps = function() {
   var _loadDeviceApp = function(pzh,pzp,installId,cb) {
     ubi.console.log("Loading device app " + pzh + "/" + pzp + "/" + installId);
     $.ajax({
-      url: "/d/installed-app/" + pzh + "/" + pzp + "/" + installId
+      url: "/installed-app/" + pzh + "/" + pzp + "/" + installId
     }).done(function(data){
         $(".ui-layout-center").html("");
         $(".ui-layout-center").append(data);
