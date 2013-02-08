@@ -27,7 +27,7 @@ module.exports = function (app, address, port, ezhHelpers) {
       if (!ezhHelpers.isPrivileged(req.user)) {
         ezhHelpers.pzhadaptor.getActiveServices(req.user, ezhHelpers.getCurrentPZH(req.user), function(services_result) {
           ezhHelpers.rationaliseServices(zones,services_result.message);
-          res.render('desktop/ezh', { pzh: ezhHelpers.getPZHId(req), zones: zones });
+          res.render('desktop/ezh', { user: req.user.emails[0].value, pzh: ezhHelpers.getPZHId(req), zones: zones });
         });
       } else {
         ezhHelpers.pzhadaptor.getZones(req.user, function(farms_result) {

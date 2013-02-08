@@ -26,7 +26,8 @@ module.exports = function (app, address, port, state) {
         "ezh.ubiapps@gmail.com": true
       };
 
-      return user ? (user.emails[0].value in privilegedUsers) && user.from === 'google' : false;
+      var email = user ? (user.emails ? user.emails[0].value : user) : "";
+      return user ? (email in privilegedUsers) : false;
     };
 
     var ensureAuthenticated = function (req, res, next) {

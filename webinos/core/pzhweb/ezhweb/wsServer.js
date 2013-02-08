@@ -35,6 +35,18 @@
           switch (msg.message.method) {
             case "getZones":
               pzhadaptor.getZones(msg.user,function(result){
+                if (!that.ezhHelpers.isPrivileged(msg.user)) {
+                  for (var pzhId in result.message) {
+                    var si = pzhId.indexOf('_');
+                    var email = "";
+                    if (si !== -1) {
+                      email = pzhId.substr(si+1);
+                    }
+                    if (email != msg.user) {
+                      delete result.message[pzhId];
+                    }
+                  }
+                }
                 sendReply(msg,result);
               });
               break;
