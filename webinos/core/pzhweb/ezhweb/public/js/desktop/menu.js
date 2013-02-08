@@ -4,7 +4,7 @@ $(function() {
   $("#menu-map-devices").click(function() {
     ubi.console.log("Loading device map");
     $.ajax({
-      url: "/d/map/"
+      url: "/map/"
     }).done(function(data){
         $(".ui-layout-center").html("");
         $(".ui-layout-center").append(data);

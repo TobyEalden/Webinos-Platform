@@ -139,7 +139,7 @@ module.exports = function (app, address, port, state) {
     if (ezhHelpers.isMobile(req)) {
       res.redirect('/m');
     } else {
-      res.redirect('/d');
+      res.redirect('/');
     }
   });
 
@@ -200,7 +200,7 @@ module.exports = function (app, address, port, state) {
     if (ezhHelpers.isMobile(req)) {
       res.redirect('/m/pzh/' + address + "_" + req.params.user);
     } else {
-      res.redirect('/d/pzh/' + address + "_" + req.params.user);
+      res.redirect('/pzh/' + address + "_" + req.params.user);
     }
   });
 

@@ -5,7 +5,7 @@ module.exports = function (app, address, port, ezhHelpers) {
   /*
   Landing page
    */
-  app.get('/d', ezhHelpers.ensureAuthenticated, function (req, res) {
+  app.get('/', ezhHelpers.ensureAuthenticated, function (req, res) {
     var zones = {};
     function processPZH(farms_result,index) {
       ezhHelpers.pzhadaptor.getActiveServices(req.user, Object.keys(farms_result)[index], function(services_result) {
@@ -37,7 +37,7 @@ module.exports = function (app, address, port, ezhHelpers) {
     }
   });
 
-  app.get('/d/zones', ezhHelpers.ensureAuthenticated,function(req,res){
+  app.get('/zones', ezhHelpers.ensureAuthenticated,function(req,res){
     ezhHelpers.pzhadaptor.getZones(req.user, function(result) {
       pzhInfoCache = result.message;
       res.render('desktop/inset/zones', { id:"home", ui: ezhHelpers.getUIOptions(req), title: "UbiApps", pzhList: result.message });
@@ -49,21 +49,21 @@ module.exports = function (app, address, port, ezhHelpers) {
    */
 
   // Get zone details
-  app.get('/d/pzh/about/:pzhId',ezhHelpers.ensureAuthenticated,function(req,res){
+  app.get('/pzh/about/:pzhId',ezhHelpers.ensureAuthenticated,function(req,res){
     ezhHelpers.pzhadaptor.getPZHDetails(req.user, ezhHelpers.getPZHId(req), function(result) {
       res.render('desktop/inset/about-zone', { id:"about", about: result.message, pzh: ezhHelpers.getPZHId(req) });
     });
   });
 
   // Also display zone details for main PZH page (rather than list of options as on the mobile site).
-  app.get('/d/pzh/:pzhId',ezhHelpers.ensureAuthenticated,function(req,res){
+  app.get('/pzh/:pzhId',ezhHelpers.ensureAuthenticated,function(req,res){
     ezhHelpers.pzhadaptor.getPZHDetails(req.user, ezhHelpers.getPZHId(req), function(result) {
       res.render('desktop/inset/about-zone', { id:"about", about: result.message, pzh: ezhHelpers.getPZHId(req) });
     });
   });
 
   // Get zone devices
-  app.get('/d/pzh/pzps/:pzhId',ezhHelpers.ensureAuthenticated,function(req,res) {
+  app.get('/pzh/pzps/:pzhId',ezhHelpers.ensureAuthenticated,function(req,res) {
     ezhHelpers.pzhadaptor.getPZHPZPs(req.user, ezhHelpers.getPZHId(req), function(result) {
       res.render('desktop/inset/zone-devices', { ui: ezhHelpers.getUIOptions(req), title: "Devices", pzpList: result.message});
     });
@@ -74,24 +74,24 @@ module.exports = function (app, address, port, ezhHelpers) {
    */
 
   // PZP options
-  app.get('/d/pzp/:pzhId/:pzpId',ezhHelpers.ensureAuthenticated, function(req,res) {
+  app.get('/pzp/:pzhId/:pzpId',ezhHelpers.ensureAuthenticated, function(req,res) {
     res.render('desktop/inset/pzp', { id:"pzp", ui: ezhHelpers.getUIOptions(req), title: "Device", pzh: ezhHelpers.getPZHId(req), pzp: req.params.pzpId});
   });
 
   // Show installed widgets
-  app.get('/d/installed/:pzhId/:pzpId', ezhHelpers.ensureAuthenticated, function(req, res) {
+  app.get('/installed/:pzhId/:pzpId', ezhHelpers.ensureAuthenticated, function(req, res) {
     ezhHelpers.pzhadaptor.getInstalledWidgets(req.user, ezhHelpers.getPZHId(req), req.params.pzpId, function(result) {
       res.render('desktop/inset/installed', { id:"installed", ui: ezhHelpers.getUIOptions(req), title: "Apps", widgetList: result.message.installedList, pzh: ezhHelpers.getPZHId(req), pzp: req.params.pzpId });
     });
   });
 
   // Install selection page
-  app.get('/d/install-app/:pzhId/:pzpId', ezhHelpers.ensureAuthenticated, function(req,res) {
+  app.get('/install-app/:pzhId/:pzpId', ezhHelpers.ensureAuthenticated, function(req,res) {
     res.render('desktop/inset/install-app', { id:"installApp", ui: ezhHelpers.getUIOptions(req), title: "Install App", pzh: ezhHelpers.getPZHId(req), pzp: req.params.pzpId });
   });
 
   // Get app details
-  app.get('/d/app/:pzhId/:pzpId/:appId', ezhHelpers.ensureAuthenticated, function(req, res) {
+  app.get('/app/:pzhId/:pzpId/:appId', ezhHelpers.ensureAuthenticated, function(req, res) {
     ezhHelpers.pzhadaptor.getInstalledWidgets(req.user, ezhHelpers.getPZHId(req), req.params.pzpId, function(result) {
       var installId = req.params.appId;
       if (result.message.installedList.hasOwnProperty(installId)) {
@@ -103,14 +103,14 @@ module.exports = function (app, address, port, ezhHelpers) {
   });
 
   // Wipe succeeded
-  app.get('/d/wiped/:pzhId/:pzpId', ezhHelpers.ensureAuthenticated, function(req, res) {
+  app.get('/wiped/:pzhId/:pzpId', ezhHelpers.ensureAuthenticated, function(req, res) {
     res.render('desktop/inset/success', { ui: ezhHelpers.getUIOptions(req), title: "Device Wiped", pzh: ezhHelpers.getPZHId(req), message: "Successfully wiped device " + req.params.pzpId});
   });
 
   /*
   Services
    */
-  app.get('/d/services/:pzhId', ezhHelpers.ensureAuthenticated, function(req, res) {
+  app.get('/services/:pzhId', ezhHelpers.ensureAuthenticated, function(req, res) {
     ezhHelpers.pzhadaptor.getActiveServices(req.user, ezhHelpers.getPZHId(req), function(result) {
       var zones = {};
       ezhHelpers.rationaliseServices(zones,result.message);
@@ -118,7 +118,7 @@ module.exports = function (app, address, port, ezhHelpers) {
     });
   });
 
-  app.get('/d/services/:pzhId/:pzpId', ezhHelpers.ensureAuthenticated, function(req, res) {
+  app.get('/services/:pzhId/:pzpId', ezhHelpers.ensureAuthenticated, function(req, res) {
     ezhHelpers.pzhadaptor.getActiveServices(req.user, ezhHelpers.getPZHId(req), function(activeResult) {
       var zones = {};
       ezhHelpers.rationaliseServices(zones,activeResult.message, ezhHelpers.getPZHId(req), req.params.pzpId);
@@ -129,7 +129,7 @@ module.exports = function (app, address, port, ezhHelpers) {
   /*
   Friends
    */
-  app.get('/d/friends/:pzhId', ezhHelpers.ensureAuthenticated, function(req,res){
+  app.get('/friends/:pzhId', ezhHelpers.ensureAuthenticated, function(req,res){
     var pzhId = ezhHelpers.getPZHId(req);
     ezhHelpers.pzhadaptor.getConnectedZones(req.user, pzhId, function(pzh_result) {
       ezhHelpers.pzhadaptor.getPendingFriends(req.user, pzhId, function(pending_result) {
@@ -139,7 +139,7 @@ module.exports = function (app, address, port, ezhHelpers) {
     });
   });
 
-  app.get('/d/invite/:pzhId', ezhHelpers.ensureAuthenticated, function(req,res) {
+  app.get('/invite/:pzhId', ezhHelpers.ensureAuthenticated, function(req,res) {
     ezhHelpers.pzhadaptor.getZones(req.user, function(result) {
       res.render('desktop/inset/invite', { id:"invite", ui: ezhHelpers.getUIOptions(req), title: "Invite a Friend", pzh: ezhHelpers.getPZHId(req), pzhList: result.message });
     });
@@ -148,14 +148,15 @@ module.exports = function (app, address, port, ezhHelpers) {
   /*
   Menu options
    */
-  app.get('/d/map', ezhHelpers.ensureAuthenticated, function(req,res) {
+  app.get('/map', ezhHelpers.ensureAuthenticated, function(req,res) {
     res.render("desktop/partials/device-map");
   });
 
   /*
   Authorisation
    */
-  app.get('/d/login', function (req, res) {
+  /*
+  app.get('/login', function (req, res) {
     if (req.query.isPzp) {
       req.session.isPzp = true;
       req.session.pzpPort = req.query.port;
@@ -163,4 +164,5 @@ module.exports = function (app, address, port, ezhHelpers) {
     }
     res.render('desktop/login', { user:req.user, id:"login", title: "UbiApps Login", isPZP: req.session.isPzp });
   });
+  */
 };
