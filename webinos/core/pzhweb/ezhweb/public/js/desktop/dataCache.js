@@ -42,7 +42,7 @@ ubi.dataCache = function() {
 
   var _initialise = function(user, cb){
     socket = new ubi.ClientSocket(user);
-    socket.connect(3123,function() {
+    socket.connect(3000,function() {
       cb();
     });
   };
