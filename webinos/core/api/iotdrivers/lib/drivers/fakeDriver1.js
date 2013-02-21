@@ -29,7 +29,7 @@
 
     elementsList[0] = {
         'type': 'temperature',
-        'name': 'Fake temperature sensor',
+        'name': 'Fake kitchen temp. sensor',
         'description': 'Monitors kitchen temperature',
         'sa': 0,
         'interval': 1,
@@ -40,7 +40,7 @@
 
     elementsList[1] = {
         'type': 'light',
-        'name': 'Fake light sensor',
+        'name': 'Fake kitchen light sensor',
         'description': 'Monitors kitchen light',
         'sa': 0,
         'interval': 3,
@@ -52,7 +52,7 @@
     elementsList[2] = {
         'type': 'linearmotor',
         'name': 'Fake linear motor',
-        'description': 'Fake actuator for emulation',
+        'description': 'Fake actuator',
         'sa': 1,
         'range' : [ [0,1] ],
         'interval': 0,
@@ -63,8 +63,8 @@
 
     elementsList[3] = {
         'type': 'temperature',
-        'name': 'Monitors bedroom temperature',
-        'description': 'Fake sensor for emulation',
+        'name': 'Fake bedroom temp. sensor',
+        'description': 'Monitors bedroom temperature',
         'sa': 0,
         'interval': 2,
         'value': 28,
