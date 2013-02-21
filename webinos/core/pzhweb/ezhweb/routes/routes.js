@@ -127,7 +127,7 @@ module.exports = function (app, address, port, state) {
   }();
 
   var WSServer= require('../wsServer.js');
-  var webSocket = new WSServer(3000, ezhHelpers);
+  var webSocket = new WSServer(3123, ezhHelpers);
   webSocket.start();
 
   var mobileRoutes = require('./ezhweb-mobile');
