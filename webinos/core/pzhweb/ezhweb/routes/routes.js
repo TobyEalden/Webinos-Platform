@@ -282,8 +282,20 @@ module.exports = function (app, address, port, state) {
   app.post('/ajax/do-install/:pzhId/:pzpId/:appId', ezhHelpers.ensureAuthenticated, function(req,res) {
     var installUrl;
     switch (req.params.appId) {
-      case "first":
+      case "wglDemo":
         installUrl = "http://webinos.two268.com/apps/wgl-demo.wgt/wgl-demo.wgt";
+        break
+      case "html5Test":
+        installUrl = "http://webinos.two268.com/apps/html5test.wgt";
+        break
+      case "airhockey":
+        installUrl = "http://webinos.two268.com/apps/airhockey.wgt";
+        break
+      case "webcommander":
+        installUrl = "http://webinos.two268.com/apps/webcommander.wgt";
+        break
+      case "pzpadmin":
+        installUrl = "http://webinos.two268.com/apps/pzpadmin.wgt";
         break
     }
     ezhHelpers.pzhadaptor.installWidget(req.user, ezhHelpers.getPZHId(req), req.params.pzpId, installUrl, function(result) {
