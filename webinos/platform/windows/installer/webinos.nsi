@@ -24,7 +24,7 @@ SetCompressor lzma
 !define INSTALLER_BANNER "installBanner.bmp"
 
 !define PRODUCT_NAME "webinos"
-!define VERSION "0.7.0"
+!define VERSION "0.8.0"
 
 ; XP Compatibility
 !ifndef SF_SELECTED
@@ -321,6 +321,9 @@ Section "Uninstall"
 
   ; Required to handle shortcuts properly on Vista/7
   SetShellVarContext all
+
+ # Check is node app is running
+  !insertmacro CheckAppRunning
 
   DetailPrint "Removing ${PRODUCT_NAME} from path"
   Push "$INSTDIR\bin"

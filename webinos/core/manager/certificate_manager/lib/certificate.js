@@ -21,12 +21,12 @@ var keystore = dependency.global.require (dependency.global.manager.keystore.loc
 
 var Certificate = function () {
     var logger = dependency.global.require (dependency.global.util.location, "lib/logging.js") (__filename);
-    keystore.call (this);
+    keystore.call(this);
+    this.cert         = {};
+    this.cert.internal= {};
+    this.cert.external= {};
+    this.cert.internal= {master: {}, conn: {}};
 
-    this.cert = {};
-    this.cert.internal = {};
-    this.cert.external = {};
-    this.cert.internal = {master:{}, conn:{}, web:{}};
     var self = this;
 
     this.generateSelfSignedCertificate = function (type, cn, callback) {
@@ -44,7 +44,18 @@ var Certificate = function () {
             ;
             cert_type = 1;
         } else if (type === "PzhWS") {
-            key_id = self.cert.internal.web.key_id = self.metaData.webinosName + "_web";
+            if (typeof this.cert.internal.webclient === 'undefined') {
+                this.cert.internal.webclient = {};
+            }
+            key_id = self.cert.internal.webclient.key_id = self.metaData.webinosName + "_webclient";
+            ;
+            cert_type = 2;
+        }
+        else if (type === "PzhSSL") {
+            if (typeof this.cert.internal.webssl === 'undefined') {
+                this.cert.internal.webssl = {};
+            }
+            key_id = self.cert.internal.webssl.key_id = self.metaData.webinosName + "_webssl";
             ;
             cert_type = 2;
         }
@@ -120,7 +131,7 @@ var Certificate = function () {
                         self.crl = obj.crl;
                     }
                     return callback (true, conn_key);
-                } else if (type === "PzhWS") {
+                } else if (type === "PzhWS" || type === "PzhSSL") {
                     return callback (true, obj.csr, conn_key);
                 }
             }
@@ -144,12 +155,12 @@ var Certificate = function () {
         }
     };
 
-    Certificate.prototype.generateSignedCertificate = function (csr, cert_type, callback) {
+    Certificate.prototype.generateSignedCertificate = function(csr, cert_type,  callback) {
         var certman, self = this;
         try {
-            certman = require ("certificate_manager");
+            certman = require("certificate_manager");
         } catch (err) {
-            return callback (false, err);
+            return callback(false, err);
         }
 
         try {

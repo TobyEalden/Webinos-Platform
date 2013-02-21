@@ -44,6 +44,7 @@ function responseHandler(res) {
     }
 }
 
+// TOBY - pass pzp host name as well as port.
 function pzpResponder(user, port, address, pzpPort, pzpHost, res) {
     return {
         success:function (authCode) {
@@ -71,6 +72,9 @@ PzhAdaptor.getRequestingExternalUser = function (user, externalEmail, cb) {
 PzhAdaptor.storeExternalUserCert = function (user, externalEmail, externalPzh, externalCerts, res) {
     pzhTLS.send(user, {type:"storeExternalCert", externalEmail:externalEmail, externalPzh:externalPzh,
         externalCerts:externalCerts}, responseHandler(res));
+};
+PzhAdaptor.requestAddLocalFriend = function(user, externalEmail, res) {
+    pzhTLS.send(user, {type:"requestAddLocalFriend", externalEmail:externalEmail}, responseHandler(res));
 };
 
 //unauthenticated input
@@ -167,6 +171,7 @@ function manageStatus(payload, user, res) {
             pzhTLS.send(user, {type:"csrAuthCodeByPzp", from:payload.from, csr:payload.csr, code:payload.code}, responseHandler(res));
             break;
         case 'enrollPzpAuthCode':
+            // TOBY - include pzp host name.
             pzhTLS.send(user, {type:"authCode"}, pzpResponder(payload.user, payload.port, payload.address, payload.pzpPort, payload.pzpHost, res));
             break;
          default:

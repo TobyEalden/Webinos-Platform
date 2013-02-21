@@ -174,6 +174,13 @@ var PzpWSS = function (_parent) {
                         logger.log("pzhCert Value:" + value);
                     });
                     break;
+                case "intraPeer":
+                {
+                    connectintra(msg, function(value){
+                        logger.log("connect intra-zone peer: " + value);
+                    });
+                }
+                    break;
             }
         } else {
             parent.webinos_manager.messageHandler.onMessageReceived (msg, msg.to);
@@ -442,6 +449,20 @@ var PzpWSS = function (_parent) {
         }
     }
 
+    function connectintra(message, callback) {
+        var addr = message.payload.message.peer;
+        var name = message.payload.message.name;
+        logger.log("connecting to: " + addr + name);
+        if(addr !== null)
+        {
+            var msg={};
+            msg.address = addr;
+            //fetch PZH id
+            msg.name = parent.config.metaData.pzhId + "/" + name + "_Pzp";
+            parent.pzpClient.connectPeer(msg);
+        }
+    }
+
     function exchangeCert(message, callback) {
         var to =  message.payload.message.peer;
         if(to !== null)
@@ -634,7 +655,7 @@ var PzpWSS = function (_parent) {
                         connection.on ("message", function (message) { wsMessage (connection, request.origin, message.utf8Data); });
                         connection.on ("close", function (reason, description) { wsClose (connection, description) });
                     } else {
-                        logger.error ("Failed to accept websocket connection: " + "wrong host or origin: " + request.host);
+                        logger.error ("Failed to accept websocket connection: " + "wrong host or origin");
                     }
                 });
                 return _callback (true);

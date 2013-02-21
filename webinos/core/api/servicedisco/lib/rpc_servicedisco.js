@@ -267,13 +267,9 @@
 	 * @param address Remove all services for this address.
 	 */
 	Discovery.prototype.removeRemoteServiceObjects = function(address) {
-    if (this.remoteServiceObjects.hasOwnProperty(address)) {
-      var count = this.remoteServiceObjects[address].length;
-      delete this.remoteServiceObjects[address];
-      logger.log("removeRemoteServiceObjects: removed " + count + " services from: " + address);
-     } else {
-      logger.log("removeRemoteServiceObjects: address not found: " + address);
-     }
+		var count = this.remoteServiceObjects[address].length;
+		delete this.remoteServiceObjects[address];
+		logger.log("removeRemoteServiceObjects: removed " + count + " services from: " + address);
 	};
 
 	/**

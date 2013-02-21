@@ -155,12 +155,12 @@ BEGIN
         BLOCK "040904B0"
         BEGIN
             VALUE "FileDescription", "webinos node service UI Module"
-            VALUE "FileVersion", "0, 7, 0, 0"
+            VALUE "FileVersion", "0, 8, 0, 0"
             VALUE "InternalName", "webinosNodeServiceUI"
             VALUE "LegalCopyright", "Copyright 2013"
             VALUE "OriginalFilename", "webinosNodeServiceUI.exe"
             VALUE "ProductName", "webinos"
-            VALUE "ProductVersion", "0, 7, 0, 0"
+            VALUE "ProductVersion", "0, 8, 0, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -297,7 +297,7 @@ BEGIN
     PUSHBUTTON      "Restart PZP",IDC_RESET_BUTTON,257,73,50,14
     CHECKBOX        "Show PZP console",IDC_OUTPUT_CHECK,11,90,80,12,BS_AUTOCHECKBOX | WS_TABSTOP
     CONTROL         IDB_BANNER_BITMAP,IDC_STATIC,"Static",SS_BITMAP,0,111,333,37
-    LTEXT           "runtime v0.7.00  ©2013 · ",IDC_VERSION_STATIC,102,130,80,10
+    LTEXT           "runtime v0.8.00  ©2013 · ",IDC_VERSION_STATIC,102,130,80,10
     CONTROL         "<a href=""http://webinos.org"">webinos.org</a>",IDC_SYSLINK,
                     "SysLink",WS_TABSTOP,183,130,41,9
     LTEXT           "",IDC_STATUS_STATIC,11,76,205,8

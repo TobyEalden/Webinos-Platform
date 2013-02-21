@@ -46,6 +46,7 @@ PzhWebTLSCommunicator.init = function (config, webOptions, handler, cb) {
         util.webinosMsgProcessing.readJson(this, _buffer, function (obj) {
             var userid = obj.user.identifier || obj.user;
             if (userid in callbackStorage && callbackStorage[userid][obj.payload.type]) {
+                // TOBY - assign callback id to support multiple concurrent requests
                 if (typeof obj.payload.callbackId !== "undefined") {
                   callbackStorage[userid][obj.payload.type][obj.payload.callbackId].success(obj.payload);
                   delete callbackStorage[userid][obj.payload.type][obj.payload.callbackId];
@@ -74,6 +75,7 @@ PzhWebTLSCommunicator.send = function (user, message, callback) {
             user:user,
             message:message
         };
+        // TOBY - assign callback id to support multiple concurrent requests
         var userid = user.identifier || user;
         if (callback && userid && realMsg.message.type) {
           if (!(userid in callbackStorage)) {

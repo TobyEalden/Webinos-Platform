@@ -16,7 +16,11 @@
  * Copyright 2012 - 2013 Samsung Electronics (UK) Ltd
  * Author: Habib Virji (habib.virji@gmail.com)
  *******************************************************************************/
-var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
+ 
+// The arguments are: a set of PZHs, the hostname of the PZH, the PZH Web Server
+// port, the PZH TLS server port, then functions for adding, refreshing and
+// retrieving PZH details.
+var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getAllPzh) {
     "use strict";
     var dependency = require("find-dependencies")(__dirname);
     var util = dependency.global.require(dependency.global.util.location);
@@ -357,6 +361,7 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         "getCertificates":getCertificates,
         "storeExternalCert":storeExternalCert,
         "requestAddFriend":requestAddFriend,
+        "requestAddLocalFriend" :requestAddLocalFriend,
         "getExpectedExternal":getExpectedExternal,
         "approveFriend":approveFriend,
         "rejectFriend":rejectFriend,
@@ -394,6 +399,7 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         lock = true;
     }
 
+    // TOBY - added callbackId to allow multiple outstanding requests per client.
     function sendMsg(conn, user, msg, callbackId) {
         var sendData = {user:user, payload:msg};
         if (typeof callbackId !== "undefined") {
@@ -709,6 +715,66 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
             delete untrustedCert[obj.message.externalUser.email];
         }
     }
+    /* In this alternative flow, we're adding an external user at the same 
+     * PZH provider as the current user, so it should be quick and easy.  Just
+     * add each PZH's details to the trusted (for the current PZH) and untrusted
+     * (for the local friend's PZH) lists.
+     */
+    function requestAddLocalFriend (conn, obj, userObj) {
+        findExistingUserFromEmail(obj.message.externalEmail, function(status, friendpzh) {
+            if (status) {
+                // add the 'friend' to the current user's list of known people.
+                logger.log("Adding " + obj.message.externalEmail + " as an external user to " + userObj.config.metaData.webinosName + "'s zone");
+                userObj.config.cert.external[friendpzh.config.metaData.serverName] = {
+                    url          :"https://" + hostname + "/main/" + obj.message.externalEmail + "/",
+                    host         :hostname,
+                    port         :port,
+                    externalCerts:friendpzh.config.cert.internal.master.cert,
+                    externalCrl  :friendpzh.config.crl,
+                    serverPort   :80 // TODO
+                };
+                userObj.config.storeCertificate (userObj.config.cert.external, "external");                                
+                
+                //update the actual list.
+                if (!userObj.config.trustedList.pzh.hasOwnProperty (friendpzh.config.metaData.serverName)) {
+                    userObj.config.trustedList.pzh[friendpzh.config.metaData.serverName] = {};
+                    userObj.config.storeTrustedList (userObj.config.trustedList);
+                }
+                
+                // refresh your own certificates (I don't exactly know why, but it matters)
+                userObj.setConnParam (function (status, certificateParam) {
+                    if (status) {
+                        var id = hostname + "_" + userObj.config.userData.email[0].value;
+                        if (port !== 443) {
+                            id = hostname + ":" + port + "_" + userObj.config.userData.email[0].value;
+                        }
+                        refreshPzh (id, certificateParam);
+                    }
+                });
+                
+                // add the current user to the friend's list of untrusted people.
+                // the friend will later approve or reject the request.
+                logger.log("Adding " + userObj.config.metaData.webinosName + " as an external user to " + obj.message.externalEmail + "'s zone");                
+                friendpzh.config.untrustedCert[userObj.config.metaData.webinosName] = {
+                    host         :hostname,
+                    port         :port,
+                    url          :"https://" + hostname + "/main/" + userObj.config.metaData.webinosName + "/",
+                    externalCerts:userObj.config.cert.internal.master.cert,
+                    externalCrl  :userObj.config.crl,
+                    serverPort   :80 // TODO 
+                };
+                userObj.config.storeUntrustedCert (friendpzh.config.untrustedCert);
+                sendMsg (conn, obj.user, { type:"requestAddLocalFriend", message:true });
+                return;
+            } else {
+                sendMsg (conn, obj.user, { type:"requestAddLocalFriend", message:false });
+                return;
+            }      
+        });
+
+        
+    }
+
 
     function authCode(conn, obj, userObj) {
         var qrCode = require("./pzh_qrcode.js");
@@ -747,6 +813,20 @@ var pzhWI = function (pzhs, hostname, port, addPzh, refreshPzh, getAllPzh) {
         } catch (err) {
             logger.log(err);
         }
+    }
+
+    function findExistingUserFromEmail(email,callback) {
+        for (var p in pzhs) {
+            if (pzhs.hasOwnProperty (p)) {
+                var i;
+                for (i = 0; i < pzhs[p].config.userData.email.length; i = i + 1) {
+                    if (pzhs[p].config.userData.email[i].value === email) {
+                        return callback (true, pzhs[p]);
+                    }
+                }
+            }
+        }
+        return callback(false);
     }
 
     function findUserFromEmail(obj, callback) {
