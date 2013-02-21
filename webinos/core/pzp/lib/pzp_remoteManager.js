@@ -176,9 +176,14 @@
       var totalCount = idList.length;
       var failedCount = 0;
       for (var installId in idList) {
-        if (!widgetLibrary.widgetmanager.uninstall(idList[installId])) {
+        try {
+          var ok = widgetLibrary.widgetmanager.uninstall(idList[installId]);
+          if (!ok) {
+            failedCount++;
+          }
+        } catch (e) {
           failedCount++;
-        } 
+        }
       }
     }
 
