@@ -1,0 +1,13 @@
+{
+  "type" : "fhz",
+  "port" : "com1",
+"webPort": "3000",
+"socketPort": "3001",
+"devices" : {
+"5151" : { "name": "Study", "threshold": "20.0" },
+"7271" : { "name": "Back reception", "threshold": "10.0" },
+"8788" : { "name": "Back bedroom", "threshold": "10.0" },
+"8660" : { "name": "Esme's room", "threshold": "10.0" },
+"7798" : { "name": "Front reception", "threshold": "10.0" }
+}
+}
