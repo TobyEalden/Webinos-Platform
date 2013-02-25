@@ -58,9 +58,7 @@
                         port = resp.websocketPort;
                     } else { // We are not inside a pzp or widget server.
                         console.log ("CAUTION: webinosConfig.json failed to load. Are you on a pzp/widget server or older version of webinos? Trying the guess  communication channel's port.");
-                        // TOBY - hack for ezh
-                        port = 8080;
-                        //port = port + 1; // Guessing that the port is +1 to the webserver's. This was the way to detect it on old versions of pzp.
+                        port = port + 1; // Guessing that the port is +1 to the webserver's. This was the way to detect it on old versions of pzp.
                     }
                 } catch (err) { // XMLHttpRequest is not supported or something went wrong with it.
                     console.log ("CAUTION: The pzp communication host and port are unknown. Trying the default communication channel.");
