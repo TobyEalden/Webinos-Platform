@@ -411,29 +411,35 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
     }
 
     function getConnectedPzp(_instance) {
-        var i, pzps = [], list = Object.keys(_instance.config.trustedList.pzp);
+        var i, pzps = [], list = Object.keys (_instance.config.trustedList.pzp), isConnected, id;
         for (i = 0; i < list.length; i = i + 1) {
-            if (_instance.pzh_state.connectedPzp.hasOwnProperty(list[i])) {            
-                pzps.push({id:list[i].split("/")[1], url:list[i], isConnected:true});
-            } else {
-                pzps.push({id:list[i].split("/")[1], url:list[i], isConnected:false});
+            isConnected = !!(_instance.pzh_state.connectedPzp.hasOwnProperty (list[i]));
+            id = (_instance.pzh_state.connectedPzp[list[i]] && _instance.pzh_state.connectedPzp[list[i]].friendlyName) || list[i];
+            pzps.push ({id: id, url:list[i], isConnected:isConnected});
+        }
+        for (i in _instance.pzh_state.connectedDevicesToOtherPzh.pzp) {
+            if (_instance.pzh_state.connectedDevicesToOtherPzh.pzp.hasOwnProperty(i)) {
+                pzps.push ({id: _instance.pzh_state.connectedDevicesToOtherPzh.pzp[i] || i,
+                url:i, isConnected:true});
             }
         }
         return pzps;
     }
 
     function getConnectedPzh(_instance) {
-        var pzhs = [], i, list = Object.keys(_instance.config.trustedList.pzh);
+        var pzhs = [], i, list = Object.keys (_instance.config.trustedList.pzh), isConnected, id;
         for (i = 0; i < list.length; i = i + 1) {
-            var splitIdx = list[i].indexOf("_");
-            var pzhId = list[i].substr(splitIdx+1);
-            if (_instance.pzh_state.connectedPzh.hasOwnProperty(list[i])) {
-                pzhs.push({id:pzhId, url:list[i], isConnected:true});
-            } else {
-                pzhs.push({id:pzhId, url:list[i], isConnected:false});
+            isConnected = !!(_instance.pzh_state.connectedPzh.hasOwnProperty (list[i]));
+            id =  (_instance.pzh_state.connectedPzh[list[i]] && _instance.pzh_state.connectedPzh[list[i]].friendlyName) || list[i];
+            pzhs.push ({id: id, url:list[i], isConnected:isConnected});
+        }
+        for (i in _instance.pzh_state.connectedDevicesToOtherPzh.pzh) {
+            if (_instance.pzh_state.connectedDevicesToOtherPzh.pzh.hasOwnProperty(i)) {
+                pzps.push ({id: _instance.pzh_state.connectedDevicesToOtherPzh.pzh[i]|| i,
+                    url:i, isConnected:true});
             }
         }
-        pzhs.push({id:_instance.config.userData.email[0].value + " (Your Pzh)", url:_instance.config.metaData.serverName, isConnected:true});
+        pzhs.push ({id:_instance.config.metaData.friendlyName+" (Your Pzh)", url:_instance.config.metaData.serverName, isConnected:true});
         return pzhs;
     }
 
@@ -536,7 +542,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
                 sendMsg (conn, obj.user, { type:"listUnregServices",
                     message                    :{"pzEntityId":obj.message.at, "modules":modules.services} });
             });
-            var msg = userObj.prepMsg (userObj.pzh_state.sessionId, obj.message.at, "listUnregServices", {listenerId:id});
+            var msg = userObj.prepMsg (obj.message.at, "listUnregServices", {listenerId:id});
             userObj.sendMessage(msg, obj.message.at);
         } else { // returns all the current serviceCache
             var data = require ("fs").readFileSync ("./webinos_config.json");
@@ -548,7 +554,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
 
     function registerService(conn, obj, userObj) {
         if (userObj.pzh_state.sessionId !== obj.message.at) {
-            var msg = userObj.prepMsg (userObj.pzh_state.sessionId, obj.message.at, "registerService",
+            var msg = userObj.prepMsg (obj.message.at, "registerService",
                 {name:obj.message.name, params:{}});
             userObj.sendMessage(msg, obj.message.at);
         } else {
@@ -564,7 +570,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
 
     function unregisterService(conn, obj, userObj) {
         if (userObj.pzh_state.sessionId !== obj.message.at) {
-            var msg = userObj.prepMsg (userObj.pzh_state.sessionId, obj.message.at, "unregisterService",
+            var msg = userObj.prepMsg (obj.message.at, "unregisterService",
                 {svId:obj.message.svId, svAPI:obj.message.svAPI})
             userObj.sendMessage(msg, obj.message.at);
         } else {
@@ -771,8 +777,6 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
                 return;
             }      
         });
-
-        
     }
 
 
@@ -797,6 +801,9 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
             var pzhId = hostname + "_" + userId;
             if (port !== 443) {
                 pzhId = hostname + ":" + port + "_" + userId;
+            }
+            if (pzhs[pzhId]) {
+                return callback(false, "pzh id already exists");
             }
             logger.log("adding new zone hub - " + pzhId);
             pzhs[pzhId] = new pzh_session();
@@ -878,18 +885,22 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
             logger.log("No 'user' or 'message' field in message from web interface");
             return false;
         }
+        if (obj.message !== "WEB SERVER INIT") { // Web server init
         valid = obj.message.hasOwnProperty("type") && obj.message.type !== undefined && obj.message.type !== null &&
             ( messageType.hasOwnProperty(obj.message.type));
         if (!valid) {
             logger.log("No valid type field in message: " + obj.message.type);
             return false;
         }
-
+        }
         return true;
     }
 
     function processMsg(conn, obj) {
         if (validateMessage(obj)) {
+            if( obj.message === "WEB SERVER INIT") {
+                // Do nothing
+            } else {
             if (obj.message.type !== "checkPzh") {
                 findUserFromEmail(obj, function (userObj) {
                     if (userObj) {
@@ -901,13 +912,13 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
             } else {
                 messageType[obj.message.type].apply(this, [conn, obj]);
             }
+            }
         } else {
             sendMsg(conn, obj.user, {type:"error", "message":"not valid msg"});
         }
     }
 
     this.handleData = function (conn, data) {
-        logger.log("handling Web Interface data");
         try {
             conn.pause();
             util.webinosMsgProcessing.readJson(this, data, function (obj) {

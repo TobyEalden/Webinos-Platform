@@ -27,7 +27,6 @@
     }
     
     _parent.prepMsg (
-      _parent.pzp_state.sessionId,
       _parent.config.metaData.pzhId,
       "remote_management.getInstalledWidgetsReply", {
           "installedList": installedList,
@@ -126,7 +125,6 @@
       if (ok) {
         doInstallWidget(filePath,function(err, installId) {
           _parent.prepMsg (
-            _parent.pzp_state.sessionId,
             _parent.config.metaData.pzhId,
             "remote_management.installWidgetReply", {
                 "ok" : err === null,
@@ -137,7 +135,6 @@
         });
       } else {
         _parent.prepMsg (
-          _parent.pzp_state.sessionId,
           _parent.config.metaData.pzhId,
           "remote_management.installWidgetReply", {
               "ok"      : false,
@@ -152,7 +149,6 @@
     console.log("removeWidget was invoked with " + receivedMsg.installId);
     if (widgetLibrary.widgetmanager.uninstall(receivedMsg.installId)) {
       _parent.prepMsg (
-        _parent.pzp_state.sessionId,
         _parent.config.metaData.pzhId,
         "remote_management.removeWidgetReply", {
             "ok" : true,
@@ -160,7 +156,6 @@
         });    
     } else {
       _parent.prepMsg (
-        _parent.pzp_state.sessionId,
         _parent.config.metaData.pzhId,
         "remote_management.removeWidgetReply", {
             "ok"      : false,
@@ -188,7 +183,6 @@
     }
 
     _parent.prepMsg (
-      _parent.pzp_state.sessionId,
       _parent.config.metaData.pzhId,
       "remote_management.wipeReply", {
           "totalCount": totalCount,
@@ -201,7 +195,6 @@
     var data = fs.readFileSync ("./webinos_config.json");
     var c = JSON.parse (data.toString ());
     _parent.prepMsg (
-      _parent.pzp_state.sessionId,
       _parent.config.metaData.pzhId,
       "remote_management.getDefaultServicesReply", {
         "services":c.pzpDefaultServices,

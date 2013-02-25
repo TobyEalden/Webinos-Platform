@@ -112,6 +112,8 @@ function newContact(i, item, picture, callback)
 	{
 		if (item['gd$structuredPostalAddress'].length !== undefined) //if is an array
 		{
+            if (item['gd$email'] && item['gd$email'].length) //if email is defined
+            {
             for (j=0; j<item['gd$email'].length; j++)
 			{
                 if (formatted = item['gd$structuredPostalAddress'][j]['gd$formattedAddress'])
@@ -147,6 +149,7 @@ function newContact(i, item, picture, callback)
 
 				addrs.push(new ContactAddress(formatted, type, street, pref, locality, region, postCode, country));
 			}
+		}
 		}
 		else
 		//single address

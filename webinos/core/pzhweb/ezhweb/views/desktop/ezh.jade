@@ -10,9 +10,7 @@ block head
   script(src="/js/desktop/dataCache.js")
   script(src="/js/desktop/explorer.js")
   script
-    log = ubi.console.log;
-    log("Connecting to webinos");
-    webinos.session.addListener ('registeredBrowser', webinos_connected);
+
     function webinos_connected() {
       log("Webinos connected");
       log("Connected to zone " + webinos.session.getPZPId());
@@ -27,6 +25,9 @@ block head
     }
 
     $(function() {
+      webinos.session.addListener ('registeredBrowser', webinos_connected);
+      log = ubi.console.log;
+      log("Connecting to webinos");
       ubi.explorer.initialise($(".tree-root"),ubi.dataCache);
       ubi.dataCache.initialise("#{user}",function() {
         ubi.dataCache.loadZones();

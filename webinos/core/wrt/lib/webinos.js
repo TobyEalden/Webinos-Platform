@@ -58,7 +58,9 @@
                         port = resp.websocketPort;
                     } else { // We are not inside a pzp or widget server.
                         console.log ("CAUTION: webinosConfig.json failed to load. Are you on a pzp/widget server or older version of webinos? Trying the guess  communication channel's port.");
-                        port = port + 1; // Guessing that the port is +1 to the webserver's. This was the way to detect it on old versions of pzp.
+                        // TOBY - hack for ezh
+                        port = 8080;
+                        //port = port + 1; // Guessing that the port is +1 to the webserver's. This was the way to detect it on old versions of pzp.
                     }
                 } catch (err) { // XMLHttpRequest is not supported or something went wrong with it.
                     console.log ("CAUTION: The pzp communication host and port are unknown. Trying the default communication channel.");
@@ -100,11 +102,14 @@
                 webinos.messageHandler.onMessageReceived (data, data.to);
             }
         };
+        channel.onopen = function() {
+          var url = window.location.pathname;
+          var filename = url.substring(url.lastIndexOf('/')+1);
+          webinos.session.message_send({type: 'prop', payload: {status:'registerBrowser', value: filename}});
+        };
     }
 
     createCommChannel ();
-
-    if (typeof webinos === 'undefined') webinos = {};
 
     webinos.rpcHandler = new RPCHandler (undefined, new Registry ());
     webinos.messageHandler = new MessageHandler (webinos.rpcHandler);
