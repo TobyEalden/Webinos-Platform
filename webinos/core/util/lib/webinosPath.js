@@ -32,7 +32,7 @@ exports.webinosPath = function() {
     case "linux":
       switch(os.platform().toLowerCase()){
         case "android":
-          webinosDemo = path.resolve("/data/data/org.webinos.app/webinos");
+          webinosDemo = path.resolve(process.env.EXTERNAL_STORAGE + "/.webinos/");
           break;
         case "linux":
           webinosDemo = path.resolve(process.env.HOME + "/.webinos");
