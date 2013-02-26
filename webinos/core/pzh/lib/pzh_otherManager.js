@@ -222,7 +222,10 @@ var Pzh_RPC = function (_parent) {
                     case "unregisterService":
                         self.registry.unregisterObject ({id:validMsgObj.payload.message.svId, api:validMsgObj.payload.message.svAPI});
                         sendUpdateServiceToAllPzh ();
-                        break;                    
+                        break;
+                    case "update":
+                        updateDeviceInfo(validMsgObj);
+                        break;
                     default:
                         // Delegate to remote manager
                         if (!_parent.pzh_remoteManager.processMsg(validMsgObj)) {

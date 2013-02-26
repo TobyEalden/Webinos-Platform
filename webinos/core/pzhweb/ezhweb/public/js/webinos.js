@@ -281,8 +281,12 @@ if (typeof webinos.util === "undefined") webinos.util = {};
 			return el.id === serviceId;
 		});
 
-		if (typeof filteredRO[0] === 'undefined')
+		if (filteredRO.length < 1) {
+			if (serviceTyp === 'ServiceDiscovery') {
 			return receiverObjs[0];
+			}
+			return undefined;
+		}
 
 		return filteredRO[0];
 	}
@@ -554,25 +558,36 @@ if (typeof webinos.util === "undefined") webinos.util = {};
 		logger.log("Received a response that is registered for " + response.id);
 
 		// invoking linked error / success callback
-		if (typeof this.awaitingResponse[response.id] !== 'undefined'){
-			if (this.awaitingResponse[response.id] != null){
+		if (this.awaitingResponse[response.id]) {
+			var waitResp = this.awaitingResponse[response.id];
 
-				if (typeof this.awaitingResponse[response.id].onResult === 'function' && typeof response.result !== 'undefined'){
-
-					this.awaitingResponse[response.id].onResult(response.result);
-					logger.log("called SCB");
+			if (waitResp.onResult && response.result) {
+				waitResp.onResult(response.result);
+				logger.log("RPC called scb for response");
 				}
 
-				if (typeof this.awaitingResponse[response.id].onError === 'function' && typeof response.error !== 'undefined'){
-					if (typeof response.error.data !== 'undefined'){
-						logger.log("Propagating error to application");
+			if (waitResp.onError && response.error) {
+				if (response.error.data) {
 						this.awaitingResponse[response.id].onError(response.error.data);
 					}
-					else this.awaitingResponse[response.id].onError();
+				else {
+					this.awaitingResponse[response.id].onError();
 				}
-
+				logger.log("RPC called ecb for response");
+				}
 				delete this.awaitingResponse[response.id];
+
+		} else if (this.callbackObjects[response.id]) {
+			// response is for a rpc callback obj
+			var callbackObj = this.callbackObjects[response.id];
+
+			if (callbackObj.onSecurityError && response.error &&
+					response.error.data && response.error.data.name === 'SecurityError') {
+
+				callbackObj.onSecurityError(response.error.data);
+				logger.log('Received SecurityError response.');
 			}
+			logger.log('Dropping received response for RPC callback obj.');
 		}
 	};
 
@@ -616,9 +631,9 @@ if (typeof webinos.util === "undefined") webinos.util = {};
 	_RPCHandler.prototype.executeRPC = function (preRpc, callback, errorCB, from) {
 		var rpc = toJSONRPC(preRpc);
 
-		if (typeof callback === 'function'){
+		if (typeof callback === 'function' || typeof errorCB === 'function'){
 			var cb = {};
-			cb.onResult = callback;
+			if (typeof callback === 'function') cb.onResult = callback;
 			if (typeof errorCB === 'function') cb.onError = errorCB;
 			if (typeof rpc.id !== 'undefined') this.awaitingResponse[rpc.id] = cb;
 		}
