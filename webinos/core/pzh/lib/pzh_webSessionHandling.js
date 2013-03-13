@@ -54,7 +54,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
         var pzhId = obj.message.targetPZH;
         var list = [];
         if (pzhs.hasOwnProperty(pzhId)) {
-          list = getConnectedPzp(pzhs[pzhId]);
+          list = getConnectedPzp(pzhs[pzhId],true);
         }
 
         sendMsg (conn, obj.user, { type: "remote_management.getPZHPZPs", message:list });
@@ -117,7 +117,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
             }
             if (!pzhs[pzhId].config.cert.external.hasOwnProperty(name)) {
               pzhs[pzhId].config.cert.external[name] = details;
-              pzhs[pzhId].config.storeCertificate(pzhs[pzhId].config.cert.external, "external");
+              pzhs[pzhId].config.storeDetails(require("path").join("certificates", "external"), "certificates", pzhs[pzhId].config.cert.external);
               pzhs[pzhId].setConnParam(function (status, certificateParam) {
                 if (status) {
                   var id = hostname + "_" + pzhs[pzhId].config.userData.email[0].value;
@@ -131,10 +131,11 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
             }
             if (!pzhs[pzhId].config.trustedList.pzh.hasOwnProperty(name)) {
               pzhs[pzhId].config.trustedList.pzh[name] = {};
-              pzhs[pzhId].config.storeTrustedList(pzhs[pzhId].config.trustedList);
+              pzhs[pzhId].config.storeDetails(null,"trustedList",pzhs[pzhId].config.trustedList);
+
             }
             delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
-            pzhs[pzhId].config.storeUntrustedCert(pzhs[pzhId].config.untrustedCert);
+            pzhs[pzhId].config.storeDetails(null, "untrustedList", pzhs[pzhId].config.untrustedCert);
           }
           sendMsg(conn, obj.user, { type:"remote_management.approvePZHFriend", message:true });
         } else {
@@ -148,7 +149,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
           if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
             logger.log("Rejecting friend request by " + obj.message.externalEmail + " for " + pzhs[pzhId].pzh_state.sessionId);
             delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
-            pzhs[pzhId].config.storeUntrustedCert(pzhs[pzhId].config.untrustedCert);
+            pzhs[pzhId].config.storeDetails(null, "untrustedList", pzhs[pzhId].config.untrustedCert);
           }
           sendMsg(conn, obj.user, { type:"remote_management.rejectPZHFriend", message:true });
         } else {
@@ -163,16 +164,16 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
           if (pzhs[pzhId].config.untrustedCert.hasOwnProperty(obj.message.externalEmail)) {
             logger.log("Removing outstanding friend request by " + obj.message.externalEmail + " for " + pzhs[pzhId].pzh_state.sessionId);
             delete pzhs[pzhId].config.untrustedCert[obj.message.externalEmail];
-            pzhs[pzhId].config.storeUntrustedCert(pzhs[pzhId].config.untrustedCert);
+            pzhs[pzhId].config.storeDetails(null, "untrustedList", pzhs[pzhId].config.untrustedCert);
           }
           if (pzhs[pzhId].config.trustedList.pzh.hasOwnProperty(obj.message.externalPZH)) {
             logger.log("Removing friend " + obj.message.externalEmail + " from " + pzhs[pzhId].pzh_state.sessionId);
             delete pzhs[pzhId].config.trustedList.pzh[obj.message.externalPZH];
-            pzhs[pzhId].config.storeTrustedList(pzhs[pzhId].config.trustedList);
+            pzhs[pzhId].config.storeDetails(null,"trustedList",pzhs[pzhId].config.trustedList);
           }
           if (pzhs[pzhId].config.cert.external.hasOwnProperty(obj.message.externalPZH)) {
             delete pzhs[pzhId].config.cert.external[obj.message.externalPZH];
-            pzhs[pzhId].config.storeCertificate(pzhs[pzhId].config.cert.external, "external");
+            pzhs[pzhId].config.storeDetails(require("path").join("certificates", "external"), "certificates", pzhs[pzhId].config.cert.external);
           }
           sendMsg(conn, obj.user, { type:"remote_management.removePZHFriend", message:true });
         } else {
@@ -270,7 +271,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
               externalCrl:obj.message.externalCerts.crl,
               serverPort:obj.message.externalCerts.serverPort
             };
-            pzhs[targetPZH].config.storeCertificate(pzhs[targetPZH].config.cert.external, "external");
+            pzhs[targetPZH].config.storeDetails(require("path").join("certificates", "external"), "certificates", pzhs[targetPZH].config.cert.external);
             pzhs[targetPZH].setConnParam(function (status, certificateParam) {// refresh your own certs
               if (status) {
                 var id = hostname + "_" + pzhs[targetPZH].config.userData.email[0].value;
@@ -283,7 +284,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
           }
           if (!pzhs[targetPZH].config.trustedList.pzh.hasOwnProperty(name)) {
             pzhs[targetPZH].config.trustedList.pzh[name] = {};
-            pzhs[targetPZH].config.storeTrustedList(pzhs[targetPZH].config.trustedList);
+            pzhs[targetPZH].config.storeDetails(null,"trustedList",pzhs[targetPZH].config.trustedList);
           }
           sendMsg(conn, obj.user, { type:"remote_management.addTrustedFriend", message:true });
         }
@@ -410,18 +411,21 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
         conn.write(buf);
     }
 
-    function getConnectedPzp(_instance) {
+    // TOBY - add flag to only fetch local devices
+    function getConnectedPzp(_instance, localOnly) {
         var i, pzps = [], list = Object.keys (_instance.config.trustedList.pzp), isConnected, id;
         for (i = 0; i < list.length; i = i + 1) {
             isConnected = !!(_instance.pzh_state.connectedPzp.hasOwnProperty (list[i]));
             id = (_instance.pzh_state.connectedPzp[list[i]] && _instance.pzh_state.connectedPzp[list[i]].friendlyName) || list[i];
             pzps.push ({id: id, url:list[i], isConnected:isConnected});
         }
+        if (typeof localOnly === "undefined" || !localOnly) {
         for (i in _instance.pzh_state.connectedDevicesToOtherPzh.pzp) {
             if (_instance.pzh_state.connectedDevicesToOtherPzh.pzp.hasOwnProperty(i)) {
                 pzps.push ({id: _instance.pzh_state.connectedDevicesToOtherPzh.pzp[i] || i,
                 url:i, isConnected:true});
             }
+        }
         }
         return pzps;
     }
@@ -459,6 +463,12 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
 
     function getUserDetails(conn, obj, userObj) {
         sendMsg(conn, obj.user, { type:"getUserDetails", message:userObj.config.userData });
+    }
+
+    function notifyUser(pzh, notification, idcallback, resultcallback) {
+        logger.log("NotifyUser method with pzh id: " + pzh);
+        var Notifications = dependency.global.require(dependency.global.api.zonenotification.location, "lib/notificationPzh.js");
+        Notifications.sendFromInternal(pzh, notification, idcallback, resultcallback);
     }
 
     function getZoneStatus(conn, obj, userObj) {
@@ -526,13 +536,13 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
         for (var i = 0; i < userObj.config.serviceCache.length; i = i + 1) {
             if (userObj.config.serviceCache[i].name === name) {
                 userObj.config.serviceCache.splice (i, 1);
-                userObj.config.storeServiceCache (userObj.config.serviceCache);
+                userObj.config.storeDetails("userData", "serviceCache", userObj.config.serviceCache);
                 return;
             }
         }
         if (!remove) {
             userObj.config.serviceCache.splice (i, 0, {"name":name, "params":{} });
-            userObj.config.storeServiceCache (userObj.config.serviceCache);
+            userObj.config.storeDetails("userData", "serviceCache", userObj.config.serviceCache);
         }
         }
 
@@ -586,7 +596,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
         var result = {
             "provider":"provider-cert-data",
             "server":userObj.config.cert.internal.master.cert,
-            "crl":userObj.config.crl,
+            "crl"       :userObj.config.crl.value,
             "serverPort":userObj.config.userPref.ports.provider
         };
         sendMsg(conn, obj.user, { type:"getCertificates", message:result });
@@ -614,7 +624,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
                     externalCrl:obj.message.externalCerts.crl,
                     serverPort:obj.message.externalCerts.serverPort
                 };
-                userObj.config.storeCertificate(userObj.config.cert.external, "external");
+                userObj.config.storeDetails(require("path").join("certificates", "external"),"certificates", userObj.config.cert.external);
                 userObj.setConnParam(function (status, certificateParam) {// refresh your own certs
                     if (status) {
                         var id = hostname + "_" + userObj.config.userData.email[0].value;
@@ -627,7 +637,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
             }
             if (!userObj.config.trustedList.pzh.hasOwnProperty(name)) {
                 userObj.config.trustedList.pzh[name] = {};
-                userObj.config.storeTrustedList(userObj.config.trustedList);
+                userObj.config.storeDetails(null, "trustedList", userObj.config.trustedList);
             }
             sendMsg(conn, obj.user, { type:"storeExternalCert", message:true });
         }
@@ -642,6 +652,25 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
             " has been authenticated and would like to be added to the list of trusted users to " +
             obj.user + "'s zone");
 
+        // notify the user about it.  This may or may not be successful, it doesn't
+        // really matter.  
+        var approveURL = "https://" + hostname + "/main/" + 
+                encodeURIComponent(userObj.config.metaData.webinosName) + 
+                "/approve-user/" + encodeURIComponent(obj.message.externalUser.email) + "/"        
+        notifyUser(
+            userObj.config.metaData.serverName, 
+            { "type" : "connection request", 
+              "url"  : approveURL,
+              "user" : { "email" : obj.message.externalUser.email,
+                         "fullname" : obj.message.externalUser.fullname,
+                         "nickname" : obj.message.externalUser.nickname,
+                         "image" : obj.message.externalUser.image
+                       }
+            },
+            function(id) { /* don't care */ }, 
+            function(id) { /* don't care */ }
+        );
+
         var url = require("url").parse(obj.message.externalPzh.externalPZHUrl);
         userObj.config.untrustedCert[obj.message.externalUser.email] = {
             host:url.hostname,
@@ -650,7 +679,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
             externalCerts:obj.message.externalPzh.pzhCerts.server,
             externalCrl:obj.message.externalPzh.pzhCerts.crl,
             serverPort:obj.message.externalPzh.pzhCerts.serverPort};
-        userObj.config.storeUntrustedCert(userObj.config.untrustedCert);
+        userObj.config.storeDetails(null, "untrustedList", userObj.config.untrustedCert);
         sendMsg(conn, obj.user, { type:"requestAddFriend", message:true });
     }
 
@@ -693,7 +722,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
             }
             if (!userObj.config.cert.external.hasOwnProperty(name)) {
                 userObj.config.cert.external[name] = details;
-                userObj.config.storeCertificate(userObj.config.cert.external, "external");
+                userObj.config.storeDetails(require("path").join("certificates", "external"), "certificates", userObj.config.cert.external);
                 userObj.setConnParam(function (status, certificateParam) {
                     if (status) {
                         var id = hostname + "_" + userObj.config.userData.email[0].value;
@@ -707,18 +736,19 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
             }
             if (!userObj.config.trustedList.pzh.hasOwnProperty(name)) {
                 userObj.config.trustedList.pzh[name] = {};
-                userObj.config.storeTrustedList(userObj.config.trustedList);
+                userObj.config.storeDetails(null, "trustedList", userObj.config.trustedList);
             }
             delete userObj.config.untrustedCert[obj.message.externalEmail];
-            userObj.config.storeUntrustedCert(userObj.config.untrustedCert);
+            userObj.config.storeDetails(null, "untrustedList", userObj.config.untrustedCert);
         }
     }
 
     // Sixth
     function rejectFriend(conn, obj, userObj) {
-        if (userObj.config.untrustedCert.hasOwnProperty(obj.message.externalUser.email)) {
-            logger.log("Rejecting friend request by " + obj.message.externalUser.email + " for " + obj.user);
-            delete untrustedCert[obj.message.externalUser.email];
+        if (userObj.config.untrustedCert.hasOwnProperty (obj.message.externalEmail)) {
+            logger.log ("Rejecting friend request by " + obj.message.externalEmail + " for " + obj.user);
+            delete userObj.config.untrustedCert[obj.message.externalEmail];
+            userObj.config.storeDetails(null, "untrustedList", userObj.config.untrustedCert);
         }
     }
     /* In this alternative flow, we're adding an external user at the same 
@@ -739,12 +769,12 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
                     externalCrl  :friendpzh.config.crl,
                     serverPort   :80 // TODO
                 };
-                userObj.config.storeCertificate (userObj.config.cert.external, "external");                                
+                userObj.config.storeDetails(require("path").join("certificates", "external"), "certificates", userObj.config.cert.external);
                 
                 //update the actual list.
                 if (!userObj.config.trustedList.pzh.hasOwnProperty (friendpzh.config.metaData.serverName)) {
                     userObj.config.trustedList.pzh[friendpzh.config.metaData.serverName] = {};
-                    userObj.config.storeTrustedList (userObj.config.trustedList);
+                    userObj.config.storeDetails(null, "trustedList", userObj.config.trustedList);
                 }
                 
                 // refresh your own certificates (I don't exactly know why, but it matters)
@@ -758,6 +788,30 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
                     }
                 });
                 
+                // notify the user about it.  This may or may not be successful, it doesn't
+                // really matter.  
+                var approveURL = "https://" + hostname + "/main/" + 
+                        encodeURIComponent(friendpzh.config.metaData.webinosName) + 
+                        "/approve-user/" + encodeURIComponent(userObj.config.metaData.webinosName) + "/"        
+                
+                logger.log("User data:\n" + require('util').inspect(userObj.config.userData));
+                logger.log("Obj data:\n" + require('util').inspect(obj.message));
+                
+                notifyUser(
+                    friendpzh.config.metaData.serverName, 
+                    { "type" : "connection request", 
+                      "url"  : approveURL,
+                      "user" : { "email" : userObj.config.metaData.webinosName,
+                                 "fullname" : userObj.config.userData.fullname,
+                                 "nickname" : userObj.config.userData.nickname,
+                                 "name" : userObj.config.userData.name,
+                                 "image" : userObj.config.userData.image
+                               }
+                    },
+                    function(id) { /* don't care */ }, 
+                    function(id) { /* don't care */ }
+                );
+                
                 // add the current user to the friend's list of untrusted people.
                 // the friend will later approve or reject the request.
                 logger.log("Adding " + userObj.config.metaData.webinosName + " as an external user to " + obj.message.externalEmail + "'s zone");                
@@ -769,7 +823,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
                     externalCrl  :userObj.config.crl,
                     serverPort   :80 // TODO 
                 };
-                userObj.config.storeUntrustedCert (friendpzh.config.untrustedCert);
+                userObj.config.storeDetails(null, "untrustedList", userObj.config.untrustedCert);
                 sendMsg (conn, obj.user, { type:"requestAddLocalFriend", message:true });
                 return;
             } else {
@@ -788,10 +842,16 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
     }
 
     function csrAuthCodeByPzp(conn, obj, userObj) {
-        userObj.enroll.addNewPZPCert(obj, function (status, payload) {
+        userObj.enroll.addNewPZPCert (obj, refreshPzh, function (status, payload) {
             if (status) {
                 sendMsg(conn, obj.user, { type:"csrAuthCodeByPzp", message:payload });
             }
+        });
+    }
+
+    function removePzh(conn, obj, userObj) {
+        userObj.removePzh(obj.message.id, refreshPzh, function(status){
+            sendMsg (conn, obj.user, { type:"removePzh", message:status });
         });
     }
 
@@ -803,8 +863,8 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
                 pzhId = hostname + ":" + port + "_" + userId;
             }
             if (pzhs[pzhId]) {
-                return callback(false, "pzh id already exists");
-            }
+                callback(false, "pzh id already exists");
+            } else {
             logger.log("adding new zone hub - " + pzhId);
             pzhs[pzhId] = new pzh_session();
             pzhs[pzhId].addLoadPzh(userId, pzhId, obj.user, function (status, options, uri) {
@@ -816,10 +876,11 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
                     return callback(false, "failed adding pzh");
                 }
             });
-
+            }
         } catch (err) {
             logger.log(err);
         }
+        return;
     }
 
     function findExistingUserFromEmail(email,callback) {
@@ -904,13 +965,13 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
             if (obj.message.type !== "checkPzh") {
                 findUserFromEmail(obj, function (userObj) {
                     if (userObj) {
-                        messageType[obj.message.type].apply(this, [conn, obj, userObj]);
+                            messageType[obj.message.type].apply(userObj, [conn, obj, userObj]);
                     } else {
                         logger.error("error validating user");
                     }
                 });
             } else {
-                messageType[obj.message.type].apply(this, [conn, obj]);
+                    messageType[obj.message.type].apply (userObj, [conn, obj]);
             }
             }
         } else {

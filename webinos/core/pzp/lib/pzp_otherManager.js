@@ -79,15 +79,15 @@ var Pzp_OtherManager = function (_parent) {
         for (msg in receivedMsg) {
             if (msg === "trustedList") {
                 _parent.config.metaData.trustedList = receivedMsg[msg];
-                _parent.config.storeTrustedList (_parent.config.metaData.trustedList);
+                _parent.config.storeDetails(null, "trustedList", _parent.config.trustedList);
             }
             else if (msg === "crl") {
                 _parent.config.crl = receivedMsg[msg];
-                _parent.config.storeCrl (_parent.config.crl);
+                _parent.config.storeDetails(null, "crl", _parent.config.crl);
             }
             else if (msg === "cert") {
                 _parent.config.cert.external = receivedMsg[msg];
-                _parent.config.storeCertificate (_parent.config.cert.external, "external");
+                _parent.config.storeDetails(require("path").join("certificates", "external"), "certificates", _parent.config.cert.external);
             }
         }
         logger.log ("Files Synchronised with the PZH");
@@ -110,14 +110,14 @@ var Pzp_OtherManager = function (_parent) {
                 if (remove) {
                     _parent.config.serviceCache.splice (i, 1);
                 }
-                _parent.config.storeServiceCache (_parent.config.serviceCache);
+                _parent.config.storeDetails("userData", "serviceCache",_parent.config.serviceCache);
                 return;
             }
         }
 
         if (!remove) {
             _parent.config.serviceCache.splice (i, 0, {"name":name, "params":{}});
-            _parent.config.storeServiceCache (_parent.config.serviceCache);
+            _parent.config.storeDetails("userData", "serviceCache",_parent.config.serviceCache);
         }
     }
 
@@ -152,7 +152,7 @@ var Pzp_OtherManager = function (_parent) {
             _parent.pzp_state.connectedPzh[validMsgObj.from].friendlyName = validMsgObj.payload.message.friendlyName;
             if (_parent.config.metaData.friendlyName.indexOf(validMsgObj.payload.message.friendlyName) === -1) {
                 _parent.config.metaData.friendlyName = validMsgObj.payload.message.friendlyName + "'s " + _parent.config.metaData.friendlyName;
-                _parent.config.storeMetaData(_parent.config.metaData);
+                _parent.config.storeDetails(null, "metaData", _parent.config.metaData);
             }
         } else if (_parent.pzp_state.connectedPzp[validMsgObj.from]) {
             _parent.pzp_state.connectedPzp[validMsgObj.from].friendlyName = validMsgObj.payload.message.friendlyName;
@@ -292,6 +292,9 @@ var Pzp_OtherManager = function (_parent) {
                         break;
                     case "update":
                         updateDeviceInfo(validMsgObj);
+                        break;
+                    case "changeFriendlyName":
+                        _parent.changeFriendlyName(validMsgObj.payload.message);
                         break;
                     default:
                         // Delegate to remote manager

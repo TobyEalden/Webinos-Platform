@@ -48,7 +48,7 @@ function load(mod, modDesc, registry, rpcHandler) {
 exports.loadServiceModules = function(modulesDesc, registry, rpcHandler) {
 	var mods = modulesDesc.map(function(m) {
 		try {
-		return deps.global.require(deps.global.api[m.name].location);
+			return deps.global.require(deps.global.api[m.name].location);
 		} catch(e) {
 			logger.error("module require for " + m.name + " failed: " + e);
 			return m;

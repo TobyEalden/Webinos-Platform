@@ -55,11 +55,26 @@ var Pzh_RPC = function (_parent) {
     }
 
     function updateDeviceInfo(validMsgObj) {
-        var i;
+        function updateCheckFN(connList, from, fn) {
+            for (var key in connList) {
+                if (connList[key].friendlyName === fn && key !== from) {
+                    // Update PZP that your friendly name is duplicate in PZ.
+                    logger.log("sending pzp " + key + " to change friendlyName")
+                    fn = fn + "#" + Math.round(Math.random()*100);
+                    var msg = _parent.prepMsg(validMsgObj.from, "changeFriendlyName", fn);
+                    _parent.sendMessage (msg, validMsgObj.from);
+                } else {
+                    continue;
+                }
+            }
+            connList[from].friendlyName = fn;
+        }
+        var i, fn = validMsgObj.payload.message.friendlyName;
         if (_parent.pzh_state.connectedPzh[validMsgObj.from]) {
-            _parent.pzh_state.connectedPzh[validMsgObj.from].friendlyName = validMsgObj.payload.message.friendlyName;
+             updateCheckFN(_parent.pzh_state.connectedPzh, validMsgObj.from, fn);
+
         } else if (_parent.pzh_state.connectedPzp[validMsgObj.from]) {
-            _parent.pzh_state.connectedPzp[validMsgObj.from].friendlyName = validMsgObj.payload.message.friendlyName;
+            updateCheckFN(_parent.pzh_state.connectedPzp, validMsgObj.from, fn);
         }
         // These are friendlyName... Just for display purpose
         for (i = 0; i < validMsgObj.payload.message.connectedPzp.length; i = i + 1) {
@@ -178,11 +193,11 @@ var Pzh_RPC = function (_parent) {
         if (Object.keys (result).length >= 1) {
             if (result["trustedList"]) {
                 _parent.config.metaData.trustedList = result["trustedList"];
-                _parent.config.storeTrustedList (_parent.config.metaData.trustedList);
+                _parent.config.storeDetails(null, "trustedList",_parent.config.metaData.trustedList);
             }
             if (result["crl"]) {
-                _parent.config.crl = receivedMsg[msg];
-                _parent.config.storeCrl (_parent.config.crl);
+                _parent.config.crl.value = receivedMsg[msg];
+                _parent.config.storeDetails(null, "crl", _parent.config.crl);
             }
             if (result["cert"]) {
                 //_parent.config.cert.external = receivedMsg[msg];

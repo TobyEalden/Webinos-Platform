@@ -44,7 +44,7 @@ module.exports = function (app, address, port, state) {
             logger.log(encodeURIComponent(req.params.user) + " does not equal " + getUserPath(req.user));
             res.redirect('/login');
         } else {
-            res.render('main', { user:req.user });
+            res.render('main', { user:getUserPath(req.user) });
         }
     });
 
@@ -254,5 +254,4 @@ module.exports = function (app, address, port, state) {
     function getUserPath(user) {
         return encodeURIComponent(user.emails[0].value);
     }
-
 };

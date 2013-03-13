@@ -41,7 +41,7 @@ PzhProviderWeb.startWebServer = function (host, address, port, config, cb) {
     var dependency = require('find-dependencies')(__dirname),
         logger = dependency.global.require(dependency.global.util.location, 'lib/logging.js')(__filename) || console,
         webTlsCommunicator = require('./realpzhtls.js');
-
+    
     // define the options for the SSL server
     function getSSLOptions(config, callback) {
         var key_id = config.cert.internal.webssl.key_id;
@@ -81,28 +81,28 @@ PzhProviderWeb.startWebServer = function (host, address, port, config, cb) {
 
         getSSLOptions(config, function(sslOptions) {
             getTLSClientOptions(config, function(tlsClientOptions) {
-        //connect to the TLS Server
+            //connect to the TLS Server
                 makeTLSServerConnection(config, tlsClientOptions, function (status, value) {
-            if (status) {
-                //configure the express app middleware
-                if (!server) {
+                    if (status) {
+                        //configure the express app middleware
+                        if (!server) {
                     // app = createApp(passport);
                     // routes = setRoutes(app, address, port);
 
                    app = createEnterpriseApp(passport);
                    routes = setEnterpriseRoutes(app, address, port);
 
-                    //actually start the server
-                    server = https.createServer(sslOptions, app).listen(port);
-                    handleAppStart(app, server, next);
-                } else {
-                    next(value);
-                }
-            } else {
-                logger.error("Failed to connect to the PZH Provider's TLS server");
-                handleAppStart(app, null, next);
-            }
-        });
+                            //actually start the server
+                            server = https.createServer(sslOptions, app).listen(port);
+                            handleAppStart(app, server, next);
+                        } else {
+                            next(value);
+                        }
+                    } else {
+                        logger.error("Failed to connect to the PZH Provider's TLS server");
+                        handleAppStart(app, null, next);
+                    }
+                });
             });
         });
     }
@@ -155,7 +155,7 @@ PzhProviderWeb.startWebServer = function (host, address, port, config, cb) {
         var MemStore = express.session.MemoryStore;
         app.configure(function () {
             app.set('views', __dirname + '/views');
-            app.set('view engine', 'ejs');
+            app.set('view engine', 'jade');
 //      app.use(express.logger()); // turn on express logging for every page
             app.use(express.bodyParser());
             app.use(express.methodOverride());
@@ -236,7 +236,9 @@ PzhProviderWeb.startWebServer = function (host, address, port, config, cb) {
         //   callback with a user object.
         passport.use(new GoogleStrategy({
                 returnURL:serverUrl + '/auth/google/return',
-                realm:serverUrl + '/'
+                realm:serverUrl + '/',
+                profile:true,
+                pape:{ 'maxAuthAge' : 0 }
             },
             function (identifier, profile, done) {
                 "use strict";
@@ -257,7 +259,9 @@ PzhProviderWeb.startWebServer = function (host, address, port, config, cb) {
 
         passport.use(new YahooStrategy({
                 returnURL:serverUrl + '/auth/yahoo/return',
-                realm:serverUrl + '/'
+                realm:serverUrl + '/',
+                profile:true,
+                pape:{ 'maxAuthAge' : 0 }
             },
             function (identifier, profile, done) {
                 "use strict";

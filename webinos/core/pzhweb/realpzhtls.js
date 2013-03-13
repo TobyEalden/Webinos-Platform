@@ -52,8 +52,8 @@ PzhWebTLSCommunicator.init = function (config, webOptions, handler, cb) {
                   delete callbackStorage[userid][obj.payload.type][obj.payload.callbackId];
                 } else {
                   callbackStorage[userid][obj.payload.type][0].success(obj.payload);
-                  delete callbackStorage[userid][obj.payload.type];
-                }
+                delete callbackStorage[userid][obj.payload.type];
+            }
             }
         });
     });
@@ -83,7 +83,7 @@ PzhWebTLSCommunicator.send = function (user, message, callback) {
           }
           if (!(realMsg.message.type in callbackStorage[userid])) {
             callbackStorage[userid][realMsg.message.type] = [];
-          }
+        }
           realMsg.callbackId = callbackStorage[userid][realMsg.message.type].push(callback) - 1;
         }
         jsonString = JSON.stringify(realMsg);

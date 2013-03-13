@@ -58,6 +58,16 @@ var Pzp = function () {
         }
     }
 
+    function initializePzpComponents() {
+        var PzpWebSocket = require ("./pzp_websocket");
+        var WebinosManager = require ("./pzp_otherManager.js");
+        self.webinos_manager = new WebinosManager(self);
+        self.pzpClient = new PzpClient (self);
+        hub = new ConnectHub (self);
+        self.enrollPzp = new EnrollPzp (self, hub);
+        self.pzpWebSocket = new PzpWebSocket (self);
+    }
+
     this.addStateListener = function (listener) {
       if (typeof listener !== "undefined") {
         if (typeof listener.setHubConnected !== "function") {
@@ -83,7 +93,7 @@ var Pzp = function () {
           listener.setPeerConnected(isConnected);
         }
       });
-    }
+    };
     this.sendUpdateToAll = function() {
         function getConnectedList(type) {
             var connList=[],key, list = (type === "pzp") ? self.pzp_state.connectedPzp: self.pzp_state.connectedPzh;
@@ -108,7 +118,7 @@ var Pzp = function () {
 
     this.changeFriendlyName = function (name) {
         self.config.metaData.friendlyName = name;
-        self.config.storeMetaData (self.config.metaData);
+        self.config.storeDetails(null, "metaData", self.config.metaData);
         self.sendUpdateToAll();
     };
 
@@ -118,7 +128,11 @@ var Pzp = function () {
     this.setSessionId = function () {
         self.pzp_state.sessionId = self.config.metaData.webinosName;
         if (self.pzp_state.enrolled) {
+            if (self.config.metaData.pzhAssignedId) {
+                self.pzp_state.sessionId = self.config.metaData.pzhId + "/" + self.config.metaData.pzhAssignedId;
+            } else {
             self.pzp_state.sessionId = self.config.metaData.pzhId + "/" + self.config.metaData.webinosName;
+        }
         }
         logger.addId (self.config.metaData.webinosName);
     };
@@ -133,8 +147,8 @@ var Pzp = function () {
             if (status) {
                 if (self.pzp_state.enrolled) { // enrolled to Hub 
                     var caList = [], crlList = [], key;
-                    caList.push(self.config.cert.internal.master.cert);
-                    crlList.push(self.config.crl );
+                    caList.push(self.config.cert.internal.pzh.cert);
+                    crlList.push(self.config.crl.value );
 
                     for ( key in self.config.cert.external) {
                         if(self.config.cert.external.hasOwnProperty(key)) {
@@ -156,6 +170,7 @@ var Pzp = function () {
                     options = {
                         key               :value,
                         cert              :self.config.cert.internal.conn.cert,
+                        ca                 :self.config.cert.internal.master.cert,
                         servername        :self.config.metaData.serverName,
                         rejectUnauthorized:true,
                         requestCert       :true
@@ -256,6 +271,7 @@ var Pzp = function () {
                     delete self.pzp_state.connectedPzp[key];
                 }
             }
+            if ((Object.keys(self.pzp_state.connectedPzh)).length > 1)  self.pzpWebSocket.pzhDisconnected();
             for (key in self.pzp_state.connectedPzh) {
                 if (self.pzp_state.connectedPzh.hasOwnProperty (key) && key === _id) {
                     logger.log ("pzh - " + key + " details removed");
@@ -265,7 +281,7 @@ var Pzp = function () {
             }
             self.sendUpdateToAll();
             self.pzpWebSocket.connectedApp ();
-            self.pzpWebSocket.pzhDisconnected ();
+
         }
     };
 
@@ -301,17 +317,19 @@ var Pzp = function () {
                 self.config.setConfiguration ("Pzp", inputConfig, function (status) {
                     if (status) {
                         checkMode ();   //virgin or hub mode
-                        var PzpWebSocket = require ("./pzp_websocket");
-                        var WebinosManager = require ("./pzp_otherManager.js");
-
                         self.setSessionId ();//sets pzp sessionId
+                        initializePzpComponents();
+                        self.startWSS(callback);
+                    }
+                });
+            });
+        } catch (err) {
+            //self.state = self.states[0];//disconnected
+            return callback (false, err);
+        }
+    };
 
-                        self.webinos_manager = new WebinosManager (self);
-                        self.pzpClient = new PzpClient (self);
-                        hub = new ConnectHub (self);
-                        self.enrollPzp = new EnrollPzp (self, hub);
-                        self.pzpWebSocket = new PzpWebSocket (self);
-
+    this.startWSS = function(callback) {
                         self.pzpWebSocket.startWebSocketServer (function (status, value) {
                             if (status) {
                                 self.webinos_manager.initializeRPC_Message (); // Initializes RPC
@@ -323,22 +341,62 @@ var Pzp = function () {
                                         } else {
                                             logger.error ("connection to PZH failed ");
                                         }
+                        return callback(status);
                                     });
                                 } else {
                                     self.webinos_manager.setupMessage_RPCHandler ();
+                    return callback (true, self.pzp_state.sessionId);  // Virgin mode
                                 }
-                                return callback (true, self.pzp_state.sessionId, self.config.cert.internal.conn.csr);// retruning csr to make test work
                             } else {
                                 return callback (false, value);
                             }
                         });
+    };
+    this.resetDevice = function() {
+        // Delete all important folders that makes it a PZP
+        var filePath, key, fs = require("fs"), path = require("path");
+        logger.log("PZP configuration is being reset");
+        self.config.fileList.forEach (function (name) {
+            if (!name.fileName) name.fileName = self.config.metaData.webinosName;
+            filePath = path.join(self.config.metaData.webinosRoot, name.folderName, name.fileName+".json");
+            logger.log("PZP Reset - " + filePath);
+            fs.unlink(filePath);
+        });
+
+        if ((Object.keys(self.pzp_state.connectedPzh)).length > 1)  self.pzpWebSocket.pzhDisconnected();
+        // Disconnect existing connections
+        for (key in self.pzp_state.connectedPzp) {
+            if (self.pzp_state.connectedPzp.hasOwnProperty (key)) {
+                delete self.pzp_state.connectedPzp[key];
+                self.webinos_manager.messageHandler.removeRoute(key, self.pzp_state.sessionId);
+            }
+        }
+        for (key in self.pzp_state.connectedPzh) {
+            if (self.pzp_state.connectedPzh.hasOwnProperty (key)) {
+                delete self.pzp_state.connectedPzh[key];
+                self.setConnectState("hub", false);
+            }
+        }
+        // Restart PZP configuration , not the PZP WebServer...
+        var inputConfig = {
+            pzhHost: '0.0.0.0',
+            pzhName: '',
+            friendlyName: '',
+            forcedDeviceName: '',
+            sessionIdentity: '0.0.0.0'
+        };
+        self.config = new util.webinosConfiguration ();// sets configuration
+        util.webinosHostname.getHostName(inputConfig.sessionIdentity, function (hostname) {
+            inputConfig.sessionIdentity = hostname;
+             self.config.setConfiguration ("Pzp", inputConfig, function (status) {
+                if (status) {
+                    self.pzp_state.enrolled  = false;
+                    self.pzp_state.sessionId = self.config.metaData.webinosName;
+                    self.webinos_manager.setupMessage_RPCHandler();
+                    self.pzpWebSocket.connectedApp();
                     }
                 });
             });
-        } catch (err) {
-            self.state = self.states[0];//disconnected
-            return callback (false, err);
-        }
     };
 };
 
@@ -632,11 +690,18 @@ var ConnectHub = function (parent) {
  */
 var EnrollPzp = function (parent, hub) {
     var logger = util.webinosLogging (__filename + "_EnrollPzp") || console;
-    this.register = function (_from, _clientCert, _masterCert, _masterCrl) {
+    this.register = function (_from, _to, _clientCert, _masterCert, _masterCrl) {
         logger.log ("PZP ENROLLED AT  " + _from);    // This message come from PZH web server over websocket
-        parent.config.cert.internal.conn.cert = _clientCert;
-        parent.config.cert.internal.master.cert = _masterCert;
-        parent.config.crl = _masterCrl;
+        //_parent.config.cert.internal.conn.cert = _clientCert;
+        //_parent.config.cert.internal.master.cert = _masterCert;
+        parent.config.cert.internal.master.cert = _clientCert;
+        parent.config.cert.internal.pzh.cert    = _masterCert;
+
+        parent.config.generateSignedCertificate(parent.config.cert.internal.conn.csr, function(status, signedCert) {
+            if(status) {
+                logger.log("connection signed certificate by PZP");
+                parent.config.cert.internal.conn.cert = signedCert;
+                parent.config.crl.value = _masterCrl;
         parent.config.metaData.pzhId = _from;
         parent.config.metaData.serverName = _from && _from.split ("_")[0];
         if (_from.indexOf (":") !== -1) {
@@ -646,15 +711,23 @@ var EnrollPzp = function (parent, hub) {
         if (!parent.config.trustedList.pzh.hasOwnProperty (parent.config.metaData.pzhId)) {
             parent.config.trustedList.pzh[parent.config.metaData.pzhId] = {"addr":"", "port":""};
         }
-        parent.config.storeMetaData (parent.config.metaData);
-        parent.config.storeAll ();
+                parent.config.storeDetails(null, "metaData", parent.config.metaData);
+                parent.config.storeDetails(null, "crl", parent.config.crl);
+                parent.config.storeDetails(null, "trustedList", parent.config.trustedList);
+                parent.config.storeDetails(require("path").join("certificates", "internal"), "certificates", parent.config.cert.internal);
         parent.pzp_state.enrolled = true; // Moved from Virgin mode to hub mode
 
+                // Same PZP name existed in PZ, PZH has assigned a new id to the PZP.
+                if ((_to.split("/") && _to.split("/")[1])!== parent.config.metaData.webinosName) {
+                  parent.config.metaData.pzhAssignedId = _to.split("/")[1];
+                } 
         hub.connect (function (status) {
             if (status) {
                 logger.log ("successfully connected to the PZH ")
             } else {
                 logger.error ("connection to the PZH unsuccessful")
+            }
+        });
             }
         });
     };
@@ -666,8 +739,10 @@ exports.initializePzp = function (config, callback) {
     pzpInstance.initializePzp (config, function (status, result) {
         if (status) {
             logger.log ("initialized pzp");
+            callback (true);
+        } else {
+            callback (false);
         } 
-        callback(status,result);
     });
 };
 
