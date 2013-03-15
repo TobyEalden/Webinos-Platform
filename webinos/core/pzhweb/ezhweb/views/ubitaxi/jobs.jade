@@ -1,0 +1,83 @@
+extends layout
+
+block content
+  div(data-role="navbar")
+    ul
+      li
+        a(href="/ubitaxi/jobs", rel="external", class="ui-btn-active ui-state-persist") jobs
+      li
+        a(href="/ubitaxi/drivers", rel="external") drivers
+      li
+        a(href="/ubitaxi/map", rel="external") map
+  div(data-role="content")
+    div(data-role='collapsible',data-theme="e",data-content-theme="a",data-collapsed="false",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
+      h3 Unallocated jobs
+      ul(data-role='listview', data-inset='false')
+        - if (unallocatedJobs.length === 0) {
+            li No unallocated jobs
+        - } else {
+          - for (var j in unallocatedJobs) {
+              li
+                div(style="float:right")
+                  a(class="assignDriverPopup", id="job-#{unallocatedJobs[j].id}", data-role="button", data-mini="true", data-inline="true", href="#assignDriver", data-rel="popup",data-position-to="window",data-transition="pop") assign driver
+                div.jobDetails
+                  div #{unallocatedJobs[j].name} (#{unallocatedJobs[j].contact})
+                  div from #{unallocatedJobs[j].pickup}
+                  div to #{unallocatedJobs[j].dropoff}
+                  div #{unallocatedJobs[j].people} #{unallocatedJobs[j].people > 1 ? "people" : "person"}, pickup at #{unallocatedJobs[j].time}
+          - }
+        - }
+
+    div(data-role='collapsible',data-theme="e",data-content-theme="a",data-collapsed="false",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
+      h3 Allocated jobs
+      ul(data-role='listview', data-inset='false')
+        - if (allocatedJobs.length === 0) {
+            li No jobs
+        - } else {
+          - for (var j in allocatedJobs) {
+              li
+                div(style="float:right")
+                  |status: #{allocatedJobs[j].status}
+                  br
+                  |driver: #{allocatedJobs[j].driverId}
+                div.jobDetails
+                  div #{allocatedJobs[j].name} (#{allocatedJobs[j].contact})
+                  div from #{allocatedJobs[j].pickup}
+                  div to #{allocatedJobs[j].dropoff}
+                  div #{allocatedJobs[j].people} #{allocatedJobs[j].people > 1 ? "people" : "person"}, pickup at #{allocatedJobs[j].time}
+          - }
+        - }
+    div(data-role='collapsible',data-theme="e",data-content-theme="a",data-collapsed="true",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
+      h3 Finished jobs
+      ul(data-role='listview', data-inset='false')
+        - if (finishedJobs.length === 0) {
+            li No jobs
+        - } else {
+          - for (var j in finishedJobs) {
+              li
+                div(style="float:right")
+                  |status: #{finishedJobs[j].status}
+                  br
+                  |driver: #{finishedJobs[j].driverId}
+                div.jobDetails
+                  div #{finishedJobs[j].name} (#{finishedJobs[j].contact})
+                  div from #{finishedJobs[j].pickup}
+                  div to #{finishedJobs[j].dropoff}
+                  div #{finishedJobs[j].people} #{finishedJobs[j].people > 1 ? "people" : "person"}, pickup at #{finishedJobs[j].time}
+          - }
+        - }
+    div(data-role="popup",id="assignDriver",style="min-width:300px;max-width:400px;",class="ui-corner-all")
+      div(data-role="header",class="ui-corner-top")
+        h3 Assign driver
+      div(data-role="content",class="ui-corner-bottom ui-content")
+        ul(data-role='listview', data-inset='false')
+          - if (drivers.length === 0) {
+            li No drivers available
+          - } else {
+            - for (var d in drivers) {
+              li
+                a(id="#{drivers[d].friendlyName}", class="assignDriver", href='#') #{drivers[d].friendlyName}
+            - }
+          - }
+      div(data-role="footer",class="ui-corner-bottom") &nbsp;
+

@@ -1,0 +1,62 @@
+body {
+}
+
+.ui-body-c {
+    background-image: none;
+    background-color: #fff3a5;
+}
+
+[data-role="header"] {
+    background-image: url('/images/ubitaxi/ubitaxi-header.jpg');
+    background-repeat: repeat-x;
+    min-height: 120px;
+}
+
+a {
+    text-decoration: none;
+    color: yellow;
+}
+
+input[type='text'], textarea {
+    width: 200px;
+}
+
+.subTitle {
+    font-size: .8em;
+}
+
+label.error {
+    float: none;
+    color: red;
+    vertical-align: top;
+    display: block;
+    font-size: .8em;
+}
+
+.headerImg {
+    float:left;
+}
+
+.headerTitle {
+    color: #eee;
+    font-size: 1.5em;
+    padding-top: 66px;
+    padding-right: 10px;
+    text-align: right;
+    text-shadow: 2px 2px #222;
+}
+
+.headerTitle a {
+    color: #eee !important;
+    text-decoration: none;
+}
+
+.footerText {
+    font-size: .8em;
+    padding: 10px 10px 10px 10px;
+    text-align:right;
+}
+
+.footerText a {
+    color: #eee !important;
+}

@@ -34,6 +34,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
             list[pzhId] = {
               url:pzhId,
               username   :pzhs[pzhId].config.userData.name,
+              friendlyName :pzhs[pzhId].config.metaData.friendlyName,
               email      :pzhs[pzhId].config.userData.email[0].value };
           }
         }

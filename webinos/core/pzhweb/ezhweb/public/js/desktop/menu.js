@@ -32,4 +32,13 @@ $(function() {
 
     return false;
   });
+
+  $("#menu-ubi-taxis").click(function() {
+    ubi.console.log("Loading ubi taxis");
+    var url = "/ubitaxi/jobs";
+    $(".ui-layout-center").html("");
+    $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='" + url + "'></iframe>");
+
+    return false;
+  });
 });

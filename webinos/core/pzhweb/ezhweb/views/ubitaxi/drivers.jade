@@ -1,0 +1,41 @@
+extends layout
+
+block content
+  div(data-role="navbar")
+    ul
+      li
+        a(href="/ubitaxi/jobs", rel="external") jobs
+      li
+        a(href="/ubitaxi/drivers", rel="external", class="ui-btn-active ui-state-persist") drivers
+      li
+        a(href="/ubitaxi/map", rel="external") map
+  div(data-role="content")
+    div(data-role='collapsible',data-theme="e",data-content-theme="a",data-collapsed="false",data-collapsed-icon="arrow-r", data-expanded-icon="arrow-d")
+      h3 Drivers online
+      ul(data-role='listview', data-inset='false')
+        - for (var d in drivers) {
+            li
+              div(style="float:right")
+                a(class="assignJobPopup", id="d-#{drivers[d].friendlyName}", data-role="button", data-mini="true", data-inline="true", href="#assignJob", data-rel="popup",data-position-to="window",data-transition="pop") assign job
+              div.driverDetails
+                div #{drivers[d].username}
+        - }
+
+  div(data-role="popup",id="assignJob",style="min-width:250px;max-width:600px;",class="ui-corner-all")
+    div(data-role="header",class="ui-corner-top")
+      h3 Assign job
+    div(data-role="content",class="ui-corner-bottom ui-content")
+      ul(data-role='listview', data-inset='false')
+        - if (jobs.length === 0) {
+          li No jobs available
+        - } else {
+          - for (var j in jobs) {
+            li
+              a(id="j-#{jobs[j].id}", class="assignJob", href='#') #{jobs[j].pickup}
+                br
+                |to
+                br
+                |#{jobs[j].dropoff}
+          - }
+        - }
+    div(data-role="footer",class="ui-corner-bottom") &nbsp;

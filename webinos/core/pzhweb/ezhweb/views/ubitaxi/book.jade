@@ -1,0 +1,91 @@
+!!! 5
+html
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='/js/jquery/jquery.mobile-1.2.0.min.css')
+    script(src='/js/jquery/jquery-1.8.2.min.js')
+    title UbiTaxi Driver
+    link(rel="stylesheet",href="/css/ubitaxi-booking.css")
+    link(rel="stylesheet",href="/js/timePicker/timePicker.css")
+    script(src='/webinos.js')
+    script(type='text/javascript')
+      // Set up some jqm defaults.
+      $(document).on("mobileinit", function(){
+      $.mobile.popup.prototype.options.history = false;
+      $.mobile.defaultPageTransition = "flip";
+      $.mobile.page.prototype.options.headerTheme = "a";
+      $.mobile.page.prototype.options.contentTheme    = "e";
+      $.mobile.page.prototype.options.footerTheme = "a";
+      });
+    script(src='/js/jquery/jquery.mobile-1.2.0.min.js')
+    script(src="/js/timePicker/jquery.timePicker.js")
+    script(src="/js/validation/jquery.validate.js")
+    script(type="text/javascript")
+      $(function() {
+        $("#bookingForm").validate();
+        var startTime = new Date();
+        if (startTime.getMinutes() > 45) {
+          startTime = new Date(startTime.getTime() + (60-startTime.getMinutes())*60000);
+        } else if (startTime.getMinutes() > 30) {
+          startTime = new Date(startTime.getTime() + (45-startTime.getMinutes())*60000);
+        } else if (startTime.getMinutes() > 15) {
+          startTime = new Date(startTime.getTime() + (30-startTime.getMinutes())*60000);
+        } else if (startTime.getMinutes() > 0) {
+          startTime = new Date(startTime.getTime() + (15-startTime.getMinutes())*60000);
+        }
+        $("#time").timePicker({
+                                startTime: startTime, // Using string. Can take string or Date object.
+                                show24Hours: true,
+                                separator: '.',
+                                step: 15});
+        $("#time").on("blur", function() {
+          $("#pickupTime").val($.timePicker("#time").getTime());
+        });
+      });
+  body
+    #booking-page(data-role='page')
+      div(data-role='header')
+          img.headerImg(src='/images/ubitaxi/ubitaxi-logo.png')
+          .headerTitle
+            a(rel='external', href='index.html') Book an UbiTaxi
+      div(data-role='content', style="clear:both;")
+        form(id="bookingForm",method="post")
+          table
+            tr
+              td Contact name
+              td
+                input(type="text",name="name",class="required")
+            tr
+              td Contact telephone
+              td
+                input(type="text",name="contact",class="required phone",autocomplete="on")
+            tr
+              td Pickup time
+              td
+                input(id="time",type="text",name="time",class="required")
+                input(id="pickupTime",type="hidden",name="pickupTime")
+            tr
+              td Pickup from
+                div.subTitle enter address including postcode
+              td
+                input(type="text",name="pickup",class="required",autocomplete="on")
+            tr
+              td Drop-off at
+                div.subTitle enter address including postcode
+              td
+                input(type="text",name="dropoff",class="required",autocomplete="on")
+            tr
+              td Number of people
+              td
+                select(name="people")
+                  option 1
+                  option 2
+                  option 3
+                  option 4
+            tr
+              td(colspan="2",style="text-align:right")
+                input(type="submit", value="Book Taxi")
+      div(data-role='footer', data-position='fixed')
+          .footerText &copy; 2013&nbsp;
+            a(href='http://ubiapps.com', data-rel='external') ubiapps.com

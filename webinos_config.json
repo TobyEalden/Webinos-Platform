@@ -1,137 +1,135 @@
 {
-  "ports":{
-    "provider"          :80,
-    "provider_webServer":443,
-    "pzp_webSocket"     :8080,
-    "pzp_tlsServer"     :8040,
-    "pzp_zeroConf"      :4321,
-    "iot"               :3000
+  "ports": {
+    "provider": 80,
+    "provider_webServer": 443,
+    "pzp_webSocket": 8080,
+    "pzp_tlsServer": 8040,
+    "pzp_zeroConf": 4321,
+    "iot": 3000
   },
-  "pzhDefaultServices":[
+  "pzhDefaultServices": [
     {
-      "name"  :"context",
-      "params":{}
+      "name": "test",
+      "params": {}
     },
     {
-      "name"  :"events",
-      "params":{}
+      "name": "app2app",
+      "params": {
+        "scope": "pzh"
+      }
     },
     {
-      "name"  :"test",
-      "params":{}
-    },
-    {
-      "name"  :"app2app",
-        "params":{
-            "scope":"pzh"
-        }
+      "name": "zonenotification",
+      "params": {}
     }
   ],
-  "pzpDefaultServices":[
+  "pzpDefaultServices": [
     {
-      "name"  :"test",
-      "params":{
-        "num":"21"
+      "name": "test",
+      "params": {
+        "num": "21"
       }
     },
     {
-      "name"  :"zap-and-shake",
-      "params":{}
+      "name": "actuator",
+      "params": {}
     },
     {
-      "name"  :"actuator",
-      "params":{}
-    },
-    {
-        "name"  :"app2app",
-        "params":{
-            "scope":"pzp"
-        }
-    },
-    {
-      "name"  :"webnotification",
-      "params":{}
-    },
-    {
-      "name"  :"file",
-      "params":{}
-    },
-    {
-      "name"  :"geolocation",
-      "params":{
-        "connector":"geoip"
+      "name": "app2app",
+      "params": {
+        "scope": "pzp"
       }
     },
     {
-      "name"  :"applauncher",
-      "params":{}
+      "name": "webnotification",
+      "params": {}
     },
     {
-      "name"  :"sensors",
-      "params":{}
+      "name": "file",
+      "params": {}
     },
     {
-      "name"  :"payment",
-      "params":{}
-    },
-    {
-      "name"  :"tv",
-      "params":{}
-    },
-    {
-      "name"  :"oauth",
-      "params":{}
-    },
-    {
-      "name"  :"deviceorientation",
-      "params":{}
-    },
-    {
-      "name"  :"vehicle",
-      "params":{
-        "connector":"simulator"
+      "name": "geolocation",
+      "params": {
+        "connector": "geoip"
       }
     },
     {
-      "name"  :"context",
-      "params":{}
+      "name": "applauncher",
+      "params": {}
     },
     {
-      "name"  :"authentication",
-      "params":{}
+      "name": "sensors",
+      "params": {}
     },
     {
-      "name"  :"contacts",
-      "params":{}
+      "name": "payment",
+      "params": {}
     },
     {
-      "name"  :"devicestatus",
-      "params":{}
+      "name": "tv",
+      "params": {}
     },
     {
-      "name"  :"discovery",
-      "params":{}
+      "name": "oauth",
+      "params": {}
     },
     {
-      "name"  :"mediacontent",
-      "params":{}
+      "name": "deviceorientation",
+      "params": {}
     },
     {
-      "name"  :"corePZinformation",
-      "params":{}
+      "name": "vehicle",
+      "params": {
+        "connector": "simulator"
+      }
     },
     {
-      "name"  :"nfc",
-      "params":{}
+      "name": "context",
+      "params": {}
+    },
+    {
+      "name": "authentication",
+      "params": {}
+    },
+    {
+      "name": "contacts",
+      "params": {}
+    },
+    {
+      "name": "devicestatus",
+      "params": {}
+    },
+    {
+      "name": "discovery",
+      "params": {}
+    },
+    {
+      "name": "mediacontent",
+      "params": {}
+    },
+    {
+      "name": "corePZinformation",
+      "params": {}
+    },
+    {
+      "name": "nfc",
+      "params": {}
     }
   ],
   "certConfiguration": {
     "country": "UK",
-    "state"  : "MX",
-    "city"   : "London",
+    "state": "MX",
+    "city": "London",
     "orgname": "Webinos",
     "orgunit": "WP4",
-    "cn"     : "",
-    "email"  : "hello@webinos.org"
+    "cn": "",
+    "email": "hello@webinos.org"
+  },
+  "friendlyName": "TE-Dev Windows",
+  "webinos_version": {
+    "tag": "v0.8.0",
+    "num_commit": "72",
+    "commit_id": "g6589af9"
   }
 }

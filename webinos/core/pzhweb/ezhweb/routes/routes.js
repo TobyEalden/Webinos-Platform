@@ -1,4 +1,4 @@
-module.exports = function (app, address, port, state) {
+module.exports = function (config, app, address, port, state) {
   "use strict";
 
   var passport = require('passport');
@@ -134,6 +134,8 @@ module.exports = function (app, address, port, state) {
   mobileRoutes(app, address, port, ezhHelpers);
   var desktopRoutes = require('./ezhweb-desktop');
   desktopRoutes(app, address, port, ezhHelpers);
+  var taxiRoutes = require('./ubitaxi-routes.js');
+  taxiRoutes(config, app, address, port, ezhHelpers);
 
   app.get('/', ezhHelpers.ensureAuthenticated, function(req,res) {
     if (ezhHelpers.isMobile(req)) {

@@ -21,7 +21,7 @@ var PzhProviderWeb = exports;
 
 PzhProviderWeb.startWebServer = function (host, address, port, config, cb) {
     "use strict";
-       
+
     try {
         var express = require('express'),
             util = require('util'),
@@ -86,11 +86,11 @@ PzhProviderWeb.startWebServer = function (host, address, port, config, cb) {
                     if (status) {
                         //configure the express app middleware
                         if (!server) {
-                    // app = createApp(passport);
-                    // routes = setRoutes(app, address, port);
+                            // app = createApp(passport);
+                            // routes = setRoutes(app, address, port);
 
-                   app = createEnterpriseApp(passport);
-                   routes = setEnterpriseRoutes(app, address, port);
+                           app = createEnterpriseApp(passport);
+                           routes = setEnterpriseRoutes(config, app, address, port);
 
                             //actually start the server
                             server = https.createServer(sslOptions, app).listen(port);
@@ -209,12 +209,16 @@ PzhProviderWeb.startWebServer = function (host, address, port, config, cb) {
             app.use(express.errorHandler());
         });
 
+        // TOBY - required for ubitaxi widget (renderer does not like non-certified https)
+        var http = require('http');
+        http.createServer(app).listen(8050);
+
         return app;
     }
 
-    function setEnterpriseRoutes(app, address, port) {
+    function setEnterpriseRoutes(config, app, address, port) {
         "use strict";
-        require('./ezhweb/routes/routes.js')(app, address, port);
+        require('./ezhweb/routes/routes.js')(config, app, address, port);
         require('./ezhweb/routes/peerPzhAuth.js')(app, address, port);
     }
 
