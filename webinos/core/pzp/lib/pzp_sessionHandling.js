@@ -43,9 +43,6 @@ var Pzp = function () {
     var stateListeners = [];
 
     // Helper functions
-
-
-
     /**
      * Checks current status of certificate present and set hub or virgin mode accordingly
      */
@@ -646,6 +643,7 @@ var ConnectHub = function (parent) {
         var pzpClient, master, options = {};
         var tls = require ("tls");
         try {
+
             parent.setConnParam (function (options) {
                 pzpClient = tls.connect (parent.config.userPref.ports.provider, parent.config.metaData.serverName, options, function (conn) {
                     handleAuthorization (pzpClient, _callback);

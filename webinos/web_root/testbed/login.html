@@ -20,7 +20,6 @@
             alert("Please use PZH IP address to connect. Using localhost is not supported");
         } else {
         $ ("#provider").hide ();
-
         var options = {type:'prop', payload:{status:'setPzhProviderAddress', message:value}};
         webinos.session.message_send (options);
 
@@ -40,6 +39,8 @@
   <fieldset class="boxBody">
     <label>Select your personal zone hub provider</label>
     <select value="pzh_list" id="pzh_list">
+      <option value="pzh.ubiapps.com"> pzh.ubiapps.com</option>
+      <option value="192.168.1.81"> 192.168.1.81</option>
       <option value="pzh.webinos.org"> pzh.webinos.org</option>
     </select>
     <label> (Or) Enter the address</label>

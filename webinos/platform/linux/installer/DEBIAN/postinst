@@ -25,6 +25,14 @@ do
 \"nodeArgs\": \"webinos_pzp.js --widgetServer\",
 \"instance\": 0
 }" >> ${user}/.webinos/wrt/webinos_pzp.json 
+
+if [ -d "${user}/.config/autostart" ];
+then
+	echo ".config/autostart exists"
+else
+	mkdir ${user}/.config/autostart
+fi
+
 	echo "[Desktop Entry]
 Name=Webinos PZP
 Comment=Startup for the webinos PZP.
@@ -35,5 +43,7 @@ StartupNotify=true
 Icon=utilities-system-monitor
 Categories=GNOME;System;
 X-GNOME-Autostart-enabled=true" >> ${user}/.config/autostart/webinos-PZP.desktop
+
 done
+
 

@@ -22,6 +22,7 @@
   'use strict';
 
   var fs = require("fs");
+  var path = require("path");
   var driverId = null;
   var registerFunc = null;
   var callbackFunc = null;
@@ -136,7 +137,8 @@
 
     function intReg() {
         console.log('FHT driver - register sensors');
-        if (fs.existsSync(CONFIG_PATH)) {
+	var existsSync = fs.existsSync || path.existsSync;
+        if (existsSync(CONFIG_PATH)) {
           configData = JSON.parse(fs.readFileSync(CONFIG_PATH));
 
           initialiseDeviceMap(liveDeviceMap);

@@ -161,7 +161,6 @@ var Pzh_RPC = function (_parent) {
                 "message":{services:localServices,
                     from:_parent.pzh_state.sessionId}}};
         _parent.sendMessage (msg, pzhId);
-
         _parent.pzh_state.logger.log ("sent " + (localServices && localServices.length) || 0 + " webinos services to " + pzhId);
     };
 

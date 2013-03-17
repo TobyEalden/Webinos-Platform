@@ -163,7 +163,6 @@ h1, h2, h3, h4 {
 */
 #console {
     font-family: "Lucida Console","Courier New","sans-serif";
-    font-size: .8em;
     white-space: nowrap;
     padding-left: 2px;
     padding-top: 2px;
@@ -174,7 +173,7 @@ h1, h2, h3, h4 {
 }
 
 .log-severity-info {
-    color: green;
+    color: lightgreen;
 }
 
 .log-severity-warn {

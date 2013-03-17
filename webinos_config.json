@@ -126,10 +126,10 @@
     "cn": "",
     "email": "hello@webinos.org"
   },
-  "friendlyName": "TE-Dev Windows",
+  "friendlyName": "",
   "webinos_version": {
-    "tag": "v0.8.0",
-    "num_commit": "72",
-    "commit_id": "g6589af9"
+    "tag": "v0.5",
+    "num_commit": "1266",
+    "commit_id": "g3616f21"
   }
 }

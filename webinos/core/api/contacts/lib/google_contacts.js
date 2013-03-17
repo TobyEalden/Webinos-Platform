@@ -544,6 +544,3 @@ this.getContacts = function(successCB, errorCB)
         }
 	}
 };
-
-
-

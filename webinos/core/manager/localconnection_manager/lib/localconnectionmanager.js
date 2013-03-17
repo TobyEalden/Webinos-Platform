@@ -23,7 +23,6 @@
   var logger  = webinos_.global.require(webinos_.global.util.location, "lib/logging.js")(__filename);
   
   var localconnectionManager = function () {
-
     // Load zeroconf mdns module 
 		if(os.platform().toLowerCase() == "android")  {
       try{

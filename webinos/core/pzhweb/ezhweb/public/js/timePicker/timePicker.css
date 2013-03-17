@@ -22,6 +22,8 @@ div.time-picker li {
   height: 10px;
   padding: 4px 3px;
   color: black;
+  font-family: verdana;
+  font-size: .8em;
 }
 div.time-picker li.selected {
   background: #0063CE;

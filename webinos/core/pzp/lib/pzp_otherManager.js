@@ -34,7 +34,7 @@ var Pzp_OtherManager = function (_parent) {
     var PzpSib   = require("./pzp_SIB_auth");
     var path = require ("path");
     var os = require ('os');
-    var remoteManager = new (require("./pzp_remoteManager"))(_parent);
+    var remoteManager = null; //new (require("./pzp_remoteManager"))(_parent);
 
     this.serviceListener;  // For a single callback to be registered via addRemoteServiceListener.
     this.registry;
@@ -298,7 +298,7 @@ var Pzp_OtherManager = function (_parent) {
                         break;
                     default:
                         // Delegate to remote manager
-                        if (!remoteManager.processMsg(validMsgObj)) {
+                        if (!remoteManager || !remoteManager.processMsg(validMsgObj)) {
                           logger.log("unknown pzp message: " + validMsgObj.payload.status);
                         }
                         break;
