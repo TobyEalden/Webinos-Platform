@@ -23,23 +23,12 @@ html
     script(type="text/javascript")
       $(function() {
         $("#bookingForm").validate();
-        var startTime = new Date();
-        if (startTime.getMinutes() > 45) {
-          startTime = new Date(startTime.getTime() + (60-startTime.getMinutes())*60000);
-        } else if (startTime.getMinutes() > 30) {
-          startTime = new Date(startTime.getTime() + (45-startTime.getMinutes())*60000);
-        } else if (startTime.getMinutes() > 15) {
-          startTime = new Date(startTime.getTime() + (30-startTime.getMinutes())*60000);
-        } else if (startTime.getMinutes() > 0) {
-          startTime = new Date(startTime.getTime() + (15-startTime.getMinutes())*60000);
-        }
-        $("#time").timePicker({
-                                startTime: startTime, // Using string. Can take string or Date object.
-                                show24Hours: true,
-                                separator: '.',
-                                step: 15});
         $("#time").on("blur", function() {
-          $("#pickupTime").val($.timePicker("#time").getTime());
+          var dt = new Date();
+          var t = $("#time").val();
+          dt.setHours(t.split(":")[0]);
+          dt.setMinutes(t.split(":")[1]);
+          $("#pickupTime").val(dt.toString());
         });
       });
   body
@@ -62,8 +51,35 @@ html
             tr
               td Pickup time
               td
-                input(id="time",type="text",name="time",class="required")
-                input(id="pickupTime",type="hidden",name="pickupTime")
+                select(id="time")
+                  - var startTime = new Date();
+                  - if (startTime.getMinutes() > 45) {
+                    - startTime = new Date(startTime.getTime() + (60-startTime.getMinutes())*60000);
+                  - } else if (startTime.getMinutes() > 30) {
+                    - startTime = new Date(startTime.getTime() + (45-startTime.getMinutes())*60000);
+                  - } else if (startTime.getMinutes() > 15) {
+                    - startTime = new Date(startTime.getTime() + (30-startTime.getMinutes())*60000);
+                  - } else if (startTime.getMinutes() > 0) {
+                    - startTime = new Date(startTime.getTime() + (15-startTime.getMinutes())*60000);
+                  - }
+                  - var startTimeSelect= ("00" + startTime.getHours()).substr(-2) + ":" + ("00" + startTime.getMinutes()).substr(-2);
+                  - var hour = 0;
+                  - var min = 0;
+                  - var val;
+                  - for (var i = 0; i < 24*4; i++) {
+                      - val = ("00" + hour).substr(-2) + ":" + ("00" + (min*15)).substr(-2);
+                      - if (startTimeSelect === val) {
+                        option(selected="true",value="#{val}") #{val}
+                      - } else {
+                        option(value="#{val}") #{val}
+                      - }
+                      - min++;
+                      - if (min === 4) {
+                         - min = 0;
+                         - hour++;
+                      - }
+                  - }
+                input(id="pickupTime",type="hidden",name="pickupTime",value="#{startTime.toString()}")
             tr
               td Pickup from
                 div.subTitle enter address including postcode
