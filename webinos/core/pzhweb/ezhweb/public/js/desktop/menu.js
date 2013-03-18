@@ -26,7 +26,7 @@ $(function() {
 
   $("#menu-heating").click(function() {
     ubi.console.log("Loading house heating");
-    var url = "http://www.ealden.com:4000";
+    var url = "http://www.ealden.com:3000";
     $(".ui-layout-center").html("");
     $(".ui-layout-center").append("<iframe style='' scrolling='auto' width='100%' height='100%' frameborder='0' src='" + url + "'></iframe>");
 
