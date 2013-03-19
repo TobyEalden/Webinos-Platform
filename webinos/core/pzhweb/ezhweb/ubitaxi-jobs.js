@@ -44,8 +44,13 @@ module.exports = function(jobsPath) {
   }
 
   function loadJobs() {
-    var jobDataText = fs.readFileSync(jobsPath,"utf8");
-    var jobData = JSON.parse(jobDataText);
+    var jobData;
+    if (fs.existsSync(jobsPath)) {
+      var jobDataText = fs.readFileSync(jobsPath,"utf8");
+      jobData = JSON.parse(jobDataText);
+    } else {
+      jobData = { nextId: 100, jobs: []}
+    }
     return jobData;
   }
 
