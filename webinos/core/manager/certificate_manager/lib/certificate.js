@@ -72,7 +72,7 @@ var Certificate = function () {
             cn = cn.substring (0, 40);
         }
 
-        self.generateKey (type, key_id, function (status, privateKey) {
+        self.generateStoreKey (type, key_id, function (status, privateKey) {
             if (!status) {
                 logger.error ("failed generating key " + privateKey);
                 return callback (false, privateKey);
