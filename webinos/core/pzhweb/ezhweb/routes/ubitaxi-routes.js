@@ -11,7 +11,11 @@ module.exports = function(config, app, address, port, ezhHelpers) {
     var booking = new jobs.Job(req.body.name,req.body.contact,req.body.pickup,req.body.dropoff,req.body.people,req.body.pickupTime);
     jobs.makeBooking(booking);
 
-    res.redirect("/ubitaxi/book");
+    res.redirect("/ubitaxi/bookingComplete");
+  });
+
+  app.get("/ubitaxi/bookingComplete", function(req,res) {
+    res.render("ubitaxi/bookingComplete");
   });
 
   app.post("/ubitaxi/setDriver/:jobId/:driverId", function(req,res){
