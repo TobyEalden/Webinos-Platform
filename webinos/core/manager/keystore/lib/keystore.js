@@ -20,38 +20,55 @@ var KeyStore = function () {
     var os = require('os');
     var fs = require('fs');
     var path = require('path');
-    var self = this;
+    var CurrentContext = this; // Include certificate and configuration parameters
 
+    /**
+     * KeyStore is supported only on Linux and Mac platform, this function does platform check and if keystore can be
+     * loaded
+     * On linux platform too if gnome-keyring is not present keyStore could fail to load
+     * @return {Object} returns keystore object or undefined if could not be loaded
+     */
     function checkPlatform() {
-        if (self.metaData.webinosType ==="Pzp" && (os.type().toLowerCase() ==="linux" &&
+        if (CurrentContext.metaData.webinosType ==="Pzp" && (os.type().toLowerCase() ==="linux" &&
             os.platform().toLowerCase() !== "android") || os.type().toLowerCase() === "darwin") {
             try {
-                var  keystore = require("keystore");
-                return keystore;
+                return require("keystore");
             } catch (err) {
-                return null;
+                return undefined;
             }
         } else {
-            return null;
+            return undefined;
         }
     }
 
+    /**
+     * Helper function used by storeKey to write into a file
+     * @param {String} id - File id
+     * @param {String} value - Key data in PEM format
+     * @param {Function} callback -returns true if data is stored else false
+     */
     function writeFile(id, value, callback) {
-        fs.writeFile(path.resolve(path.join(self.metaData.webinosRoot, "keys", id)), value, function(err) {
+        fs.writeFile(path.resolve(path.join(CurrentContext.metaData.webinosRoot, "keys", id)), value, function(err) {
             if(err) {
-                return callback(false, "failed storing private keys " + err);
+                callback(false, {"Component": "KeyStore","Type": "WRITE", "Error": err, "Message": "Failed storing key"});
             } else {
-                return callback(true, value);
+                callback(true, value);
             }
         });
     }
 
+    /**
+     * Helper function used by generateStoreKey to store keys in keystore or call writeFile to store in a file
+     * @param {String} id - fileName or secretKey used for storing PEM key
+     * @param {String} value - Key in PEM format
+     * @param {Function} callback - return status true or false
+     */
     function storeKey(id, value, callback) {
-        var keystore = checkPlatform();
         try{
+            var keystore = checkPlatform();
             if(keystore) {
                 keystore.put(id, value);
-                return callback(true, value);
+                callback(true, value);
             } else {
                 writeFile(id, value, callback);
             }
@@ -60,47 +77,100 @@ var KeyStore = function () {
         }
     }
 
-    function getKeys(id, callback) {
-        var keyPath = path.resolve(path.join(self.metaData.webinosRoot, "keys", id));
+    /**
+     * Helper function used by fetchKey to read private key from a file
+     * @param {String} id - fileName to retrieve a private key
+     * @param {Function} callback - true if private key was fetched successful else false
+     */
+    function getKey(id, callback) {
+        var keyPath = path.resolve(path.join(CurrentContext.metaData.webinosRoot, "keys", id));
         fs.readFile(keyPath, function(err, data) {
             if(err) {
-                return callback(false, "failed fetching keys " + err);
+                callback(false, {"Component": "KeyStore", "Type": "READ","Error": err, "Message": "Failed fetching key"});
             } else {
-                return callback(true, data.toString());
+                callback(true, data.toString());
             }
         });
     }
 
-    this.generateKey = function(type, id, callback) {
+    /**
+     * Helper function to delete private key from a file
+     * @param {String} id - FileName of the private key
+     * @param {Function} callback - true if file deleted else false
+     */
+    function deleteKeyFile(id, callback){
         try {
-            var certman = require("certificate_manager");
+            var keyPath = path.resolve(path.join(CurrentContext.metaData.webinosRoot, "keys", id));
+            fs.unlinkSync(keyPath);
+            callback(true);
+        } catch(err){
+            callback(false,{"Component": "KeyStore", Type:"CLEANUP", "Error": err, "Message": "Failed deleting key"});
+        }
+    }
+    /**
+     * Public function to generate private key and store key
+     * @param {String} type - Webinos type, used for using different key size for client and server
+     * @param {String} id - SecretKey or fileName used for storing a private key
+     * @param {Function} callback - returns true if key successful stored or else returns false
+     */
+    this.generateStoreKey = function(type, id, callback) {
+        try {
+            var certManager = require("certificate_manager");
         } catch (err) {
-            return callback(false, "certificate manager is missing, please run npm install to generate it");
+            callback(false, {"Component": "KeyStore", "Type": "MODULE_MISSING", "Error": err, "Message": "CertificateManager is missing"});
+            return;
         }
         try {
             var key;
             if (type === "PzhPCA" ||  type === "PzhCA" || type === "PzpCA"){
-                key = certman.genRsaKey(2048);
+                key = certManager.genRsaKey(2048);
             } else {
-                key = certman.genRsaKey(1024);
+                key = certManager.genRsaKey(1024);
             }
             storeKey(id, key, callback);
         } catch(err) {
-            return callback(false, err);
+            callback(false ,{"Component": "KeyStore", TYPE:"FUNC_ERROR", "Error": err, "Message": "Private key generation error"});
         }
     };
 
+    /**
+     * Public function to fetch private key from the keyStore of the file
+     * @param {String} id - fileName or secretKey for the value to be retrieved
+     * @param {Function} callback - Returns true if value could be retrieved or else false
+     */
     this.fetchKey = function (id, callback) {
         var key, keystore = checkPlatform();
-        if(keystore) {
-            key = keystore.get(id);
-            if (key.search("-----BEGIN RSA PRIVATE KEY-----") !== -1) {
-                return callback(true, key);
+        try {
+            if(keystore) {
+                key = keystore.get(id);
+                if (key.search("-----BEGIN RSA PRIVATE KEY-----") !== -1) {
+                    callback(true, key);
+                } else {
+                    getKey(id, callback);
+                }
             } else {
-                getKeys(id, callback);
+                getKey(id, callback);
             }
-        } else {
-            getKeys(id, callback);
+        } catch (err) {
+            getKey(id, callback);
+        }
+    };
+    /**
+     * Deletes key from the file or from the keyStore
+     * @param {String} id - FileName or SecretKey to delete private key
+     * @param {Function} callback - true if file or secretKey deleted else false
+     */
+    this.deleteKey = function (id, callback) {
+        var key, keystore = checkPlatform();
+        try {
+            if(keystore) {
+                keystore.delete(id);
+                callback(true);
+            } else {
+                deleteKeyFile(id, callback);
+            }
+        } catch (err) {
+            deleteKeyFile(id, callback);
         }
     };
 };
