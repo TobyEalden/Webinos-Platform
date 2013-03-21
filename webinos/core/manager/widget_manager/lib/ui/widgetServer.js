@@ -62,6 +62,7 @@
     app.get('/widget/:id', apps.boot);
     app.get('/widget/:id/*', apps.run);
     app.get('/sideLoad/:id', apps.sideLoad);
+    app.get('/installPrompt/:id', apps.installPrompt);
     
     // widget testing
     app.get('/widget-tests', widgetTests.listTestWidgets);

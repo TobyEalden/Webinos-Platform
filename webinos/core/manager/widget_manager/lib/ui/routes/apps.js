@@ -33,13 +33,13 @@
       var options = {
         host: host,
         port: port,
-        path: path,
+        path: path
       };
 
       // Create and execute request for the file.
       var clientReq = http.get(options, function (clientResponse) {
           // Download to temporary folder.
-          var targetFilePath = path.join(pzp.session.getWebinosPath(), '../widgetDownloads');
+          var targetFilePath = path.join(pzp.session.getWebinosPath(), 'wrt/widgetDownloads');
 
           try {
             // Create the target path if it doesn't already exist.
@@ -90,15 +90,16 @@
             callback({ title: "widget installation", status: processingResult.validationResult.status, text: "widget not signed - installation failed"});        
           } else {
             console.log("******** completing install: " + installId);
-            
-            var result = wm.widgetmanager.completeInstall(installId, true);
-            if (result) {
-              console.log('wm: completeInstall error: install: ' + result);
-              callback({ title: "widget installation", status: result, text: "completing installation failed"});
-            } else {
-              console.log('wm: install complete');
-              callback(null, installId);
-            }
+	          callback({ title: "widget installation"}, installId, processingResult);
+		   
+//            var result = wm.widgetmanager.completeInstall(installId, true);
+//            if (result) {
+//              console.log('wm: completeInstall error: install: ' + result);
+//              callback({ title: "widget installation", status: result, text: "completing installation failed"});
+//            } else {
+//              console.log('wm: install complete');
+//              callback(null, installId);
+//            }
           }
         }
       }
@@ -139,13 +140,22 @@
     exports.sideLoad = function (req, res) {
       var wgt = decodeURIComponent(req.param('id', 'missing id!'));
       console.log("side-loading: " + wgt);
-      installWidget(wgt, function (err, installId) {
+      installWidget(wgt, function (err, installId, processingResult) {
         if (installId) {        
-          // We need to use this trick so that the renderer re-loads the browser instance
-          // and sets the new widget attributes up (width, height, widget interface etc).
-          var redirect = 'webinos://sideLoadComplete/' + installId;
-          console.log("sideload redirecting to " + redirect);
-          res.redirect(redirect);
+		if (processingResult) {
+			var resultData = JSON.stringify(processingResult);
+      var targetFilePath = path.join(pzp.session.getWebinosPath(), 'wrt/widgetStore/', installId + "_", "prompt.json");
+      fs.writeFileSync(targetFilePath,resultData);
+			res.redirect("/installPrompt/" + installId);
+		} else {		
+			/* TOBY - TIDY UP ONCE INSTALLATION PROMPTING IS DONE */
+			
+			// We need to use this trick so that the renderer re-loads the browser instance
+			// and sets the new widget attributes up (width, height, widget interface etc).
+			var redirect = 'webinos://sideLoadComplete/' + installId;
+			console.log("sideload redirecting to " + redirect);
+			res.redirect(redirect);
+		}
         } else {      
           var reason = encodeURIComponent(err.text);
           res.redirect("webinos://sideLoadFailed/" + reason);
@@ -153,6 +163,14 @@
       });      
     };
 
+    exports.installPrompt = function(req, res) {
+		var installId = req.param('id','');
+    var targetFilePath = path.join(pzp.session.getWebinosPath(), 'wrt/widgetStore/', installId + "_", "prompt.json");
+    var promptJSON = fs.readFileSync(targetFilePath);
+    var promptData = JSON.parse(promptJSON);
+		res.render("installPrompt", {installId: installId });
+	};
+	
     // Start running a widget => redirect to widget start file.
     exports.boot = function (req, res) {
       console.log("apps.boot - " + req.url);

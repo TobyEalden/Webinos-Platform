@@ -1,0 +1,23 @@
+!!! 5
+html
+  head
+    title Webinos policies - app installation
+    meta(charset='utf-8')
+    link(rel='stylesheet', href='/css/installPrompt.css')
+    meta(name='viewport', content='width=device-width, user-scalable=no')
+  body
+    img.webinoslogo(src='/images/installPrompt/webinosWithBorder.png')
+    .header
+      .header-content
+        img#appimg(src='/images/installPrompt/app_placeholder_logo.png')
+        #appname.title App Name
+        #appdev.subtitle Developer
+    #content.content      
+      #permissions-list
+    .footer
+      .footer-content
+        #updateinfo.info This is an update. Your user data will not be overwritten.
+        .button.dontinstall BACK
+        #installbutton.button.install INSTALL
+        #updateinfo-button.button.updatehelp ?
+    script(type='text/javascript', src='/js/installPrompt.js')
