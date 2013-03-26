@@ -165,6 +165,8 @@ void ClientApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFra
               readonly attribute unsigned long width;
           };
         */
+        std::string widgetArgs;
+        AppGetWidgetArgs(cfg.GetSessionId(),widgetArgs);
 
         char widgetInterfaceTemplate[] = "\
                                          // Widget interface\r\n\
@@ -180,6 +182,7 @@ void ClientApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFra
                                          preferences: {},\r\n\
                                          height: %d,\r\n\
                                          width: %d,\r\n\
+                                         args: {%s}\r\n\
                                          }; ";
 
         sprintf(widgetInterface,widgetInterfaceTemplate,
@@ -192,12 +195,13 @@ void ClientApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFra
             cfg.authorEmail().c_str(),        // author email
             cfg.authorHref().c_str(),         // author href
             cfg.height(),                     // height
-            cfg.width()                       // width
+            cfg.width(),                      // width
+            widgetArgs.c_str()                // launch args
         );
       }
       else
       {
-    	  LOG(INFO) << "OnContextCreated => not a widget";
+    	  LOG(INFO) << "OnContextCreated => not a widget " << frame->GetURL();
       }
 
       int bootstrapLen = bootDataSize + strlen(widgetInterface) + 100;
