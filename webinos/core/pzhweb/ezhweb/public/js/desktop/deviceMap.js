@@ -96,5 +96,5 @@ function initMap() {
     }
   }
 
-  ubi.services.findServices("http://www.w3.org/ns/api-perms/geolocation", geoServiceFound);
+  ubi.services.findServices("http://webinos.org/api/w3c/geolocation", geoServiceFound);
 }
