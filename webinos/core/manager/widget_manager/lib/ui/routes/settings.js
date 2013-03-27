@@ -24,7 +24,7 @@
     function readPZPConfig(callback) {
       var pzpConfig;
 
-      fs.readFile((path.join(pzp.session.getWebinosPath(),'/wrt/webinos_pzp.json')), function (err, data) {
+      fs.readFile((path.join(pzp.session.getWebinosPath(),'wrt/webinos_pzp.json')), function (err, data) {
         if (err) {
           console.log(err);
         } else {

@@ -1,4 +1,29 @@
 !macro CheckAppRunning
+	StrCpy $0 "webinosBrowser.exe"
+  DetailPrint "Searching for processes called '$0'"
+  KillProc::FindProcesses
+	StrCmp $1 "-1" wooops3
+	Goto BrowserAppRunning	
+	BrowserAppRunning:
+    DetailPrint "-> Found $0 processes running"
+		StrCmp $0 "0" BrowserAppNotRunning
+		MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "webinos renderer is currently running. $\n$\nDo you want to close it and continue installation?" IDYES KillBrowserApp
+		DetailPrint "Installation aborted"
+    Abort
+	KillBrowserApp:
+		StrCpy $0 "webinosBrowser.exe"
+    DetailPrint "Killing all processes called '$0'"
+    KillProc::KillProcesses
+		StrCmp $1 "-1" wooops3
+    DetailPrint "-> Killed $0 processes, failed to kill $1 processes"
+    sleep 1500
+		Goto BrowserAppNotRunning		
+	wooops3:
+		DetailPrint "-> Error: unable to close all running instances of webinos renderer. Please close them all manually before installing ${PRODUCT_NAME}."
+    Abort
+	BrowserAppNotRunning:
+		DetailPrint "No webinos renderer instances found running"
+		
 	StrCpy $0 "webinosNodeServiceUI.exe"
 	DetailPrint "Searching for processes called '$0'"
 	KillProc::FindProcesses

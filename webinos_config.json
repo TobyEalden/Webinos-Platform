@@ -19,6 +19,10 @@
       }
     },
     {
+      "name": "events",
+      "params": {}
+    },
+    {
       "name": "zonenotification",
       "params": {}
     }
@@ -128,8 +132,8 @@
   },
   "friendlyName": "",
   "webinos_version": {
-    "tag": "v0.5",
-    "num_commit": "1266",
-    "commit_id": "g3616f21"
+    "tag": "v0.8.0",
+    "num_commit": "15",
+    "commit_id": "gba7314e"
   }
 }

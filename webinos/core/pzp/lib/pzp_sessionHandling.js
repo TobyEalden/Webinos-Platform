@@ -737,6 +737,22 @@ exports.initializePzp = function (config, callback) {
     pzpInstance.initializePzp (config, function (status, result) {
         if (status) {
             logger.log ("initialized pzp");
+            var os = require("os");
+            if(os.platform().toLowerCase() == "android") {
+                try {
+                    var bridge = require('bridge');
+                    var notification = bridge.load('org.webinos.impl.PZPNotificationManagerImpl', this);
+                    notification.eventNotify("Initialized", function(status){
+                        logger.log("send notification on PZP status:" + status);
+                    });
+                }
+                catch(e) {
+                    logger.error("Android pzp notification - error: "+e.message);
+                }
+            }
+
+            //end of adding android
+
             callback (true);
         } else {
             callback (false);

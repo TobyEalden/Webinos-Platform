@@ -17,6 +17,8 @@
 ******************************************************************************/
 (function() {
 
+    var sensorListeners = new Array();
+
     /**
      * Webinos Sensor service constructor (client side).
      * @constructor
@@ -70,7 +72,8 @@
     };
 
     Sensor.prototype.addEventListener = function(eventType, eventHandler, capture) {
-        var rpc = webinos.rpcHandler.createRPC(this, 'addEventListener', eventType);
+        var rpc = webinos.rpcHandler.createRPC(this, "addEventListener", eventType);
+        sensorListeners.push([rpc.id, eventHandler]);
         rpc.onEvent = function (sensorEvent) {
             eventHandler(sensorEvent);
         };
@@ -80,8 +83,17 @@
 
 
     Sensor.prototype.removeEventListener = function(eventType, eventHandler, capture) {
-        var rpc = webinos.rpcHandler.createRPC(this, 'removeEventListener', eventType);
+        for (var i = 0; i < sensorListeners.length; i++) {
+            if (sensorListeners[i][1] == eventHandler) {
+                var arguments = new Array();
+                arguments[0] = sensorListeners[i][0];
+                arguments[1] = eventType;
+                var rpc = webinos.rpcHandler.createRPC(this, "removeEventListener", arguments);
         webinos.rpcHandler.executeRPC(rpc);
+                sensorListeners.splice(i,1);
+                break;
+            }
+        }
     };
 
 }());
