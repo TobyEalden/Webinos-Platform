@@ -432,7 +432,7 @@ var pzhWI = function (pzhs, hostname, port, serverPort, addPzh, refreshPzh, getA
     }
 
     function getConnectedPzh(_instance) {
-        var pzhs = [], i, list = Object.keys (_instance.config.trustedList.pzh), isConnected, id;
+        var pzhs = [], pzps = [], i, list = Object.keys (_instance.config.trustedList.pzh), isConnected, id;
         for (i = 0; i < list.length; i = i + 1) {
             isConnected = !!(_instance.pzh_state.connectedPzh.hasOwnProperty (list[i]));
             id =  (_instance.pzh_state.connectedPzh[list[i]] && _instance.pzh_state.connectedPzh[list[i]].friendlyName) || list[i];
