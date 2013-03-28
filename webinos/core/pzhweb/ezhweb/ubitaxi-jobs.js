@@ -31,10 +31,10 @@ module.exports = function(jobsPath) {
   }
 
   // Gets the index of a given job status - used for filtering.
-  function jobStatusIndex(job) {
+  function jobStatusIndex(jobStatus) {
     var idx = -1;
     for (var i = 0; i < jobStatusLookup.length; i++) {
-      if (jobStatusLookup[i] === job.status) {
+      if (jobStatusLookup[i] === jobStatus) {
         idx = i;
         break;
       }
@@ -70,7 +70,7 @@ module.exports = function(jobsPath) {
       jobList = [];
       for (var j in jobData.jobs) {
         var job = jobData.jobs[j];
-        var jobStatus = jobStatusIndex(job);
+        var jobStatus = jobStatusIndex(job.status);
         if (jobData.jobs.hasOwnProperty(j) &&
             (typeof filterFrom === "undefined" || jobStatus >= filterFrom) &&
             (typeof filterTo === "undefined" || jobStatus <= filterTo) &&
@@ -115,11 +115,19 @@ module.exports = function(jobsPath) {
   function allocateDriver(jobId, driverId) {
     var jobData = loadJobs();
     var job = findJob(jobData.jobs,jobId);
+    var ok = true;
 
-    job.status = jobStatusLookup[STATUS_DRIVER_ALLOCATED];
-    job.driverId = driverId;
+    if (jobStatusIndex(job.status) === STATUS_ORDER_TAKEN) {
+      job.status = jobStatusLookup[STATUS_DRIVER_ALLOCATED];
+      job.driverId = driverId;
 
-    saveJobs(jobData);
+      saveJobs(jobData);
+    } else {
+      // Job already allocated.
+      ok = false;
+    }
+
+    return ok;
   }
 
   function updateJobStatus(jobId,jobStatus) {

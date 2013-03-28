@@ -2,6 +2,10 @@ module.exports = function(config, app, address, port, ezhHelpers) {
   var fs = require('fs');
   var path = require('path');
   var jobs = require('../ubitaxi-jobs.js')(path.join(config.metaData.webinosRoot,"ubitaxi","jobs.json"));
+  var api = require('../ubitaxi-api.js')(jobs);
+
+  var apiServer = new api.webSocketServer(6661);
+  apiServer.start();
 
   app.get("/ubitaxi/book", function(req,res) {
     res.render("ubitaxi/book");
