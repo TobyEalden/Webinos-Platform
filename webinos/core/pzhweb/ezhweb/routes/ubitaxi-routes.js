@@ -65,9 +65,9 @@ module.exports = function(config, app, address, port, ezhHelpers) {
   });
 
   app.get("/ubitaxi/api/allocateJob/:jobId/:driverId", function(req, res) {
-    jobs.allocateDriver(parseInt(req.params.jobId), req.params.driverId);
+    var allocated = jobs.allocateDriver(parseInt(req.params.jobId), req.params.driverId);
     var callback = req.param("callback","callback");
-    res.send(callback + "({'ok': true })");
+    res.send(callback + "(" + (allocated ? "true" : "false") + ")");
   });
 
   app.get("/ubitaxi/api/currentJob/:driverId", function(req,res) {
@@ -80,8 +80,8 @@ module.exports = function(config, app, address, port, ezhHelpers) {
   });
 
   app.get("/ubitaxi/api/updateJobStatus/:jobId/:status", function(req,res) {
-    jobs.updateJobStatus(parseInt(req.params.jobId),req.params.status);
+    var updated = jobs.updateJobStatus(parseInt(req.params.jobId),req.params.status);
     var callback = req.param("callback","callback");
-    res.send(callback + "({'ok': true })");
+    res.send(callback + "(" + (updated ? "true" : "false") + ")");
   });
 };
