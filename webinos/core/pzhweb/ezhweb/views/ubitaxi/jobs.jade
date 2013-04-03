@@ -37,7 +37,7 @@ block content
           - for (var j in allocatedJobs) {
               li
                 div(style="float:right")
-                  |status: #{allocatedJobs[j].status}
+                  |status: #{allocatedJobs[j].progress[allocatedJobs[j].progress.length-1].status}
                   br
                   |driver: #{allocatedJobs[j].driverId}
                 div.jobDetails
@@ -56,7 +56,7 @@ block content
           - for (var j in finishedJobs) {
               li
                 div(style="float:right")
-                  |status: #{finishedJobs[j].status}
+                  |status: #{finishedJobs[j].progress[finishedJobs[j].progress.length-1].status}
                   br
                   |driver: #{finishedJobs[j].driverId}
                 div.jobDetails
