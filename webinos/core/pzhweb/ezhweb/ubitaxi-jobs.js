@@ -237,6 +237,7 @@
     updateJobProgress: updateJobProgress,
     getCurrentJob: getCurrentJob,
     getNextJob: getNextJob,
+    jobStatusLookup: jobStatusLookup,
     getJobStatus: getJobStatus,
     getJobStatusIndex: jobStatusIndex,
     removeJob: removeJob
