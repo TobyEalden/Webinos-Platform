@@ -1,5 +1,12 @@
-module.exports = function(jobsPath) {
-  var fs = require('fs');
+/*
+  This file is shared on server and client.
+  If you change this file be sure to update both locations.
+ */
+(function() {
+  var jobStore;
+  function initialiseStore(store) {
+    jobStore = store;
+  }
 
   var jobStatusLookup = [
     "unknown",
@@ -26,8 +33,7 @@ module.exports = function(jobsPath) {
     this.dropoff = dropoff;
     this.people = people;
     this.time = time;
-    // Job status is stored as text rather than index as this makes it easier to display in views - needs optimising.
-    this.status = jobStatusLookup[STATUS_UNKNOWN];
+    this.progress = [];
   }
 
   // Gets the index of a given job status - used for filtering.
@@ -43,15 +49,14 @@ module.exports = function(jobsPath) {
     return idx;
   }
 
-  function loadJobs() {
-    var jobData;
-    if (fs.existsSync(jobsPath)) {
-      var jobDataText = fs.readFileSync(jobsPath,"utf8");
-      jobData = JSON.parse(jobDataText);
-    } else {
-      jobData = { nextId: 100, jobs: []}
+  function getJobStatus(job) {
+    var status = jobStatusLookup[STATUS_ORDER_TAKEN];
+
+    if (typeof job.progress !== "undefined") {
+      status = job.progress[job.progress.length-1].status;
     }
-    return jobData;
+
+    return status;
   }
 
   function timeSort(a,b) {
@@ -61,7 +66,7 @@ module.exports = function(jobsPath) {
   }
 
   function getJobs(filterFrom, filterTo, driverId) {
-    var jobData = loadJobs();
+    var jobData = jobStore.load();
 
     var jobList;
     if (typeof filterFrom === "undefined" && typeof filterTo === "undefined") {
@@ -70,7 +75,8 @@ module.exports = function(jobsPath) {
       jobList = [];
       for (var j in jobData.jobs) {
         var job = jobData.jobs[j];
-        var jobStatus = jobStatusIndex(job.status);
+        var status = getJobStatus(job);
+        var jobStatus = jobStatusIndex(status);
         if (jobData.jobs.hasOwnProperty(j) &&
             (typeof filterFrom === "undefined" || jobStatus >= filterFrom) &&
             (typeof filterTo === "undefined" || jobStatus <= filterTo) &&
@@ -83,12 +89,8 @@ module.exports = function(jobsPath) {
     return jobList.sort(timeSort);
   }
 
-  function saveJobs(jobs) {
-    fs.writeFileSync(jobsPath,JSON.stringify(jobs,undefined,2));
-  }
-
   function findJob(jobs,id) {
-    var job = null;
+    var job;
 
     for (var j = 0; j < jobs.length; j++) {
       if (jobs[j].id === id) {
@@ -100,46 +102,101 @@ module.exports = function(jobsPath) {
     return job;
   }
 
-  function makeBooking(job) {
-    var jobData = loadJobs();
+  function addJob(job) {
+    var jobData = jobStore.load();
+    var exists;
 
-    job.id = jobData.nextId++;
-    job.status = jobStatusLookup[STATUS_ORDER_TAKEN];
-    jobData.jobs.push(job);
-
-    saveJobs(jobData);
+    if ((typeof job.id === "undefined") || job.id === 0) {
+      var time = new Date();
+      job.id = jobData.nextId++;
+      job.progress = [{ status: jobStatusLookup[STATUS_ORDER_TAKEN], time: time.getTime() }];
+    } else {
+      exists = findJob(jobData.jobs,job.id);
+    }
+    if (typeof exists === "undefined") {
+      jobData.jobs.push(job);
+      jobStore.save(jobData);
+    }
 
     return job;
   }
 
-  function allocateDriver(jobId, driverId) {
-    var jobData = loadJobs();
-    var job = findJob(jobData.jobs,jobId);
-    var ok = true;
+  function removeJob(job) {
+    var jobData = jobStore.load();
+    var jobs = jobData.jobs;
 
-    if (jobStatusIndex(job.status) === STATUS_ORDER_TAKEN) {
-      job.status = jobStatusLookup[STATUS_DRIVER_ALLOCATED];
-      job.driverId = driverId;
-
-      saveJobs(jobData);
-    } else {
-      // Job already allocated.
-      ok = false;
+    for (var j = 0; j < jobs.length; j++) {
+      if (jobs[j].id === job.id) {
+        jobs.splice(j,1);
+        jobStore.save(jobData);
+        break;
+      }
     }
-
-    return ok;
   }
 
-  function updateJobStatus(jobId,jobStatus) {
+  function allocateDriver(jobId, driverId, time, lat, lng) {
+    var jobData = jobStore.load();
+    var job = findJob(jobData.jobs,jobId);
+
+    if (typeof job !== "undefined")  {
+      var status = getJobStatus(job);
+      if (jobStatusIndex(status) === STATUS_ORDER_TAKEN) {
+        var progress = findJobProgress(job, jobStatusLookup[STATUS_DRIVER_ALLOCATED], true);
+        progress.time = time;
+        progress.lat = lat;
+        progress.long = lng;
+
+        job.driverId = driverId;
+
+        jobStore.save(jobData);
+      } else {
+        // Job already allocated.
+        job = null;
+      }
+    } else {
+      // Job doesn't exist.
+      job = null;
+    }
+
+    return job;
+  }
+
+  function findJobProgress(job, status, add) {
+    var progress;
+    for (var p in job.progress) {
+      if (job.progress[p].status === status) {
+        progress = job.progress[p];
+        break;
+      }
+    }
+
+    if (typeof progress === "undefined" && add) {
+      progress = { status: status };
+      job.progress.push(progress);
+    }
+    return progress;
+  }
+
+  function updateJobProgress(jobId,jobStatus,time,lat,lng,requireSync) {
     var ok = false;
 
-    var jobData = loadJobs();
+    var jobData = jobStore.load();
     var job = findJob(jobData.jobs,jobId);
 
     // Check job status is valid.
     if (jobStatusIndex(jobStatus)) {
-      job.status = jobStatus;
-      saveJobs(jobData);
+      if (typeof job.progress === "undefined") {
+        job.progress = [];
+      }
+
+      var progress = findJobProgress(job, jobStatus, true);
+      progress.status = jobStatus;
+      progress.time = time;
+      progress.lat = lat;
+      progress.long = lng;
+      progress.requireSync = requireSync;
+
+      jobStore.save(jobData);
       ok = true;
     }
 
@@ -164,7 +221,7 @@ module.exports = function(jobsPath) {
     return job;
   }
 
-  return {
+  var exp = {
     STATUS_UNKNOWN: STATUS_UNKNOWN,
     STATUS_ORDER_TAKEN: STATUS_ORDER_TAKEN,
     STATUS_DRIVER_ALLOCATED: STATUS_DRIVER_ALLOCATED,
@@ -172,12 +229,26 @@ module.exports = function(jobsPath) {
     STATUS_PICKED_UP: STATUS_PICKED_UP,
     STATUS_DROPPED_OFF: STATUS_DROPPED_OFF,
     STATUS_ALL: STATUS_ALL,
+    initialise: initialiseStore,
     Job: Job,
     getJobs: getJobs,
-    makeBooking: makeBooking,
+    addJob: addJob,
     allocateDriver: allocateDriver,
-    updateJobStatus: updateJobStatus,
+    updateJobProgress: updateJobProgress,
     getCurrentJob: getCurrentJob,
-    getNextJob: getNextJob
+    getNextJob: getNextJob,
+    getJobStatus: getJobStatus,
+    getJobStatusIndex: jobStatusIndex,
+    removeJob: removeJob
+  };
+
+  if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
+    module.exports = exp;
+  } else {
+    if (typeof window.ubitaxi === "undefined") {
+      window.ubitaxi = {};
+    }
+    window.ubitaxi.jobs = exp;
   }
-};
+
+}());

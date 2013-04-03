@@ -43,8 +43,11 @@ module.exports = function(jobs) {
             case "allocateJob":
               var driverId = packet.message.driverId;
               var jobId = parseInt(packet.message.jobId);
-              var allocated = jobs.allocateDriver(jobId, driverId);
-              sendReply(packet, { message: allocated });
+              var time = parseInt(packet.message.time);
+              var lat = parseFloat(packet.message.lat);
+              var lng = parseFloat(packet.message.lng);
+              var allocatedJob = jobs.allocateDriver(jobId, driverId, time, lat, lng);
+              sendReply(packet, { message: allocatedJob });
               break;
             case "currentJob":
               var driverId = packet.message.driverId;
@@ -54,10 +57,13 @@ module.exports = function(jobs) {
               }
               sendReply(packet, { message: currentJob });
               break;
-            case "updateJobStatus":
+            case "updateJobProgress":
               var jobId = parseInt(packet.message.jobId);
               var status = packet.message.status;
-              var updated = jobs.updateJobStatus(jobId,status);
+              var time = parseInt(packet.message.time);
+              var lat = parseFloat(packet.message.lat);
+              var lng = parseFloat(packet.message.lng);
+              var updated = jobs.updateJobProgress(jobId,status,time,lat,lng);
               sendReply(packet, { message: updated })
               break;
             default:

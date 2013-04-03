@@ -1,7 +1,10 @@
 module.exports = function(config, app, address, port, ezhHelpers) {
   var fs = require('fs');
   var path = require('path');
-  var jobs = require('../ubitaxi-jobs.js')(path.join(config.metaData.webinosRoot,"ubitaxi","jobs.json"));
+  var jobStore = require('../ubitaxi-store.js')(path.join(config.metaData.webinosRoot,"ubitaxi","jobs.json"));
+  var jobs = require('../ubitaxi-jobs.js');
+  jobs.initialise(jobStore);
+
   var api = require('../ubitaxi-api.js')(jobs);
 
   var apiServer = new api.webSocketServer(6661);
@@ -13,7 +16,7 @@ module.exports = function(config, app, address, port, ezhHelpers) {
 
   app.post("/ubitaxi/book", function(req,res) {
     var booking = new jobs.Job(req.body.name,req.body.contact,req.body.pickup,req.body.dropoff,req.body.people,req.body.pickupTime);
-    jobs.makeBooking(booking);
+    jobs.addJob(booking);
 
     res.redirect("/ubitaxi/bookingComplete");
   });
@@ -64,10 +67,10 @@ module.exports = function(config, app, address, port, ezhHelpers) {
     res.send(callback + "(" + JSON.stringify(allocatedJobList) + ");");
   });
 
-  app.get("/ubitaxi/api/allocateJob/:jobId/:driverId", function(req, res) {
-    var allocated = jobs.allocateDriver(parseInt(req.params.jobId), req.params.driverId);
+  app.get("/ubitaxi/api/allocateJob/:jobId/:driverId/:time/:lat/:long", function(req, res) {
+    var allocatedJob = jobs.allocateDriver(parseInt(req.params.jobId), req.params.driverId,parseInt(req.params.time),parseFloat(req.params.lat),parseFloat(req.params.long));
     var callback = req.param("callback","callback");
-    res.send(callback + "(" + (allocated ? "true" : "false") + ")");
+    res.send(callback + "(" + JSON.stringify(allocatedJob) + ")");
   });
 
   app.get("/ubitaxi/api/currentJob/:driverId", function(req,res) {
@@ -79,8 +82,8 @@ module.exports = function(config, app, address, port, ezhHelpers) {
     res.send(callback + "(" + JSON.stringify(currentJob) + ")");
   });
 
-  app.get("/ubitaxi/api/updateJobStatus/:jobId/:status", function(req,res) {
-    var updated = jobs.updateJobStatus(parseInt(req.params.jobId),req.params.status);
+  app.get("/ubitaxi/api/updateJobProgress/:jobId/:status/:time/:lat/:long", function(req,res) {
+    var updated = jobs.updateJobProgress(parseInt(req.params.jobId),req.params.status,parseInt(req.params.time),parseFloat(req.params.lat),parseFloat(req.params.long));
     var callback = req.param("callback","callback");
     res.send(callback + "(" + (updated ? "true" : "false") + ")");
   });
