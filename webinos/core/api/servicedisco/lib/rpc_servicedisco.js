@@ -227,7 +227,7 @@
 					if (that.remoteServicesFoundCallbacks[callbackId]) {
 						that.remoteServicesFoundCallbacks[callbackId]([], callbackId, true);
 					}
-				}, options && typeof options.timeout !== 'undefined' ? options.timeout : 120000); // default: 120 secs
+				}, options && typeof options.timeout !== 'undefined' ? options.timeout : 2500); // TOBY - changed timeout
 
 				// store callback in map for lookup on returned remote results
 				this.remoteServicesFoundCallbacks[callbackId] = (function(res, refCnt) {

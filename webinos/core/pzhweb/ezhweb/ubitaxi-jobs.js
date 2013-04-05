@@ -183,6 +183,7 @@
     var jobData = jobStore.load();
     var job = findJob(jobData.jobs,jobId);
 
+    if (typeof job !== "undefined") {
     // Check job status is valid.
     if (jobStatusIndex(jobStatus)) {
       if (typeof job.progress === "undefined") {
@@ -198,6 +199,7 @@
 
       jobStore.save(jobData);
       ok = true;
+      }
     }
 
     return ok;
