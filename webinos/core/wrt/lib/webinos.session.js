@@ -25,33 +25,19 @@
   var serviceLocation;
   var listenerMap = {};
   var channel;
-    function callListenerForMsg(data) {
-        var listeners = listenerMap[data.payload.status] || [];
-        for(var i = 0;i < listeners.length;i++) {
-            listeners[i](data) ;
-        }
-    }
-    function setWebinosMessaging() {
-        webinos.messageHandler.setGetOwnId(sessionId);
-        var msg = webinos.messageHandler.registerSender(sessionId, pzpId);
-        webinos.session.message_send(msg, pzpId);
-    }
-    function updateConnected(message){
-        otherPzh = message.connectedPzh;
-        otherPzp = message.connectedPzp;
-        isConnected = !!(otherPzh.indexOf (pzhId) !== -1)
-        enrolled = message.enrolled;
-        mode = message.mode;
-    }
-    function setWebinosSession(data){
-        sessionId = data.to;
-        pzpId = data.from;
-        if(data.payload.message) {
-            pzhId = data.payload.message.pzhId;
-            updateConnected(data.payload.message);
-        }
-        setWebinosMessaging();
-    }
+  webinos.session.setChannel = function(_channel) {
+    channel = _channel;
+  };
+  webinos.session.setPzpPort = function (port_) {
+    port = port_;
+  };
+  webinos.session.getPzpPort = function () {
+    return port;
+ };
+  webinos.session.message_send_messaging = function(msg, to) {
+    msg.resp_to = webinos.session.getSessionId();
+    channel.send(JSON.stringify(msg));
+  };
   webinos.session.message_send = function(rpc, to) {
     var type, id = Math.floor(Math.random() * 101);
     if(rpc.type !== undefined && rpc.type === "prop") {
@@ -82,19 +68,6 @@
           channel.send(JSON.stringify(message));
     }
   };
-    webinos.session.setChannel = function(_channel) {
-        channel = _channel;
-    };
-    webinos.session.setPzpPort = function (port_) {
-        port = port_;
-    };
-    webinos.session.getPzpPort = function () {
-        return port;
-    };
-    webinos.session.message_send_messaging = function(msg, to) {
-        msg.resp_to = webinos.session.getSessionId();
-        channel.send(JSON.stringify(msg));
-    };
     webinos.session.setServiceLocation = function (loc) {
         serviceLocation = loc;
     };
@@ -136,9 +109,72 @@
     webinos.session.isConnected = function () {
         return isConnected;
     };
-  webinos.session.getPzpModeState = function (mode_name) {
-        return (enrolled && mode[mode_name] === "connected");
+
+  webinos.session.getSessionId = function() {
+    return sessionId;
   };
+  webinos.session.getPZPId = function() {
+    return pzpId;
+  };
+  webinos.session.getPZHId = function() {
+    return ( pzhId || "");
+  };
+  webinos.session.getOtherPZP = function() {
+    return (otherPzp || []);
+  };
+  webinos.session.getOtherPZH = function() {
+    return (otherPzh || []);
+  };
+  webinos.session.getPzpModeState = function (mode_name) {
+    if (enrolled && mode[mode_name] === "connected") {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  webinos.session.addListener = function(statusType, listener) {
+    var listeners = listenerMap[statusType] || [];
+    listeners.push(listener);
+    listenerMap[statusType] = listeners;
+    return listeners.length;
+  };
+  webinos.session.removeListener = function(statusType, id) {
+    var listeners = listenerMap[statusType] || [];
+    try {
+      listeners[id - 1] = undefined;
+    }catch(e) {
+    }
+  };
+  webinos.session.isConnected = function(){
+    return isConnected;
+  };
+  function callListenerForMsg(data) {
+    var listeners = listenerMap[data.payload.status] || [];
+    for(var i = 0;i < listeners.length;i++) {
+      listeners[i](data) ;
+    }
+  }
+  function setWebinosMessaging() {
+    webinos.messageHandler.setOwnSessionId(sessionId);
+    var msg = webinos.messageHandler.createRegisterMessage(sessionId, pzpId);
+    webinos.session.message_send(msg, pzpId);
+  }
+  function updateConnected(message){
+    otherPzh = message.connectedPzh;
+    otherPzp = message.connectedPzp;
+    isConnected = !!(otherPzh.indexOf(pzhId) !== -1);
+    enrolled = message.enrolled;
+    mode = message.mode;
+  }
+  function setWebinosSession(data){
+    sessionId = data.to;
+    pzpId = data.from;
+    if(data.payload.message) {
+      pzhId = data.payload.message.pzhId;
+      updateConnected(data.payload.message);
+    }
+    setWebinosMessaging();
+  }
   webinos.session.handleMsg = function(data) {
     if(data.type === "prop") {
       switch(data.payload.status) {
@@ -174,7 +210,7 @@
           callListenerForMsg(data);
           break;   
         case "update":
-                    updateConnected(data.payload.message);
+          setWebinosSession(data);
           callListenerForMsg(data);
           break;
         case "infoLog":
