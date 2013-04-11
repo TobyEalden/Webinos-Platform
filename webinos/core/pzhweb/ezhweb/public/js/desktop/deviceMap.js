@@ -85,6 +85,8 @@ function initMap() {
     if ((serviceAddress in geoServices) && !(serviceAddress in boundServices)) {
       ubi.console.log("Binding to service: " + serviceAddress);
       geoServices[serviceAddress].bindService({ onBind:serviceBound });
+    } else {
+      ubi.console.log("Service alread bound: " + serviceAddress);
     }
   }
 
