@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  div(data-role="navbar")
+    ul
+      li
+        a(href="/ubitaxi/jobs", rel="external") jobs
+      li
+        a(href="/ubitaxi/drivers", rel="external") drivers
+      li
+        a(href="/ubitaxi/map", rel="external", class="ui-btn-active ui-state-persist") map
+  div(data-role="content", style="width:100%; height:100%")
+    script(src="/js/webinos.js")
+    script(src="/js/desktop/console.js")
+    script(src="/js/desktop/services.js")
+    script(src="/js/desktop/deviceMap.js")
+    div(id="map_canvas",style="width:500px; height:500px;")
+

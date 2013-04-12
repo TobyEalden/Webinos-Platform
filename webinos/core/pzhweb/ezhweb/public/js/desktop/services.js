@@ -1,5 +1,5 @@
-if (typeof ubiapps === "undefined") {
-  ubiapps = {};
+if (typeof ubi === "undefined") {
+  ubi = {};
 }
 
 ubi.services = function() {

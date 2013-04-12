@@ -51,6 +51,10 @@ module.exports = function(config, app, address, port, ezhHelpers) {
     });
   });
 
+  app.get("/ubitaxi/map", ezhHelpers.ensureAuthenticated, function(req,res) {
+    res.render("ubitaxi/map");
+  });
+
   /*
     AJAX api
    */
