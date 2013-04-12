@@ -70,6 +70,7 @@ var Pzh = function () {
                 self.sendMessage (msg, key);
             }
         }
+        payload.connectedPzh = [];
         for (key in self.pzh_state.connectedPzh) {
             if (from !== key && self.pzh_state.connectedPzh.hasOwnProperty(key)) {
                 msg = self.prepMsg(key, "update", payload);

@@ -39,17 +39,28 @@ var Pzh_RPC = function (_parent) {
     /* When new service are registered PZH update other pzh's about update
      */
     function sendUpdateServiceToAllPzh (from) {
-        var localServices = self.discovery.getAllServices ();
-        for (var key in _parent.pzh_state.connectedPzh) {
+        var localServices = self.discovery.getAllServices(), filteredService=[], key;
+        for (key in localServices){
+            if(localServices.hasOwnProperty(key) && _parent.pzh_state.connectedPzh.hasOwnProperty(localServices[key].serviceAddress)) {
+               // Do not sent pzh details to another pzh
+              console.log("******************** skipping service: " + localServices[key].serviceAddress);
+            } else {
+              console.log("******************** adding service: " + localServices[key].serviceAddress + " " + localServices[key].api);
+              filteredService.push(localServices[key]);
+            }
+         }
+        if(filteredService.length > 0){
+            for (key in _parent.pzh_state.connectedPzh) {
             if (key !== from && _parent.pzh_state.connectedPzh.hasOwnProperty (key)) {
                 var msg = {"type":"prop",
                     "from"       :_parent.pzh_state.sessionId,
                     "to"         :key,
                     "payload"    :{"status":"registerServices",
-                        "message"          :{services:localServices,
+                            "message":{services:filteredService,
                         "from":_parent.pzh_state.sessionId}}};
                 _parent.sendMessage (msg, key);
-                _parent.pzh_state.logger.log ("sent " + (localServices && localServices.length) || 0 + " webinos services to " + key);
+                    _parent.pzh_state.logger.log ("sent " + (filteredService && filteredService.length) || 0 + " webinos services to " + key);
+                }
             }
         }
     }
@@ -152,7 +163,7 @@ var Pzh_RPC = function (_parent) {
     /* Register current services with other PZH
      */
     this.registerServices = function (pzhId) {
-        var localServices = self.discovery.getAllServices ();
+        var localServices = self.discovery.getAllServices(pzhId);
         var msg = {"type":"prop",
             "from":_parent.pzh_state.sessionId,
             "to":pzhId,
