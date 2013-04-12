@@ -296,8 +296,8 @@ module.exports = function (config, app, address, port, state) {
       case "webcommander":
         installUrl = "http://webinos.two268.com/apps/webcommander.wgt";
         break
-      case "pzpadmin":
-        installUrl = "http://webinos.two268.com/apps/pzpadmin.wgt";
+      case "ubitaxi":
+        installUrl = "http://webinos.two268.com/apps/ubitaxi.wgt";
         break
     }
     ezhHelpers.pzhadaptor.installWidget(req.user, ezhHelpers.getPZHId(req), req.params.pzpId, installUrl, function(result) {
