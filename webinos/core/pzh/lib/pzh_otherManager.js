@@ -43,9 +43,7 @@ var Pzh_RPC = function (_parent) {
         for (key in localServices){
             if(localServices.hasOwnProperty(key) && _parent.pzh_state.connectedPzh.hasOwnProperty(localServices[key].serviceAddress)) {
                // Do not sent pzh details to another pzh
-              console.log("******************** skipping service: " + localServices[key].serviceAddress);
             } else {
-              console.log("******************** adding service: " + localServices[key].serviceAddress + " " + localServices[key].api);
               filteredService.push(localServices[key]);
             }
          }
