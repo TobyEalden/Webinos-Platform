@@ -34,7 +34,11 @@ var Pzp_OtherManager = function (_parent) {
     var PzpSib   = require("./pzp_SIB_auth");
     var path = require ("path");
     var os = require ('os');
-    var remoteManager = new (require("./pzp_remoteManager"))(_parent);
+    var remoteManager = null;
+
+    if (process.platform !== "android") {
+      remoteManager = new (require("./pzp_remoteManager"))(_parent);
+    }
 
     this.serviceListener;  // For a single callback to be registered via addRemoteServiceListener.
     this.registry;
