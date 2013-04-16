@@ -299,6 +299,12 @@ module.exports = function (config, app, address, port, state) {
       case "ubitaxi":
         installUrl = "http://webinos.two268.com/apps/ubitaxi.wgt";
         break
+      case "ezh-console":
+        installUrl = "http://webinos.two268.com/apps/ezh-console.wgt";
+        break;
+      case "ubitaxi-booking":
+        installUrl = "http://webinos.two268.com/apps/ubitaxi-book.wgt";
+        break;
     }
     ezhHelpers.pzhadaptor.installWidget(req.user, ezhHelpers.getPZHId(req), req.params.pzpId, installUrl, function(result) {
       res.json(result.message);
