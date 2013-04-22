@@ -42,6 +42,10 @@ var argv = require('optimist')
         describe: "starts widget server",
         default: false
     },
+    "branding" : {
+        describe: "specifies branding config",
+        default: "webinos"
+    },
     "policyEditor": {
         describe: "starts policy editor server",
         default: false
@@ -93,26 +97,28 @@ function initializeWidgetServer() {
   var wrt = require("./webinos/core/manager/widget_manager/lib/ui/widgetServer");
   if (typeof wrt !== "undefined") {
     // Attempt to start the widget server.
-    wrt.start(argv.signedWidgetOnly, argv.enforceWidgetCSP, pzp.session.getWebinosPort(),
-    function (msg, wrtPort) {
-      if (msg === "startedWRT") {
-        // Write the websocket and widget server ports to file so the renderer can pick them up.
-        var wrtConfig = {};
-        wrtConfig.runtimeWebServerPort = wrtPort;
-        wrtConfig.pzpWebSocketPort = pzp.session.getWebinosPort();
-        wrtConfig.pzpPath = pzp.session.getWebinosPath();
-                    require ("fs").writeFile ((require ("path").join (pzp.session.getWebinosPath (), 'wrt/webinos_runtime.json')),
-            JSON.stringify(wrtConfig, null, ' '), function (err) {
-          if (err) {
-            console.log('error saving runtime configuration file: ' + err);
-          } else {
-            console.log('saved configuration runtime file');
-          }
-        });
-      } else {
-            console.log('error starting wrt server: ' + msg);
+    var brandingFile = argv.branding + "_branding.json";
+    wrt.start(argv.signedWidgetOnly, argv.enforceWidgetCSP, pzp.session.getWebinosPort(),brandingFile,
+      function (msg, wrtPort) {
+        if (msg === "startedWRT") {
+          // Write the websocket and widget server ports to file so the renderer can pick them up.
+          var wrtConfig = {};
+          wrtConfig.runtimeWebServerPort = wrtPort;
+          wrtConfig.pzpWebSocketPort = pzp.session.getWebinosPort();
+          wrtConfig.pzpPath = pzp.session.getWebinosPath();
+                      require ("fs").writeFile ((require ("path").join (pzp.session.getWebinosPath (), 'wrt/webinos_runtime.json')),
+              JSON.stringify(wrtConfig, null, ' '), function (err) {
+            if (err) {
+              console.log('error saving runtime configuration file: ' + err);
+            } else {
+              console.log('saved configuration runtime file');
+            }
+          });
+        } else {
+              console.log('error starting wrt server: ' + msg);
+        }
       }
-    });
+    );
   }
 }
 

@@ -1,12 +1,11 @@
 ﻿(function (exports) {
 
-  exports.start = function (signedWidgetOnly, enforceWidgetCSP, pzpWebSocketPort, callback) {
+  exports.start = function (signedWidgetOnly, enforceWidgetCSP, pzpWebSocketPort, brandingFile, callback) {
     var express = require('express');
     var http = require('http');
     var fs = require('fs');
     var path = require('path');
     var logger = require('../../../../util/lib/logging.js')(__filename);
-
 
     // Default port
     var runtimeServerPort = 53510;
@@ -25,7 +24,10 @@
       //app.use(express.logger());
     });
 
+    var branding = JSON.parse(fs.readFileSync(brandingFile));
+
     app.use(app.router);
+    app.locals.branding = branding;
 
     // Load routing
     var stores = require('./routes/stores');
