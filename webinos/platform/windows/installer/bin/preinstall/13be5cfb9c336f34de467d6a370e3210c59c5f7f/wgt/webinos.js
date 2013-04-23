@@ -1614,9 +1614,7 @@ if (typeof webinos.util === "undefined") webinos.util = {};
                         port = resp.websocketPort;
                     } else { // We are not inside a pzp or widget server.
                         console.log ("CAUTION: webinosConfig.json failed to load. Are you on a pzp/widget server or older version of webinos? Trying the guess  communication channel's port.");
-				   // TOBY - hack for EZH
-				   port = 8080;
-                        //port = port + 1; // Guessing that the port is +1 to the webserver's. This was the way to detect it on old versions of pzp.
+                        port = port + 1; // Guessing that the port is +1 to the webserver's. This was the way to detect it on old versions of pzp.
                     }
                 } catch (err) { // XMLHttpRequest is not supported or something went wrong with it.
                     console.log ("CAUTION: The pzp communication host and port are unknown. Trying the default communication channel.");
@@ -1946,7 +1944,7 @@ if (typeof webinos.file === "undefined") webinos.file = {};
   Entry.prototype.moveTo = function (parent, newName, successCallback, errorCallback) {
     var self = this;
     var request = self.rpc.createRPC(self.service, "moveTo",
-        { source : self, parent : parent, newName : newName });
+      { source : self, parent : parent, newName : newName });
     self.rpc.executeRPC(request, function (entry) {
       if (self.isDirectory) {
         successCallback(new DirectoryEntry(self.filesystem, entry.fullPath));
@@ -1989,11 +1987,11 @@ if (typeof webinos.file === "undefined") webinos.file = {};
   Entry.prototype.toJSON = function () {
     var json =
       { name        : this.name
-               , fullPath    : this.fullPath
-               , filesystem  : this.filesystem
-               , isFile      : this.isFile
-               , isDirectory : this.isDirectory
-               };
+      , fullPath    : this.fullPath
+      , filesystem  : this.filesystem
+      , isFile      : this.isFile
+      , isDirectory : this.isDirectory
+      };
     return json;
   };
 
@@ -3264,6 +3262,7 @@ function clearWatch(watchId) {
             });
     };
 
+
     Sensor.prototype.addEventListener = function(eventType, eventHandler, capture) {
         var rpc = webinos.rpcHandler.createRPC(this, "addEventListener", eventType);
         sensorListeners.push([rpc.id, eventHandler]);
@@ -3274,7 +3273,6 @@ function clearWatch(watchId) {
         webinos.rpcHandler.executeRPC(rpc);
     };
 
-
     Sensor.prototype.removeEventListener = function(eventType, eventHandler, capture) {
         for (var i = 0; i < sensorListeners.length; i++) {
             if (sensorListeners[i][1] == eventHandler) {
@@ -3282,13 +3280,12 @@ function clearWatch(watchId) {
                 arguments[0] = sensorListeners[i][0];
                 arguments[1] = eventType;
                 var rpc = webinos.rpcHandler.createRPC(this, "removeEventListener", arguments);
-        webinos.rpcHandler.executeRPC(rpc);
+                webinos.rpcHandler.executeRPC(rpc);
                 sensorListeners.splice(i,1);
                 break;
             }
         }
     };
-
 }());
 
 /*******************************************************************************

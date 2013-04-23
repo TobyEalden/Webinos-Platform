@@ -20,11 +20,11 @@ SetCompressor lzma
 ; File association management
 !include "FileAssociation.nsh"
 
-!define PRODUCT_ICON "webinos.ico"
+!define PRODUCT_ICON "vodafone-icon.ico"
 !define INSTALLER_BANNER "installBanner.bmp"
 
 !define PRODUCT_NAME "webinos"
-!define VERSION "0.8.10-webinos"
+!define VERSION "0.8.10-vodafone"
 
 ; XP Compatibility
 !ifndef SF_SELECTED
@@ -204,7 +204,7 @@ SectionIn RO
 	${StrRep} $1 $INSTDIR\bin "\" "\\"
 	${StrRep} $2 $INSTDIR "\" "\\"
 	FileOpen $0 $INSTDIR\bin\wrt\wrt_config.json w
-	FileWrite $0 "{$\"nodePath$\": $\"$1$\",$\"workingDirectoryPath$\": $\"$2$\",$\"pzp_nodeArgs$\": $\"webinos_pzp.js --widgetServer --branding=webinos$\",$\"pzh_nodeArgs$\": $\"webinos_pzh.js$\"}"
+	FileWrite $0 "{$\"nodePath$\": $\"$1$\",$\"workingDirectoryPath$\": $\"$2$\",$\"pzp_nodeArgs$\": $\"webinos_pzp.js --widgetServer --branding=vodafone$\",$\"pzh_nodeArgs$\": $\"webinos_pzh.js$\"}"
 	FileClose $0
 	
 	; Write default pzh configuration (not enabled by default)

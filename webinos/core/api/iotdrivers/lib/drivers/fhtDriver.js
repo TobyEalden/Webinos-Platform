@@ -137,7 +137,7 @@
 
     function intReg() {
         console.log('FHT driver - register sensors');
-	var existsSync = fs.existsSync || path.existsSync;
+	      var existsSync = fs.existsSync || path.existsSync;
         if (existsSync(CONFIG_PATH)) {
           configData = JSON.parse(fs.readFileSync(CONFIG_PATH));
 

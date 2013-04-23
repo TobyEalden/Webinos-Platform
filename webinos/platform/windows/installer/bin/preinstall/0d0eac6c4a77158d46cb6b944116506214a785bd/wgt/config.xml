@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns       = "http://www.w3.org/ns/widgets"
+        id          = "http://webinos.fokus.fraunhofer.de/apps/opencityguide.wgt"
+        version     = "0.1"
+        height      = "640"
+        width       = "480"
+        >
+ 
+  <name short="OpenCityGuide">
+   OpenCityGuide
+  </name>
+
+  <description>
+OpenCityGuide is a cross-platform mobile application built on top of the open data 
+platforms of different cities. The application accesses the touristic data from
+different OD platforms and aggregates them with user generated data such as ratings, 
+comments, checkins, etc. and 3rd party content such as photos from Flickr and linked data from DPPedia
+in one single application. After starting the App, the user can select a city from the list or allow the application to detect the  
+city automatically by accessing the GPS module. After a city is determined, the application shows all
+touristic attractions for the selected city either on a map or as a list. If the user selects a point of interest, 
+the application shows more details such as description, opening hours, entry fees, etc. for the selected place.
+Furthermore, the user is able in this view to do the following
+actions: 1) add new comment or show comments from other users related
+to the selected place, 2) set rating or show the average rating of the
+selected place, 3) checkin in the selected place. 
+New features such as offline capability, social media integration and personalized recommendation will 
+be available in future releases.
+  </description>
+
+  <author email="louay.bassbouss@fokus.fraunhofer.de">Louay Bassbouss</author>
+
+  <icon src="icon.png" />
+
+  <content type="text/html" src="http://mashweb.fokus.fraunhofer.de:3007/"/>
+
+  <license>
+OpenCityGuide
+Copyright (C) Fraunhofer FOKUS, 2011
+http://www.fokus.fraunhofer.de/go/fame
+
+This product includes software developed at 
+Fraunhofer FOKUS (http://www.fokus.fraunhofer.de)
+
+Louay Bassbouss "louay.bassbouss@fokus.fraunhofer.de"
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  </license>
+</widget>
