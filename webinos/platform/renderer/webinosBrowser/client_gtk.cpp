@@ -113,6 +113,7 @@ int main(int argc, char* argv[])
 
   // Enable remote debugging by default.
   settings.remote_debugging_port = 9222;
+  settings.ignore_certificate_errors = true;
 
   // Populate the settings based on command line arguments.
   AppGetSettings(settings, app);
@@ -224,7 +225,7 @@ void AppCreateWindow(CefRefPtr<ClientHandler> clientHandler, bool sideLoading, C
 
   gtk_container_add(GTK_CONTAINER(window), vbox);
 
-  if (!sideLoading)
+//  if (!sideLoading)
   {
     gtk_widget_show_all(GTK_WIDGET(window));
   }

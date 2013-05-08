@@ -16,7 +16,9 @@ class CefApp;
 class CefBrowser;
 class CefCommandLine;
 class ClientHandler;
+namespace base {
 class FilePath;
+}
 
 // Returns the application working directory.
 std::string AppGetWorkingDirectory();
@@ -33,16 +35,13 @@ CefRefPtr<CefCommandLine> AppGetCommandLine();
 // Returns the application settings based on command line arguments.
 void AppGetSettings(CefSettings& settings, CefRefPtr<ClientApp> app);
 
-// Returns the application browser settings based on command line arguments.
-void AppGetBrowserSettings(CefBrowserSettings& settings);
-
 std::string AppGetWebinosWRTConfig(int* pzpPort, int* webPort);
 
 void AppCreateWebinosBrowser(std::string url, bool isWidget, bool sideLoading, CefWindowHandle closeParent, int width = 0, int height = 0);
 
 void AppCreateWindow(CefRefPtr<ClientHandler> clientHandler, bool sideLoading, CefWindowHandle closeParent, int width, int height);
 
-bool AppParseLaunchFile(FilePath launchFile, std::string& installId, std::string& params);
+bool AppParseLaunchFile(base::FilePath launchFile, std::string& installId, std::string& params);
 
 bool AppGetWidgetArgs(std::string sessionId, std::string& args);
 

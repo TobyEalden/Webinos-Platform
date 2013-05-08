@@ -381,14 +381,12 @@ void ClientHandler::ShowDevTools(CefRefPtr<CefBrowser> browser)
   }
 }
 
-bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> parentBrowser, const CefPopupFeatures& popupFeatures, CefWindowInfo& windowInfo, const CefString& url, CefRefPtr<CefClient>& client, CefBrowserSettings& settings) 
+bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& target_url, const CefString& target_frame_name, const CefPopupFeatures& popupFeatures, CefWindowInfo& windowInfo, CefRefPtr<CefClient>& client, CefBrowserSettings& settings, bool* no_javascript_access) 
 {
-  REQUIRE_UI_THREAD();
-
   webinos::WidgetConfig cfg;
-  if (cfg.LoadFromURL(url))
+  if (cfg.LoadFromURL(target_url))
   {
-    AppCreateWebinosBrowser(url, false, false, NULL);
+    CefPostTask(TID_UI, NewCefRunnableFunction(AppCreateWebinosBrowser,target_url, false, false, (HWND)NULL,cfg.width(),cfg.height()));
     return true;
   }
 

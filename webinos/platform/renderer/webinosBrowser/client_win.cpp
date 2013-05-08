@@ -80,6 +80,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
   // Enable remote debugging by default.
   settings.remote_debugging_port = 9222;
+  settings.ignore_certificate_errors = true;
 
   // Initialize CEF.
   CefInitialize(main_args, settings, app.get());
@@ -261,9 +262,6 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
       CefWindowInfo info;
       CefBrowserSettings settings;
-
-      // Populate the settings based on command line arguments.
-      AppGetBrowserSettings(settings);
 
       info.SetAsChild(hWnd, rect);
 

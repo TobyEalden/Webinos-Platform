@@ -12,8 +12,6 @@
 #include "webinosBrowser/string_util.h"
 #include "webinosBrowser/util.h"
 #include "googleurl/src/gurl.h"
-#include "base/file_path.h"
-#include "base/sys_string_conversions.h"
 
 #if defined(OS_WIN)
 #include "webinosBrowser/resource.h"

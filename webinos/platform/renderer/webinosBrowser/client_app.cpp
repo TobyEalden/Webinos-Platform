@@ -12,7 +12,7 @@
 #include "include/cef_process_message.h"
 #include "include/cef_task.h"
 #include "include/cef_v8.h"
-#include "base/file_path.h"
+#include "base/files/file_path.h"
 #include "base/file_util.h"
 #include "base/path_service.h"
 #include "base/values.h"
@@ -25,7 +25,6 @@
 #include "webinosBrowser/WidgetConfig.h"
 
 ClientApp::ClientApp() : 
-  proxy_type_(CEF_PROXY_TYPE_DIRECT),
   m_webinosShowChrome(false)
 {
   // Default schemes that support cookies.
@@ -41,13 +40,6 @@ void ClientApp::OnContextInitialized()
   manager->SetSupportedSchemes(cookieable_schemes_);
 }
 
-void ClientApp::GetProxyForUrl(const CefString& url, CefProxyInfo& proxy_info) 
-{
-  proxy_info.proxyType = proxy_type_;
-  if (!proxy_config_.empty())
-    CefString(&proxy_info.proxyList) = proxy_config_;
-}
-
 // Inject webinos.js
 // The file is loaded from the webinos\test\client folder if possible.
 // If this fails, the current folder is used.
@@ -57,11 +49,11 @@ void ClientApp::InjectWebinos(CefRefPtr<CefFrame> frame)
 
   // First try and load the platform-supplied webinos.js
 #if defined(OS_WIN)
-  FilePath workingDir(commandLine->GetProgram().ToWString().c_str());
-  FilePath webinosJSPath = workingDir.DirName().Append(L"..\\..\\webinos\\web_root\\webinos.js");
+  base::FilePath workingDir(commandLine->GetProgram().ToWString().c_str());
+  base::FilePath webinosJSPath = workingDir.DirName().Append(L"..\\..\\webinos\\web_root\\webinos.js");
 #else
-  FilePath workingDir(commandLine->GetProgram());
-  FilePath webinosJSPath = workingDir.DirName().Append("..\\..\\webinos\\web_root\\webinos.js");
+  base::FilePath workingDir(commandLine->GetProgram());
+  base::FilePath webinosJSPath = workingDir.DirName().Append("..\\..\\webinos\\web_root\\webinos.js");
 #endif
 
   int64 webinosJSCodeSize;
@@ -70,10 +62,10 @@ void ClientApp::InjectWebinos(CefRefPtr<CefFrame> frame)
   {
     // Unable to load the platform-supplied webinos.js, use the installed version.
 #if defined(OS_WIN)
-    workingDir = FilePath(commandLine->GetProgram().ToWString().c_str());
+    workingDir = base::FilePath(commandLine->GetProgram().ToWString().c_str());
     webinosJSPath = workingDir.DirName().Append(L"webinos.js");
 #else
-    workingDir = FilePath(commandLine->GetProgram());
+    workingDir = base::FilePath(commandLine->GetProgram());
     webinosJSPath = workingDir.DirName().Append("webinos.js");
 #endif
     gotJSFile = file_util::GetFileSize(webinosJSPath, &webinosJSCodeSize);
@@ -129,11 +121,11 @@ void ClientApp::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFra
 
     CefRefPtr<CefCommandLine> commandLine = AppGetCommandLine();
 #if defined(OS_WIN)
-    FilePath workingDir(commandLine->GetProgram().ToWString().c_str());
-    FilePath bootPath = workingDir.DirName().Append(L"webinosBoot.js");
+    base::FilePath workingDir(commandLine->GetProgram().ToWString().c_str());
+    base::FilePath bootPath = workingDir.DirName().Append(L"webinosBoot.js");
 #else
-    FilePath workingDir(commandLine->GetProgram());
-    FilePath bootPath = workingDir.DirName().Append("webinosBoot.js");
+    base::FilePath workingDir(commandLine->GetProgram());
+    base::FilePath bootPath = workingDir.DirName().Append("webinosBoot.js");
 #endif
 
     int64 bootDataSize;

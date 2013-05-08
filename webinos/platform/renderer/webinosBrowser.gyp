@@ -7,6 +7,7 @@
     'pkg-config': 'pkg-config',
     'chromium_code': 1,
     'grit_out_dir': '<(SHARED_INTERMEDIATE_DIR)/cef',
+    'about_credits_file': '<(SHARED_INTERMEDIATE_DIR)/about_credits.html',
     'revision': '<!(python tools/revision.py)',
     # Need to be creative to match dylib version formatting requirements.
     'version_mac_dylib':
@@ -86,6 +87,8 @@
               '-lcomctl32.lib',
               '-lshlwapi.lib',
               '-lrpcrt4.lib',
+              '-lopengl32.lib',
+              '-lglu32.lib',
             ],
           },
           'sources': [
@@ -98,38 +101,29 @@
             '<(DEPTH)/sandbox/sandbox.gyp:sandbox',
           ],
         }],
-        ['toolkit_uses_gtk == 1', {
-          'dependencies': [
-            '<(DEPTH)/build/linux/system.gyp:gtk',
-          ],
-        }],
         [ 'OS=="mac"', {
           'product_name': 'webinosBrowser',
           'dependencies': [
             'webinosBrowser_helper_app',
             'interpose_dependency_shim',
           ],
+          'variables': {
+            'PRODUCT_NAME': 'webinosBrowser',
+          },
           'copies': [
             {
               # Add library dependencies to the bundle.
-              'destination': '<(PRODUCT_DIR)/webinosBrowser.app/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/',
+              'destination': '<(PRODUCT_DIR)/<(PRODUCT_NAME).app/Contents/Frameworks/Chromium Embedded Framework.framework/Libraries/',
               'files': [
                 '<(PRODUCT_DIR)/libcef.dylib',
                 '<(PRODUCT_DIR)/ffmpegsumo.so',
               ],
             },
             {
-              # Add localized resources to the bundle.
-              'destination': '<(PRODUCT_DIR)/webinosBrowser.app/Contents/Frameworks/Chromium Embedded Framework.framework/Resources/',
-              'files': [
-                '<!@pymod_do_main(repack_locales -o -g <(grit_out_dir) -s <(SHARED_INTERMEDIATE_DIR) -x <(INTERMEDIATE_DIR) <(locales))',
-              ],
-            },
-            {
               # Add the helper app.
-              'destination': '<(PRODUCT_DIR)/webinosBrowser.app/Contents/Frameworks',
+              'destination': '<(PRODUCT_DIR)/<(PRODUCT_NAME).app/Contents/Frameworks',
               'files': [
-                '<(PRODUCT_DIR)/webinosBrowser Helper.app',
+                '<(PRODUCT_DIR)/<(PRODUCT_NAME) Helper.app',
                 '<(PRODUCT_DIR)/libplugin_carbon_interpose.dylib',
               ],
             },
@@ -146,12 +140,30 @@
               ],
             },
             {
+              'postbuild_name': 'Copy WebCore Resources',
+              'action': [
+                'cp',
+                '-Rf',
+                '${BUILT_PRODUCTS_DIR}/../../third_party/WebKit/Source/WebCore/Resources/',
+                '${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework/Resources/'
+              ],
+            },
+            {
+              'postbuild_name': 'Copy locale Resources',
+              'action': [
+                'cp',
+                '-Rf',
+                '${BUILT_PRODUCTS_DIR}/locales/',
+                '${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework/Resources/'
+              ],
+            },
+            {
               'postbuild_name': 'Copy cef.pak File',
               'action': [
                 'cp',
                 '-f',
                 '${BUILT_PRODUCTS_DIR}/cef.pak',
-                '${BUILT_PRODUCTS_DIR}/cefclient.app/Contents/Frameworks/Chromium Embedded Framework.framework/Resources/cef.pak'
+                '${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework/Resources/cef.pak'
               ],
             },
             {
@@ -160,16 +172,7 @@
                 'cp',
                 '-f',
                 '${BUILT_PRODUCTS_DIR}/devtools_resources.pak',
-                '${BUILT_PRODUCTS_DIR}/cefclient.app/Contents/Frameworks/Chromium Embedded Framework.framework/Resources/devtools_resources.pak'
-              ],
-            },
-            {
-              'postbuild_name': 'Copy WebCore Resources',
-              'action': [
-                'cp',
-                '-Rf',
-                '${BUILT_PRODUCTS_DIR}/../../third_party/WebKit/Source/WebCore/Resources/',
-                '${BUILT_PRODUCTS_DIR}/webinosBrowser.app/Contents/Frameworks/Chromium Embedded Framework.framework/Resources/'
+                '${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework/Resources/devtools_resources.pak'
               ],
             },
             {
@@ -182,8 +185,8 @@
               # This postbuid step is responsible for creating the following
               # helpers:
               #
-              # webinosBrowser Helper EH.app and webinosBrowser Helper NP.app are created
-              # from webinosBrowser Helper.app.
+              # cefclient Helper EH.app and cefclient Helper NP.app are created
+              # from cefclient Helper.app.
               #
               # The EH helper is marked for an executable heap. The NP helper
               # is marked for no PIE (ASLR).
@@ -198,6 +201,7 @@
           'link_settings': {
             'libraries': [
               '$(SDKROOT)/System/Library/Frameworks/AppKit.framework',
+              '$(SDKROOT)/System/Library/Frameworks/OpenGL.framework',
             ],
           },
           'sources': [
@@ -206,6 +210,9 @@
           ],
         }],
         [ 'OS=="linux" or OS=="freebsd" or OS=="openbsd"', {
+          'dependencies': [
+            '<(DEPTH)/build/linux/system.gyp:gtk',
+          ],
           'sources': [
             '<@(includes_linux)',
             '<@(webinosBrowser_sources_linux)',
@@ -226,31 +233,6 @@
       'type': 'shared_library',
       'msvs_guid': 'C13650D5-CF1A-4259-BE45-B1EBA6280E47',
       'dependencies': [
-        '<(DEPTH)/content/content.gyp:content_app',
-        '<(DEPTH)/content/content.gyp:content_browser',
-        '<(DEPTH)/content/content.gyp:content_common',
-        '<(DEPTH)/content/content.gyp:content_gpu',
-        '<(DEPTH)/content/content.gyp:content_plugin',
-        '<(DEPTH)/content/content.gyp:content_ppapi_plugin',
-        '<(DEPTH)/content/content.gyp:content_renderer',
-        '<(DEPTH)/content/content.gyp:content_utility',
-        '<(DEPTH)/content/content.gyp:content_worker',
-        '<(DEPTH)/content/content_resources.gyp:content_resources',
-        '<(DEPTH)/base/base.gyp:base',
-        '<(DEPTH)/base/third_party/dynamic_annotations/dynamic_annotations.gyp:dynamic_annotations',
-        '<(DEPTH)/build/temp_gyp/googleurl.gyp:googleurl',
-        '<(DEPTH)/ipc/ipc.gyp:ipc',
-        '<(DEPTH)/media/media.gyp:media',
-        '<(DEPTH)/net/net.gyp:net',
-        '<(DEPTH)/skia/skia.gyp:skia',
-        '<(DEPTH)/third_party/WebKit/Source/WebKit/chromium/WebKit.gyp:webkit',
-        '<(DEPTH)/ui/ui.gyp:ui',
-        '<(DEPTH)/v8/tools/gyp/v8.gyp:v8',
-        '<(DEPTH)/webkit/support/webkit_support.gyp:appcache',
-        '<(DEPTH)/webkit/support/webkit_support.gyp:database',
-        '<(DEPTH)/webkit/support/webkit_support.gyp:fileapi',
-        '<(DEPTH)/webkit/support/webkit_support.gyp:glue',
-        '<(DEPTH)/webkit/support/webkit_support.gyp:quota',
         'libcef_static',
       ],
       'defines': [
@@ -259,19 +241,15 @@
       'include_dirs': [
         '.',
       ],
-      # Avoid "RC1102: internal error : too many arguments to RCPP" error by
-      # explicitly specifying a short list of resource include directories.
-      'resource_include_dirs' :  [
-        '.',
-        '..',
-      ],
       'sources': [
         '<@(includes_common)',
         '<@(includes_capi)',
         '<@(libcef_sources_common)',
       ],
       'xcode_settings': {
+        # Default path that will be changed by install_name_tool in dependent targets.
         'INSTALL_PATH': '@executable_path',
+        'DYLIB_INSTALL_NAME_BASE': '@executable_path',
         # The libcef_static target contains ObjC categories. Passing the -ObjC flag
         # is necessary to properly load them and avoid a "selector not recognized"
         # runtime error. See http://developer.apple.com/library/mac/#qa/qa1490/_index.html
@@ -298,9 +276,10 @@
           },
           'sources': [
             '<@(includes_win)',
-            # TODO(cef): Remove webkit_resources.rc once custom cursor resources
-            # can be loaded via ResourceBundle. See crbug.com/147663.
-            '$(OutDir)/obj/global_intermediate/webkit/webkit_resources.rc',
+            # TODO(cef): Remove ui_unscaled_resources.rc once custom cursor
+            # resources can be loaded via ResourceBundle. See crbug.com/147663.
+            '<(SHARED_INTERMEDIATE_DIR)/webkit/webkit_resources.rc',
+            '<(SHARED_INTERMEDIATE_DIR)/ui/ui_resources/ui_unscaled_resources.rc',
             'libcef_dll/libcef_dll.rc',
           ],
           'link_settings': {
@@ -318,20 +297,8 @@
         [ 'OS=="linux" or OS=="freebsd" or OS=="openbsd"', {
           'dependencies':[
             '<(DEPTH)/base/allocator/allocator.gyp:allocator',
+            '<(DEPTH)/build/linux/system.gyp:gtk',
           ],
-          'direct_dependent_settings': {
-            'cflags': [
-              '<!@(<(pkg-config) --cflags gtk+-2.0 gthread-2.0)',
-            ],
-          },
-          'link_settings': {
-            'ldflags': [
-              '<!@(<(pkg-config) --libs-only-L --libs-only-other gtk+-2.0 gthread-2.0)',
-            ],
-            'libraries': [
-              '<!@(<(pkg-config) --libs-only-l gtk+-2.0 gthread-2.0)',
-            ],
-          },
       	}],
       ],
     },
@@ -353,6 +320,13 @@
         '<@(includes_capi)',
         '<@(includes_wrapper)',
         '<@(libcef_dll_wrapper_sources_common)',
+      ],
+      'conditions': [
+        [ 'OS=="linux" or OS=="freebsd" or OS=="openbsd"', {
+          'dependencies': [
+            '<(DEPTH)/build/linux/system.gyp:gtk',
+          ],
+        }],
       ],
     },
     {
@@ -382,6 +356,14 @@
       'variables': {
         'repack_locales_cmd': ['python', 'tools/repack_locales.py'],
       },
+      'copies': [
+        {
+          'destination': '<(PRODUCT_DIR)/locales',
+          'files': [
+            '<!@pymod_do_main(repack_locales -o -g <(grit_out_dir) -s <(SHARED_INTERMEDIATE_DIR) -x <(INTERMEDIATE_DIR) <(locales))'
+          ],
+        },
+      ],
       'conditions': [
         ['OS=="win"', {
           'actions': [
@@ -434,27 +416,49 @@
             },
           ],
         }],
-        ['OS != "mac"', {
-          'copies': [
+      ],
+    },
+    {
+      'target_name': 'about_credits',
+      'type': 'none',
+      'actions': [
             {
-              'destination': '<(PRODUCT_DIR)/locales',
-              'files': [
-                '<!@pymod_do_main(repack_locales -o -g <(grit_out_dir) -s <(SHARED_INTERMEDIATE_DIR) -x <(INTERMEDIATE_DIR) <(locales))'
+          'variables': {
+            'generator_path': '../tools/licenses.py',
+          },
+          'action_name': 'generate_about_credits',
+          'inputs': [
+            # TODO(phajdan.jr): make licenses.py print inputs too.
+            '<(generator_path)',
+          ],
+          'outputs': [
+            '<(about_credits_file)',
+          ],
+          'hard_dependency': 1,
+          'action': ['python',
+                     '<(generator_path)',
+                     'credits',
+                     '<(about_credits_file)',
               ],
+          'message': 'Generating about:credits.',
             },
           ],
-        }],
-      ],
     },
     {
       # Create the pack file for CEF resources.
       'target_name': 'cef_resources',
       'type': 'none',
+      'dependencies': [
+        'about_credits',
+      ],
       'actions': [
         {
           'action_name': 'cef_resources',
           'variables': {
             'grit_grd_file': 'libcef/resources/cef_resources.grd',
+            'grit_additional_defines': [
+              '-E', 'about_credits_file=<(about_credits_file)',
+            ],
           },
           'includes': [ '../build/grit_action.gypi' ],
         },
@@ -474,7 +478,7 @@
       'target_name': 'cef_pak',
       'type': 'none',
       'dependencies': [
-        '<(DEPTH)/content/browser/debugger/devtools_resources.gyp:devtools_resources',
+        '<(DEPTH)/content/browser/devtools/devtools_resources.gyp:devtools_resources',
         '<(DEPTH)/content/content_resources.gyp:content_resources',
         '<(DEPTH)/net/net.gyp:net_resources',
         '<(DEPTH)/ui/ui.gyp:ui_resources',
@@ -575,6 +579,7 @@
         # CEF grit resource includes
         '<(grit_out_dir)',
         '<(SHARED_INTERMEDIATE_DIR)/ui/ui_strings',
+        '<(SHARED_INTERMEDIATE_DIR)/webkit',
       ],
       'dependencies': [
         '<(DEPTH)/content/content.gyp:content_app',
@@ -588,22 +593,23 @@
         '<(DEPTH)/content/content.gyp:content_worker',
         '<(DEPTH)/content/content_resources.gyp:content_resources',
         '<(DEPTH)/base/base.gyp:base',
+        '<(DEPTH)/base/base.gyp:base_prefs',
         '<(DEPTH)/base/third_party/dynamic_annotations/dynamic_annotations.gyp:dynamic_annotations',
         '<(DEPTH)/build/temp_gyp/googleurl.gyp:googleurl',
         '<(DEPTH)/ipc/ipc.gyp:ipc',
         '<(DEPTH)/media/media.gyp:media',
         '<(DEPTH)/net/net.gyp:net',
+        '<(DEPTH)/net/net.gyp:net_with_v8',
         '<(DEPTH)/skia/skia.gyp:skia',
         '<(DEPTH)/third_party/libxml/libxml.gyp:libxml',
         '<(DEPTH)/third_party/WebKit/Source/WebCore/WebCore.gyp/WebCore.gyp:webcore',
         '<(DEPTH)/third_party/WebKit/Source/WebKit/chromium/WebKit.gyp:webkit',
+        '<(DEPTH)/third_party/zlib/zlib.gyp:minizip',
+        '<(DEPTH)/ui/gl/gl.gyp:gl',
         '<(DEPTH)/ui/ui.gyp:ui',
         '<(DEPTH)/v8/tools/gyp/v8.gyp:v8',
-        '<(DEPTH)/webkit/support/webkit_support.gyp:appcache',
-        '<(DEPTH)/webkit/support/webkit_support.gyp:database',
-        '<(DEPTH)/webkit/support/webkit_support.gyp:fileapi',
         '<(DEPTH)/webkit/support/webkit_support.gyp:glue',
-        '<(DEPTH)/webkit/support/webkit_support.gyp:quota',
+        '<(DEPTH)/webkit/support/webkit_support.gyp:webkit_storage',
         # Necessary to generate the grit include files.
         'cef_pak',
       ],
@@ -613,12 +619,16 @@
         'libcef/browser/browser_context.h',
         'libcef/browser/browser_host_impl.cc',
         'libcef/browser/browser_host_impl.h',
+        'libcef/browser/browser_info.cc',
+        'libcef/browser/browser_info.h',
         'libcef/browser/browser_main.cc',
         'libcef/browser/browser_main.h',
         'libcef/browser/browser_message_filter.cc',
         'libcef/browser/browser_message_filter.h',
         'libcef/browser/browser_message_loop.cc',
         'libcef/browser/browser_message_loop.h',
+        'libcef/browser/browser_pref_store.cc',
+        'libcef/browser/browser_pref_store.h',
         'libcef/browser/browser_settings.cc',
         'libcef/browser/browser_settings.h',
         'libcef/browser/browser_urlrequest_impl.cc',
@@ -643,11 +653,14 @@
         'libcef/browser/download_manager_delegate.h',
         'libcef/browser/frame_host_impl.cc',
         'libcef/browser/frame_host_impl.h',
+        'libcef/browser/geolocation_impl.cc',
         'libcef/browser/internal_scheme_handler.cc',
         'libcef/browser/internal_scheme_handler.h',
         'libcef/browser/javascript_dialog.h',
-        'libcef/browser/javascript_dialog_creator.cc',
-        'libcef/browser/javascript_dialog_creator.h',
+        'libcef/browser/javascript_dialog_manager.cc',
+        'libcef/browser/javascript_dialog_manager.h',
+        'libcef/browser/media_capture_devices_dispatcher.cc',
+        'libcef/browser/media_capture_devices_dispatcher.h',
         'libcef/browser/menu_creator.cc',
         'libcef/browser/menu_creator.h',
         'libcef/browser/menu_model_impl.cc',
@@ -658,16 +671,17 @@
         'libcef/browser/origin_whitelist_impl.h',
         'libcef/browser/path_util_impl.cc',
         'libcef/browser/process_util_impl.cc',
-        'libcef/browser/resource_context.cc',
-        'libcef/browser/resource_context.h',
+        'libcef/browser/proxy_stubs.cc',
         'libcef/browser/resource_dispatcher_host_delegate.cc',
         'libcef/browser/resource_dispatcher_host_delegate.h',
         'libcef/browser/resource_request_job.cc',
         'libcef/browser/resource_request_job.h',
         'libcef/browser/scheme_impl.cc',
+        'libcef/browser/scheme_impl.h',
         'libcef/browser/scheme_registration.cc',
         'libcef/browser/scheme_registration.h',
-        'libcef/browser/sqlite_diagnostics_stub.cc',
+        'libcef/browser/speech_recognition_manager_delegate.cc',
+        'libcef/browser/speech_recognition_manager_delegate.h',
         'libcef/browser/stream_impl.cc',
         'libcef/browser/stream_impl.h',
         'libcef/browser/trace_impl.cc',
@@ -719,6 +733,8 @@
         'libcef/common/string_multimap_impl.cc',
         'libcef/common/string_types_impl.cc',
         'libcef/common/task_impl.cc',
+        'libcef/common/task_runner_impl.cc',
+        'libcef/common/task_runner_impl.h',
         'libcef/common/time_impl.cc',
         'libcef/common/time_util.h',
         'libcef/common/tracker.cc',
@@ -743,6 +759,8 @@
         'libcef/renderer/dom_node_impl.h',
         'libcef/renderer/frame_impl.cc',
         'libcef/renderer/frame_impl.h',
+        'libcef/renderer/render_message_filter.cc',
+        'libcef/renderer/render_message_filter.h',
         'libcef/renderer/render_process_observer.cc',
         'libcef/renderer/render_process_observer.h',
         'libcef/renderer/render_urlrequest_impl.cc',
@@ -752,21 +770,43 @@
         'libcef/renderer/v8_impl.h',
         'libcef/renderer/webkit_glue.cc',
         'libcef/renderer/webkit_glue.h',
-        # Include sources for persistent cookie storage.
-        '<(DEPTH)/chrome/browser/net/clear_on_exit_policy.cc',
-        '<(DEPTH)/chrome/browser/net/clear_on_exit_policy.h',
-        '<(DEPTH)/chrome/browser/net/sqlite_persistent_cookie_store.cc',
-        '<(DEPTH)/chrome/browser/net/sqlite_persistent_cookie_store.h',
+        '<(DEPTH)/chrome/common/chrome_switches.cc',
+        '<(DEPTH)/chrome/common/chrome_switches.h',
+        # Include sources for proxy support.
+        '<(DEPTH)/base/prefs/testing_pref_store.cc',
+        '<(DEPTH)/base/prefs/testing_pref_store.h',
+        '<(DEPTH)/chrome/browser/net/pref_proxy_config_tracker.h',
+        '<(DEPTH)/chrome/browser/net/pref_proxy_config_tracker_impl.cc',
+        '<(DEPTH)/chrome/browser/net/pref_proxy_config_tracker_impl.h',
+        '<(DEPTH)/chrome/browser/net/proxy_service_factory.cc',
+        '<(DEPTH)/chrome/browser/net/proxy_service_factory.h',
+        '<(DEPTH)/chrome/browser/prefs/command_line_pref_store.cc',
+        '<(DEPTH)/chrome/browser/prefs/command_line_pref_store.h',
+        '<(DEPTH)/chrome/browser/prefs/proxy_config_dictionary.cc',
+        '<(DEPTH)/chrome/browser/prefs/proxy_config_dictionary.h',
+        '<(DEPTH)/chrome/browser/prefs/proxy_prefs.cc',
+        '<(DEPTH)/chrome/browser/prefs/proxy_prefs.h',
+        '<(DEPTH)/chrome/common/pref_names.cc',
+        '<(DEPTH)/chrome/common/pref_names.h',
+        # Include sources for the loadtimes V8 extension.
+        '<(DEPTH)/chrome/renderer/loadtimes_extension_bindings.h',
+        '<(DEPTH)/chrome/renderer/loadtimes_extension_bindings.cc',
       ],
       'conditions': [
         ['OS=="win"', {
           'sources': [
             '<@(includes_win)',
+            'libcef/browser/backing_store_osr.cc',
+            'libcef/browser/backing_store_osr.h',
             'libcef/browser/browser_host_impl_win.cc',
             'libcef/browser/browser_main_win.cc',
             'libcef/browser/javascript_dialog_win.cc',
             'libcef/browser/menu_creator_runner_win.cc',
             'libcef/browser/menu_creator_runner_win.h',
+            'libcef/browser/render_widget_host_view_osr.cc',
+            'libcef/browser/render_widget_host_view_osr.h',
+            'libcef/browser/web_contents_view_osr.cc',
+            'libcef/browser/web_contents_view_osr.h',
             # Include sources for context menu implementation.
             '<(DEPTH)/ui/views/controls/menu/menu_2.cc',
             '<(DEPTH)/ui/views/controls/menu/menu_2.h',
@@ -784,16 +824,18 @@
             '<@(includes_mac)',
             'libcef/browser/application_mac.h',
             'libcef/browser/application_mac.mm',
+            'libcef/browser/backing_store_osr.cc',
+            'libcef/browser/backing_store_osr.h',
             'libcef/browser/browser_host_impl_mac.mm',
             'libcef/browser/browser_main_mac.mm',
             'libcef/browser/javascript_dialog_mac.mm',
             'libcef/browser/menu_creator_runner_mac.h',
             'libcef/browser/menu_creator_runner_mac.mm',
+            'libcef/browser/render_widget_host_view_osr.cc',
+            'libcef/browser/render_widget_host_view_osr.h',
+            'libcef/browser/web_contents_view_osr.cc',
+            'libcef/browser/web_contents_view_osr.h',
             # Include sources for context menu implementation.
-            '<(DEPTH)/chrome/browser/disposition_utils.cc',
-            '<(DEPTH)/chrome/browser/disposition_utils.h',
-            '<(DEPTH)/chrome/browser/event_disposition.cc',
-            '<(DEPTH)/chrome/browser/event_disposition.h',
             '<(DEPTH)/chrome/browser/ui/cocoa/event_utils.mm',
             '<(DEPTH)/chrome/browser/ui/cocoa/event_utils.h',
             '<(DEPTH)/chrome/browser/ui/cocoa/menu_controller.mm',
@@ -824,7 +866,7 @@
     },
   ],
   'conditions': [
-    ['os_posix==1 and OS!="mac" and OS!="android" and gcc_version==46', {
+    ['os_posix==1 and OS!="mac" and OS!="android" and gcc_version>=46', {
       'target_defaults': {
         # Disable warnings about c++0x compatibility, as some names (such
         # as nullptr) conflict with upcoming c++0x types.
@@ -1015,6 +1057,7 @@
             'tests/unittests/client_app_delegates.cc',
             'tests/unittests/cookie_unittest.cc',
             'tests/unittests/dom_unittest.cc',
+            'tests/unittests/navigation_unittest.cc',
             'tests/unittests/process_message_unittest.cc',
             'tests/unittests/scheme_handler_unittest.cc',
             'tests/unittests/urlrequest_unittest.cc',
