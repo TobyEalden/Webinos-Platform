@@ -563,3 +563,58 @@ void CServiceManager::GetLaunchFiles(const CUserParameters& user, const CService
   closedir(dir);
 #endif
 }
+
+void CServiceManager::GetNotificationFiles(const CUserParameters& user, const CServiceParameters& params, std::vector<std::string> &out)
+{
+  std::string directory;
+  GetUserSettingsPath(user,params,directory);
+
+#if defined(WIN32)
+  HANDLE dir;
+  WIN32_FIND_DATA file_data;
+
+  if ((dir = FindFirstFile((directory + "\\*.notify").c_str(), &file_data)) == INVALID_HANDLE_VALUE)
+    return; /* No files found */
+
+  do 
+  {
+    const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+
+    if (is_directory)
+      continue;
+
+    const std::string file_name = file_data.cFileName;
+    const std::string full_file_name = directory + "/" + file_name;
+
+    out.push_back(full_file_name);
+  } 
+  while (FindNextFile(dir, &file_data));
+
+  FindClose(dir);
+#else
+  DIR *dir;
+  class dirent *ent;
+  class stat st;
+
+  dir = opendir(directory.c_str());
+  while ((ent = readdir(dir)) != NULL) 
+  {
+    const std::string file_name = ent->d_name;
+    const std::string full_file_name = directory + "/" + file_name;
+
+    if (stat(full_file_name.c_str(), &st) == -1)
+      continue;
+
+    const bool is_directory = (st.st_mode & S_IFDIR) != 0;
+    if (is_directory)
+      continue;
+
+    size_t extIdx = file_name.find_last_of('.');
+    if (extIdx == std::string::npos || file_name.substr(extIdx+1) != std::string("notify"))
+      continue;
+
+    out.push_back(full_file_name);
+  }
+  closedir(dir);
+#endif
+}

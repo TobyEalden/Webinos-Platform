@@ -24,7 +24,7 @@ SetCompressor lzma
 !define INSTALLER_BANNER "installBanner.bmp"
 
 !define PRODUCT_NAME "webinos"
-!define VERSION "0.8.10-webinos"
+!define VERSION "0.8.11-webinos"
 
 ; XP Compatibility
 !ifndef SF_SELECTED

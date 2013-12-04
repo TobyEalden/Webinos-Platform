@@ -24,6 +24,7 @@ extern CAppModule _Module;
 #include <atlwin.h>
 
 #define PRODUCT_NAME _T("webinos runtime")
+#define WEBINOS_NOTIFICATION _T("webinos notification")
 #define WEBINOS_PZH _T("webinos_pzh")
 #define WEBINOS_PZH_FOLDER _T("webinosPzh")
 #define WEBINOS_PZP _T("webinos_pzp")

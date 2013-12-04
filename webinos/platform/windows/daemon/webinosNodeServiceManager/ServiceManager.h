@@ -83,6 +83,7 @@ public:
   unsigned long GetServiceHeartbeatTime(const CUserParameters& user, const CServiceParameters& params);
 	unsigned long GetNodeHeartbeatTime(const CUserParameters& user,const CServiceParameters& params);
   void GetLaunchFiles(const CUserParameters& user,const CServiceParameters& params, long allowedTimespan , std::vector<std::string> &out);
+  void GetNotificationFiles(const CUserParameters& user,const CServiceParameters& params, std::vector<std::string> &out);
   std::string ReadFile(std::string path);
   bool DeleteServiceFolder(const CUserParameters& user, const CServiceParameters& params);
 };

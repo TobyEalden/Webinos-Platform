@@ -28,12 +28,14 @@ class CWebinosUI : public CDialogImpl<CWebinosUI>, public CUpdateUI<CWebinosUI>,
 	NOTIFYICONDATA m_trayIcon;
 	class CServiceRunner* m_pzh_runner;
 	class CServiceRunner* m_pzp_runner;
+  bool m_balloonVisible;
 
 	void Initialise();
 	void ConfirmExit();
   bool ParseArg(std::string& arg, std::string argName, std::string& argVal);
 	void ShowServiceStatus(int& restarting, CServiceParameters& params, int statusCtl, int resetCtl, int outputCtl);
   void CheckForLaunchRequests();
+  void CheckForNotifications();
   bool GetIP(IPv4 & myIP);
 
 public:
